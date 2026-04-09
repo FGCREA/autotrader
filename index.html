@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>AutoTrader</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { font-family:'Segoe UI',sans-serif; background:#060810; color:#e8edf5; min-height:100vh; display:flex; align-items:center; justify-content:center }
+  .box { background:#0d1117; border:1px solid #1e2d40; border-radius:12px; padding:2rem; width:100%; max-width:400px }
+  .logo { text-align:center; font-size:1.4rem; font-weight:800; color:#00d4a1; margin-bottom:1.5rem }
+  .logo span { color:#e8edf5 }
+  .tabs { display:flex; background:#111827; border-radius:8px; padding:3px; margin-bottom:1.5rem }
+  .tab { flex:1; text-align:center; padding:.55rem; border-radius:6px; font-size:.85rem; font-weight:600; cursor:pointer; color:#8b9cb5; transition:all .2s }
+  .tab.active { background:#1c2333; color:#e8edf5 }
+  label { display:block; font-size:.75rem; color:#8b9cb5; margin-bottom:.35rem; text-transform:uppercase; letter-spacing:.05em }
+  input { width:100%; background:#111827; border:1px solid #1e2d40; border-radius:7px; padding:.7rem 1rem; color:#e8edf5; font-size:.9rem; margin-bottom:1rem; outline:none }
+  input:focus { border-color:#00d4a1 }
+  .btn { width:100%; background:#00d4a1; color:#000; border:none; border-radius:8px; padding:.8rem; font-size:.9rem; font-weight:700; cursor:pointer; margin-top:.5rem }
+  .btn:hover { background:#00b389 }
+  .msg { text-align:center; margin-top:1rem; font-size:.85rem; padding:.75rem; border-radius:8px }
+  .msg.ok { background:rgba(0,212,161,.1); color:#00d4a1 }
+  .msg.err { background:rgba(255,77,109,.1); color:#ff4d6d }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="logo">Auto<span>Trader</span></div>
+  
+  <div class="tabs">
+    <div class="tab active" id="tab-reg" onclick="switchTab('register')">Registrarse</div>
+    <div class="tab" id="tab-log" onclick="switchTab('login')">Iniciar sesión</div>
+  </div>
+
+  <div id="form-register">
+    <label>Email</label>
+    <input type="email" id="reg-email" placeholder="tu@email.com" />
+    <label>Contraseña</label>
+    <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" />
+    <button class="btn" onclick="registrar()">Crear cuenta gratis →</button>
+  </div>
+
+  <div id="form-login" style="display:none">
+    <label>Email</label>
+    <input type="email" id="log-email" placeholder="tu@email.com" />
+    <label>Contraseña</label>
+    <input type="password" id="log-pass" placeholder="Tu contraseña" />
+    <button class="btn" onclick="login()">Entrar →</button>
+  </div>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+  const { createClient } = supabase
+  const client = createClient(
+    'https://hmpxnorawqppbxptbyeu.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+  )
+
+  function switchTab(t) {
+    document.getElementById('form-register').style.display = t==='register' ? 'block' : 'none'
+    document.getElementById('form-login').style.display = t==='login' ? 'block' : 'none'
+    document.getElementById('tab-reg').className = 'tab' + (t==='register' ? ' active' : '')
+    document.getElementById('tab-log').className = 'tab' + (t==='login' ? ' active' : '')
+    document.getElementById('msg').innerHTML = ''
+  }
+
+  function showMsg(text, tipo) {
+    document.getElementById('msg').innerHTML = `<div class="msg ${tipo}">${text}</div>`
+  }
+
+  async function registrar() {
+    const email = document.getElementById('reg-email').value
+    const pass = document.getElementById('reg-pass').value
+    if(!email || !pass) return showMsg('Completá todos los campos', 'err')
+    const { error } = await client.auth.signUp({ email, password: pass })
+    if(error) return showMsg('Error: ' + error.message, 'err')
+    showMsg('✅ Cuenta creada! Iniciando...', 'ok')
+    setTimeout(() => window.location.href = 'dashboard.html', 1500)
+  }
+
+  async function login() {
+    const email = document.getElementById('log-email').value
+    const pass = document.getElementById('log-pass').value
+    if(!email || !pass) return showMsg('Completá todos los campos', 'err')
+    const { error } = await client.auth.signInWithPassword({ email, password: pass })
+    if(error) return showMsg('Email o contraseña incorrectos', 'err')
+    showMsg('✅ Bienvenido!', 'ok')
+    setTimeout(() => window.location.href = 'dashboard.html', 1500)
+  }
+</script>
+
+</body>
+</html>

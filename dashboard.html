@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>AutoTrader — Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { font-family:'Segoe UI',sans-serif; background:#060810; color:#e8edf5; min-height:100vh }
+  .nav { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; background:#0d1117; border-bottom:1px solid #1e2d40 }
+  .logo { font-size:1.1rem; font-weight:800; color:#00d4a1 }
+  .logo span { color:#e8edf5 }
+  .nav-right { display:flex; align-items:center; gap:1rem; font-size:.85rem; color:#8b9cb5 }
+  .btn-sm { background:transparent; border:1px solid #2a3f5a; color:#e8edf5; padding:.4rem .9rem; border-radius:6px; cursor:pointer; font-size:.8rem }
+  .main { padding:2rem }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem }
+  .metric { background:#111827; border:1px solid #1e2d40; border-radius:10px; padding:1.1rem }
+  .mlabel { font-size:.72rem; color:#4a5a6e; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem }
+  .mval { font-size:1.4rem; font-weight:800 }
+  .green { color:#00d4a1 } .red { color:#ff4d6d } .muted { color:#4a5a6e }
+  .card { background:#0d1117; border:1px solid #1e2d40; border-radius:12px; padding:1.5rem; margin-bottom:1.5rem }
+  .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem }
+  .card-title { font-size:.95rem; font-weight:700 }
+  .live { display:flex; align-items:center; gap:.4rem; font-size:.75rem; color:#8b9cb5 }
+  .dot { width:7px; height:7px; border-radius:50%; background:#00d4a1; animation:pulse 1.5s infinite }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+  table { width:100%; border-collapse:collapse; font-size:.82rem }
+  th { text-align:left; padding:.6rem 1rem; color:#4a5a6e; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid #1e2d40 }
+  td { padding:.65rem 1rem; border-bottom:1px solid rgba(30,45,64,.4); color:#8b9cb5 }
+  tr:hover td { background:rgba(255,255,255,.015) }
+  .tag { display:inline-flex; padding:2px 8px; border-radius:4px; font-size:.72rem; font-weight:600 }
+  .tag-buy { background:rgba(0,212,161,.15); color:#00d4a1 }
+  .tag-sell { background:rgba(255,77,109,.15); color:#ff4d6d }
+  .tag-hold { background:#1c2333; color:#4a5a6e }
+  .badge { background:rgba(0,212,161,.12); color:#00d4a1; border:1px solid rgba(0,212,161,.25); padding:3px 10px; border-radius:20px; font-size:.72rem }
+  .empty { text-align:center; padding:2rem; color:#4a5a6e; font-size:.85rem }
+  .pbar { height:5px; background:#1e2d40; border-radius:3px; overflow:hidden; margin-top:.35rem }
+  .pfill { height:100%; background:linear-gradient(90deg,#00d4a1,#3b82f6); border-radius:3px; transition:width .5s }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">Auto<span>Trader</span></div>
+  <div class="nav-right">
+    <span id="user-email"></span>
+    <span class="badge">🎁 7 días de prueba</span>
+    <button class="btn-sm" onclick="logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div style="margin-bottom:1.75rem">
+    <div style="font-size:1.3rem;font-weight:800" id="welcome">Dashboard</div>
+    <div style="font-size:.8rem;color:#8b9cb5;margin-top:.15rem">Resultados en tiempo real</div>
+  </div>
+
+  <div class="grid">
+    <div class="metric">
+      <div class="mlabel">Balance</div>
+      <div class="mval green" id="m-balance">$100.00</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">PnL total</div>
+      <div class="mval" id="m-pnl">$0.00</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Trades</div>
+      <div class="mval" id="m-trades">0</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Win rate</div>
+      <div class="mval green" id="m-wr">0%</div>
+      <div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Historial de trades</div>
+      <div class="live"><div class="dot"></div>En vivo</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr>
+      </thead>
+      <tbody id="trades-body">
+        <tr><td colspan="6" class="empty">Esperando trades del bot...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const { createClient } = supabase
+  const client = createClient(
+    'https://hmpxnorawqppbxptbyeu.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+  )
+
+  async function init() {
+    const { data: { session } } = await client.auth.getSession()
+    if(!session) return window.location.href = 'index.html'
+    document.getElementById('user-email').textContent = session.user.email
+    document.getElementById('welcome').textContent = 'Bienvenido, ' + session.user.email.split('@')[0] + ' 👋'
+    cargarTrades()
+    suscribirTrades()
+  }
+
+  async function cargarTrades() {
+    const { data, error } = await client
+      .from('trades')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    if(error || !data) return
+    renderTrades(data)
+    actualizarMetricas(data)
+  }
+
+  function suscribirTrades() {
+    client.channel('trades')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trades' }, payload => {
+        cargarTrades()
+      })
+      .subscribe()
+  }
+
+  function renderTrades(trades) {
+    if(!trades.length) return
+    const tbody = document.getElementById('trades-body')
+    tbody.innerHTML = trades.map(t => `
+      <tr>
+        <td>${new Date(t.created_at).toLocaleString('es-AR')}</td>
+        <td style="font-weight:600">${t.symbol}</td>
+        <td><span class="tag tag-${t.side.toLowerCase()}">${t.side}</span></td>
+        <td>$${t.price.toLocaleString()}</td>
+        <td>${t.rsi.toFixed(1)}</td>
+        <td class="${t.pnl >= 0 ? 'green' : 'red'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+      </tr>
+    `).join('')
+  }
+
+  function actualizarMetricas(trades) {
+    const pnlTotal = trades.reduce((a, b) => a + b.pnl, 0)
+    const wins = trades.filter(t => t.pnl > 0).length
+    const wr = trades.length ? (wins / trades.length * 100) : 0
+    const balance = 100 + pnlTotal
+
+    document.getElementById('m-balance').textContent = '$' + balance.toFixed(2)
+    document.getElementById('m-pnl').textContent = (pnlTotal >= 0 ? '+' : '') + '$' + pnlTotal.toFixed(2)
+    document.getElementById('m-pnl').className = 'mval ' + (pnlTotal >= 0 ? 'green' : 'red')
+    document.getElementById('m-trades').textContent = trades.length
+    document.getElementById('m-wr').textContent = wr.toFixed(0) + '%'
+    document.getElementById('wr-bar').style.width = wr + '%'
+  }
+
+  async function logout() {
+    await client.auth.signOut()
+    window.location.href = 'index.html'
+  }
+
+  init()
+</script>
+
+</body>
+</html>
