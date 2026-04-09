@@ -2,40 +2,61 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AutoTrader — Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box }
-  body { font-family:'Segoe UI',sans-serif; background:#060810; color:#e8edf5; min-height:100vh }
-  .nav { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; background:#0d1117; border-bottom:1px solid #1e2d40 }
-  .logo { font-size:1.1rem; font-weight:800; color:#00d4a1 }
-  .logo span { color:#e8edf5 }
-  .nav-right { display:flex; align-items:center; gap:1rem; font-size:.85rem; color:#8b9cb5 }
-  .btn-sm { background:transparent; border:1px solid #2a3f5a; color:#e8edf5; padding:.4rem .9rem; border-radius:6px; cursor:pointer; font-size:.8rem }
-  .main { padding:2rem }
-  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem }
-  .metric { background:#111827; border:1px solid #1e2d40; border-radius:10px; padding:1.1rem }
-  .mlabel { font-size:.72rem; color:#4a5a6e; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem }
-  .mval { font-size:1.4rem; font-weight:800 }
-  .green { color:#00d4a1 } .red { color:#ff4d6d } .muted { color:#4a5a6e }
-  .card { background:#0d1117; border:1px solid #1e2d40; border-radius:12px; padding:1.5rem; margin-bottom:1.5rem }
-  .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem }
-  .card-title { font-size:.95rem; font-weight:700 }
-  .live { display:flex; align-items:center; gap:.4rem; font-size:.75rem; color:#8b9cb5 }
-  .dot { width:7px; height:7px; border-radius:50%; background:#00d4a1; animation:pulse 1.5s infinite }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-  table { width:100%; border-collapse:collapse; font-size:.82rem }
-  th { text-align:left; padding:.6rem 1rem; color:#4a5a6e; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid #1e2d40 }
-  td { padding:.65rem 1rem; border-bottom:1px solid rgba(30,45,64,.4); color:#8b9cb5 }
-  tr:hover td { background:rgba(255,255,255,.015) }
-  .tag { display:inline-flex; padding:2px 8px; border-radius:4px; font-size:.72rem; font-weight:600 }
-  .tag-buy { background:rgba(0,212,161,.15); color:#00d4a1 }
-  .tag-sell { background:rgba(255,77,109,.15); color:#ff4d6d }
-  .tag-hold { background:#1c2333; color:#4a5a6e }
-  .badge { background:rgba(0,212,161,.12); color:#00d4a1; border:1px solid rgba(0,212,161,.25); padding:3px 10px; border-radius:20px; font-size:.72rem }
-  .empty { text-align:center; padding:2rem; color:#4a5a6e; font-size:.85rem }
-  .pbar { height:5px; background:#1e2d40; border-radius:3px; overflow:hidden; margin-top:.35rem }
-  .pfill { height:100%; background:linear-gradient(90deg,#00d4a1,#3b82f6); border-radius:3px; transition:width .5s }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
+  .nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
+  .logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
+  .logo span{color:#e8edf5}
+  .nav-right{display:flex;align-items:center;gap:.75rem;font-size:.82rem;color:#8b9cb5}
+  .btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif}
+  .btn-sm:hover{background:#1c2333}
+  .badge{background:rgba(0,212,161,.12);color:#00d4a1;border:1px solid rgba(0,212,161,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+  .badge-warn{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+  .main{padding:1.75rem;max-width:1200px;margin:0 auto}
+  .dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem}
+  .dt{font-size:1.3rem;font-weight:800}
+  .ds{font-size:.8rem;color:#8b9cb5;margin-top:.15rem}
+  .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.75rem}
+  .metric{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1.1rem}
+  .mlabel{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+  .mval{font-size:1.45rem;font-weight:800;font-family:'DM Mono',monospace}
+  .green{color:#00d4a1}.red{color:#ff4d6d}.muted{color:#4a5a6e}
+  .mch{font-size:.72rem;margin-top:.2rem}
+  .cc{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+  .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
+  .ctitle{font-size:.9rem;font-weight:700}
+  .live{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#8b9cb5}
+  .dot{width:7px;height:7px;border-radius:50%;background:#00d4a1;animation:pulse 1.5s infinite;display:inline-block}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  table{width:100%;border-collapse:collapse;font-size:.8rem}
+  th{text-align:left;padding:.6rem .85rem;color:#4a5a6e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #1e2d40}
+  td{padding:.65rem .85rem;border-bottom:1px solid rgba(30,45,64,.4);color:#8b9cb5}
+  tr:hover td{background:rgba(255,255,255,.015)}
+  .tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+  .tag-buy{background:rgba(0,212,161,.15);color:#00d4a1}
+  .tag-sell{background:rgba(255,77,109,.15);color:#ff4d6d}
+  .empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.85rem}
+  .pbar{height:5px;background:#1e2d40;border-radius:3px;overflow:hidden;margin-top:.35rem}
+  .pfill{height:100%;background:linear-gradient(90deg,#00d4a1,#3b82f6);border-radius:3px;transition:width .5s}
+  .steps-card{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+  .step-item{display:flex;align-items:center;gap:1rem;padding:.85rem;background:#111827;border-radius:8px;margin-bottom:.6rem;border:1px solid #1e2d40}
+  .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex-shrink:0}
+  .s-done{background:#00d4a1;color:#000}
+  .s-active{background:rgba(0,212,161,.15);color:#00d4a1;border:1px solid rgba(0,212,161,.3)}
+  .s-pending{background:#1c2333;color:#4a5a6e}
+  .step-text{flex:1}
+  .step-title{font-size:.88rem;font-weight:600}
+  .step-sub{font-size:.75rem;color:#8b9cb5;margin-top:.15rem}
+  .btn-green{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.55rem 1.1rem;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'Segoe UI',sans-serif}
+  .btn-green:hover{background:#00b389}
+  .trial-banner{background:linear-gradient(135deg,rgba(0,212,161,.08),rgba(59,130,246,.05));border:1px solid rgba(0,212,161,.2);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .trial-text h3{font-size:.9rem;font-weight:700;color:#00d4a1;margin-bottom:.2rem}
+  .trial-text p{font-size:.78rem;color:#8b9cb5}
+  @media(max-width:768px){.mgrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -44,125 +65,156 @@
   <div class="logo">Auto<span>Trader</span></div>
   <div class="nav-right">
     <span id="user-email"></span>
-    <span class="badge">🎁 7 días de prueba</span>
+    <span id="trial-nav"></span>
+    <a href="planes.html" class="btn-sm">Planes</a>
     <button class="btn-sm" onclick="logout()">Salir</button>
   </div>
 </nav>
 
 <div class="main">
-  <div style="margin-bottom:1.75rem">
-    <div style="font-size:1.3rem;font-weight:800" id="welcome">Dashboard</div>
-    <div style="font-size:.8rem;color:#8b9cb5;margin-top:.15rem">Resultados en tiempo real</div>
+  <div class="dh">
+    <div>
+      <div class="dt" id="greeting">Dashboard</div>
+      <div class="ds">Resultados en tiempo real · Bot activo 24/7</div>
+    </div>
+    <div style="font-size:.72rem;color:#4a5a6e" id="dtime"></div>
   </div>
 
-  <div class="grid">
-    <div class="metric">
-      <div class="mlabel">Balance</div>
-      <div class="mval green" id="m-balance">$100.00</div>
+  <!-- Trial banner -->
+  <div class="trial-banner" id="trial-banner" style="display:none">
+    <div class="trial-text">
+      <h3 id="trial-title">🎁 Prueba gratuita activa</h3>
+      <p id="trial-desc">Tenés acceso completo al sistema.</p>
     </div>
-    <div class="metric">
-      <div class="mlabel">PnL total</div>
-      <div class="mval" id="m-pnl">$0.00</div>
+    <a href="planes.html" class="btn-green">Ver planes →</a>
+  </div>
+
+  <!-- Métricas -->
+  <div class="mgrid">
+    <div class="metric"><div class="mlabel">Balance</div><div class="mval green" id="m1">$0.00</div></div>
+    <div class="metric"><div class="mlabel">PnL total</div><div class="mval" id="m2">$0.00</div></div>
+    <div class="metric"><div class="mlabel">Trades</div><div class="mval" id="m3">0</div></div>
+    <div class="metric"><div class="mlabel">Win rate</div><div class="mval green" id="m4">0%</div><div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div></div>
+  </div>
+
+  <!-- Pasos -->
+  <div class="steps-card" id="steps-card">
+    <div class="ch"><div class="ctitle">🚀 Pasos para empezar</div></div>
+    <div class="step-item">
+      <div class="step-circle s-done">✓</div>
+      <div class="step-text"><div class="step-title">Cuenta creada</div><div class="step-sub">Tu cuenta está activa y lista</div></div>
     </div>
-    <div class="metric">
-      <div class="mlabel">Trades</div>
-      <div class="mval" id="m-trades">0</div>
+    <div class="step-item">
+      <div class="step-circle s-active">2</div>
+      <div class="step-text"><div class="step-title">Conectar Binance</div><div class="step-sub">Ingresá tu API Key y Secret de Binance</div></div>
+      <a href="planes.html" class="btn-green">Configurar →</a>
     </div>
-    <div class="metric">
-      <div class="mlabel">Win rate</div>
-      <div class="mval green" id="m-wr">0%</div>
-      <div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div>
+    <div class="step-item">
+      <div class="step-circle s-pending">3</div>
+      <div class="step-text"><div class="step-title">Activar el bot</div><div class="step-sub">El bot comenzará a operar automáticamente</div></div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">Historial de trades</div>
+  <!-- Trades -->
+  <div class="cc">
+    <div class="ch">
+      <div class="ctitle">Historial de trades</div>
       <div class="live"><div class="dot"></div>En vivo</div>
     </div>
     <table>
-      <thead>
-        <tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr>
-      </thead>
-      <tbody id="trades-body">
-        <tr><td colspan="6" class="empty">Esperando trades del bot...</td></tr>
-      </tbody>
+      <thead><tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr></thead>
+      <tbody id="trades-body"><tr><td colspan="6" class="empty">Esperando trades del bot...</td></tr></tbody>
     </table>
   </div>
 </div>
 
 <script>
-  const { createClient } = supabase
+  const {createClient} = supabase
   const client = createClient(
     'https://hmpxnorawqppbxptbyeu.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
   )
 
   async function init() {
-    const { data: { session } } = await client.auth.getSession()
-    if(!session) return window.location.href = 'index.html'
-    document.getElementById('user-email').textContent = session.user.email
-    document.getElementById('welcome').textContent = 'Bienvenido, ' + session.user.email.split('@')[0] + ' 👋'
+    const {data:{session}} = await client.auth.getSession()
+    if(!session) return window.location.href='login.html'
+    const email = session.user.email
+    const name = session.user.user_metadata?.name || email.split('@')[0]
+    document.getElementById('user-email').textContent = email
+    document.getElementById('greeting').textContent = 'Bienvenido, '+name+' 👋'
+
+    // Trial
+    const created = new Date(session.user.created_at)
+    const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
+    const now = new Date()
+    const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
+    const banner = document.getElementById('trial-banner')
+    banner.style.display = 'flex'
+    if(daysLeft > 0) {
+      document.getElementById('trial-nav').innerHTML = `<span class="badge">🎁 ${daysLeft}d trial</span>`
+      document.getElementById('trial-title').textContent = `🎁 Prueba gratuita — ${daysLeft} días restantes`
+      document.getElementById('trial-desc').textContent = 'Tenés acceso completo. Activá tu plan antes de que termine.'
+    } else {
+      document.getElementById('trial-nav').innerHTML = `<span class="badge-warn">⚠️ Trial vencido</span>`
+      document.getElementById('trial-title').textContent = '⚠️ Tu prueba gratuita terminó'
+      document.getElementById('trial-desc').textContent = 'Activá tu plan para seguir operando.'
+    }
+
+    setInterval(()=>{
+      const el=document.getElementById('dtime')
+      if(el) el.textContent=new Date().toLocaleString('es-AR')
+    },1000)
+
     cargarTrades()
     suscribirTrades()
   }
 
   async function cargarTrades() {
-    const { data, error } = await client
-      .from('trades')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20)
-
-    if(error || !data) return
-    renderTrades(data)
-    actualizarMetricas(data)
+    const {data,error} = await client.from('trades').select('*').order('created_at',{ascending:false}).limit(20)
+    if(error||!data) return
+    if(data.length > 0) {
+      document.getElementById('steps-card').style.display = 'none'
+      renderTrades(data)
+      actualizarMetricas(data)
+    }
   }
 
   function suscribirTrades() {
-    client.channel('trades')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trades' }, payload => {
-        cargarTrades()
-      })
-      .subscribe()
+    client.channel('trades').on('postgres_changes',{event:'INSERT',schema:'public',table:'trades'},()=>{cargarTrades()}).subscribe()
   }
 
   function renderTrades(trades) {
-    if(!trades.length) return
-    const tbody = document.getElementById('trades-body')
-    tbody.innerHTML = trades.map(t => `
+    document.getElementById('trades-body').innerHTML = trades.map(t=>`
       <tr>
         <td>${new Date(t.created_at).toLocaleString('es-AR')}</td>
         <td style="font-weight:600">${t.symbol}</td>
         <td><span class="tag tag-${t.side.toLowerCase()}">${t.side}</span></td>
         <td>$${t.price.toLocaleString()}</td>
         <td>${t.rsi.toFixed(1)}</td>
-        <td class="${t.pnl >= 0 ? 'green' : 'red'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+        <td class="${t.pnl>=0?'green':'red'}">${t.pnl>=0?'+':'-'}$${Math.abs(t.pnl).toFixed(2)}</td>
       </tr>
     `).join('')
   }
 
   function actualizarMetricas(trades) {
-    const pnlTotal = trades.reduce((a, b) => a + b.pnl, 0)
-    const wins = trades.filter(t => t.pnl > 0).length
-    const wr = trades.length ? (wins / trades.length * 100) : 0
-    const balance = 100 + pnlTotal
-
-    document.getElementById('m-balance').textContent = '$' + balance.toFixed(2)
-    document.getElementById('m-pnl').textContent = (pnlTotal >= 0 ? '+' : '') + '$' + pnlTotal.toFixed(2)
-    document.getElementById('m-pnl').className = 'mval ' + (pnlTotal >= 0 ? 'green' : 'red')
-    document.getElementById('m-trades').textContent = trades.length
-    document.getElementById('m-wr').textContent = wr.toFixed(0) + '%'
-    document.getElementById('wr-bar').style.width = wr + '%'
+    const pnl = trades.reduce((a,b)=>a+b.pnl,0)
+    const wins = trades.filter(t=>t.pnl>0).length
+    const wr = trades.length?(wins/trades.length*100):0
+    const balance = 100+pnl
+    document.getElementById('m1').textContent = '$'+balance.toFixed(2)
+    document.getElementById('m2').textContent = (pnl>=0?'+':'')+' $'+pnl.toFixed(2)
+    document.getElementById('m2').className = 'mval '+(pnl>=0?'green':'red')
+    document.getElementById('m3').textContent = trades.length
+    document.getElementById('m4').textContent = wr.toFixed(0)+'%'
+    document.getElementById('wr-bar').style.width = wr+'%'
   }
 
   async function logout() {
     await client.auth.signOut()
-    window.location.href = 'index.html'
+    window.location.href = 'login.html'
   }
 
   init()
 </script>
-
 </body>
 </html>

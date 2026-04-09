@@ -2,74 +2,76 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AutoTrader — Planes</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box }
-  body { font-family:'Segoe UI',sans-serif; background:#060810; color:#e8edf5; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem }
-  .logo { font-size:1.2rem; font-weight:800; color:#00d4a1; margin-bottom:2rem }
-  .logo span { color:#e8edf5; font-style:normal }
-  h2 { font-size:1.8rem; font-weight:800; text-align:center; margin-bottom:.5rem }
-  p { color:#8b9cb5; text-align:center; margin-bottom:2.5rem }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:700px; width:100% }
-  .plan { background:#0d1117; border:1px solid #1e2d40; border-radius:14px; padding:2rem; position:relative }
-  .plan.featured { border-color:#00d4a1 }
-  .badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#00d4a1; color:#000; font-size:.7rem; font-weight:700; padding:3px 14px; border-radius:20px; white-space:nowrap }
-  .pname { font-size:.8rem; color:#8b9cb5; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem }
-  .pprice { font-size:2rem; font-weight:800; margin-bottom:.2rem }
-  .pper { font-size:.75rem; color:#4a5a6e; margin-bottom:1.25rem }
-  .sep { height:1px; background:#1e2d40; margin:.85rem 0 }
-  ul { list-style:none; margin-bottom:1.5rem }
-  ul li { font-size:.83rem; color:#8b9cb5; padding:.4rem 0; display:flex; gap:.5rem }
-  .ck { color:#00d4a1 }
-  .btn-outline { width:100%; background:transparent; border:1px solid #2a3f5a; color:#e8edf5; border-radius:8px; padding:.75rem; font-weight:700; cursor:pointer; font-size:.85rem; transition:all .2s }
-  .btn-outline:hover { background:#1c2333 }
-  .btn-green { width:100%; background:#00d4a1; color:#000; border:none; border-radius:8px; padding:.75rem; font-weight:700; cursor:pointer; font-size:.85rem }
-  .btn-green:hover { background:#00b389 }
-  .trial { font-size:.78rem; color:#8b9cb5; text-align:center; margin-top:1.25rem; padding:.65rem; background:rgba(0,212,161,.05); border:1px solid rgba(0,212,161,.15); border-radius:8px; max-width:700px; width:100% }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+  .logo{font-size:1.2rem;font-weight:800;color:#00d4a1;margin-bottom:.5rem}
+  .logo span{color:#e8edf5}
+  .back{font-size:.8rem;color:#4a5a6e;text-decoration:none;margin-bottom:2rem;display:block;text-align:center}
+  .back:hover{color:#8b9cb5}
+  h2{font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:.5rem}
+  p{color:#8b9cb5;text-align:center;margin-bottom:2.5rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:700px;width:100%}
+  .plan{background:#0d1117;border:1px solid #1e2d40;border-radius:14px;padding:2rem;position:relative}
+  .plan.feat{border-color:#00d4a1;background:rgba(0,212,161,.03)}
+  .pbadge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#00d4a1;color:#000;font-size:.7rem;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap}
+  .pname{font-size:.78rem;color:#8b9cb5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
+  .pprice{font-size:2.2rem;font-weight:800;margin-bottom:.2rem}
+  .pper{font-size:.75rem;color:#4a5a6e;margin-bottom:1.25rem}
+  .psep{height:1px;background:#1e2d40;margin:.85rem 0}
+  ul{list-style:none;display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem}
+  ul li{display:flex;gap:.5rem;font-size:.83rem;color:#8b9cb5}
+  .ck{color:#00d4a1}
+  .btn-outline{width:100%;background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.75rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif;transition:all .2s}
+  .btn-outline:hover{background:#1c2333}
+  .btn-green{width:100%;background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.75rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
+  .btn-green:hover{background:#00b389}
+  .trial{font-size:.78rem;color:#8b9cb5;text-align:center;margin-top:1.25rem;padding:.65rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;max-width:700px;width:100%}
+  .disc{font-size:.72rem;color:#4a5a6e;text-align:center;max-width:600px;margin-top:1.5rem;line-height:1.6}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<div class="logo">Auto<span>Trader</span></div>
-<h2>Elegí tu plan</h2>
-<p>7 días de prueba gratuita incluidos. Cancelá cuando quieras.</p>
-
-<div class="grid">
-  <div class="plan">
-    <div class="pname">Basic</div>
-    <div class="pprice">$15<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
-    <div class="pper">después del trial gratuito</div>
-    <div class="sep"></div>
-    <ul>
-      <li><span class="ck">✓</span> Configuración manual del bot</li>
-      <li><span class="ck">✓</span> Dashboard con PnL</li>
-      <li><span class="ck">✓</span> Estrategia RSI + EMA</li>
-      <li><span class="ck">✓</span> Stop-loss y take-profit</li>
-      <li><span class="ck">✓</span> Alertas por Telegram</li>
-      <li><span class="ck">✓</span> 1 par de trading</li>
-    </ul>
-    <button class="btn-outline" onclick="window.location.href='https://autotrader-pro.lemonsqueezy.com/checkout/buy/fda9e6a9-ba13-4017-a551-521968b28e3d'">Elegir Basic</button>
+  <div class="logo">Auto<span>Trader</span></div>
+  <a href="dashboard.html" class="back">← Volver al dashboard</a>
+  <h2>Elegí tu plan</h2>
+  <p>7 días de prueba gratuita incluidos. Cancelá cuando quieras.</p>
+  <div class="grid">
+    <div class="plan">
+      <div class="pname">Basic</div>
+      <div class="pprice">$15<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
+      <div class="pper">después del trial gratuito</div>
+      <div class="psep"></div>
+      <ul>
+        <li><span class="ck">✓</span> Bot RSI + EMA activo 24/7</li>
+        <li><span class="ck">✓</span> Dashboard con PnL en tiempo real</li>
+        <li><span class="ck">✓</span> Stop-loss y take-profit automático</li>
+        <li><span class="ck">✓</span> Alertas por Telegram</li>
+        <li><span class="ck">✓</span> 1 par de trading</li>
+        <li><span class="ck">✓</span> Soporte por email</li>
+      </ul>
+      <button class="btn-outline" onclick="window.location.href='https://autotrader-pro.lemonsqueezy.com/checkout/buy/fda9e6a9-ba13-4017-a551-521968b28e3d'">Elegir Basic</button>
+    </div>
+    <div class="plan feat">
+      <div class="pbadge">⭐ Más popular</div>
+      <div class="pname">Pro</div>
+      <div class="pprice">$30<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
+      <div class="pper">después del trial gratuito</div>
+      <div class="psep"></div>
+      <ul>
+        <li><span class="ck">✓</span> Todo lo de Basic</li>
+        <li><span class="ck">✓</span> Ajuste automático de riesgo</li>
+        <li><span class="ck">✓</span> Optimización dinámica</li>
+        <li><span class="ck">✓</span> Múltiples pares de trading</li>
+        <li><span class="ck">✓</span> Analytics avanzados</li>
+        <li><span class="ck">✓</span> Soporte prioritario</li>
+      </ul>
+      <button class="btn-green" onclick="window.location.href='https://autotrader-pro.lemonsqueezy.com/checkout/buy/204b37f5-ba1c-4f83-83c6-5dbf9328862d'">Elegir Pro</button>
+    </div>
   </div>
-
-  <div class="plan featured">
-    <div class="badge">⭐ Más popular</div>
-    <div class="pname">Pro</div>
-    <div class="pprice">$30<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
-    <div class="pper">después del trial gratuito</div>
-    <div class="sep"></div>
-    <ul>
-      <li><span class="ck">✓</span> Todo lo de Basic</li>
-      <li><span class="ck">✓</span> Ajuste automático de riesgo</li>
-      <li><span class="ck">✓</span> Optimización dinámica</li>
-      <li><span class="ck">✓</span> Múltiples pares</li>
-      <li><span class="ck">✓</span> Analytics avanzados</li>
-      <li><span class="ck">✓</span> Gestión avanzada de capital</li>
-    </ul>
-    <button class="btn-green" onclick="window.location.href='https://autotrader-pro.lemonsqueezy.com/checkout/buy/204b37f5-ba1c-4f83-83c6-5dbf9328862d'">Elegir Pro</button>
-  </div>
-</div>
-
-<div class="trial">🎁 No se cobra nada hasta que terminen los 7 días de prueba.</div>
-
+  <div class="trial">🎁 No se cobra nada hasta que terminen los 7 días de prueba. Cancelá en cualquier momento.</div>
+  <div class="disc">⚠️ El trading implica riesgo. Los resultados no están garantizados. AutoTrader es una herramienta de automatización — no somos asesores financieros.</div>
 </body>
 </html>
