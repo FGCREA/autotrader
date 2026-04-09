@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTrader — Configurá tu perfil</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060810;--bg2:#0d1117;--bg3:#111827;--bg4:#1c2333;
+  --border:#1e2d40;--border2:#2a3f5a;
+  --text:#e8edf5;--text2:#8b9cb5;--text3:#4a5a6e;
+  --green:#00d4a1;--green2:#00b389;--green3:rgba(0,212,161,.1);
+  --red:#ff4d6d;
+}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.logo{font-size:1.2rem;font-weight:800;color:var(--green);margin-bottom:2.5rem;text-align:center}
+.logo span{color:var(--text)}
+.box{width:100%;max-width:580px}
+
+/* Progress */
+.prog-wrap{margin-bottom:2.5rem}
+.prog-bar{display:flex;gap:.4rem;margin-bottom:.75rem}
+.pdot{flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .3s}
+.pdot.done{background:var(--green)}
+.pdot.cur{background:#3b82f6}
+.prog-label{font-size:.75rem;color:var(--text2);font-family:'DM Mono',monospace}
+
+/* Step content */
+.step-tag{font-size:.72rem;color:var(--green);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:.5rem}
+.step-title{font-size:1.8rem;font-weight:800;line-height:1.2;margin-bottom:.5rem}
+.step-sub{color:var(--text2);font-size:.9rem;margin-bottom:2rem;line-height:1.6}
+
+/* Options grid */
+.ogrid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:2rem}
+.ocard{background:var(--bg3);border:2px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;user-select:none}
+.ocard:hover{border-color:var(--border2);background:var(--bg4)}
+.ocard.sel{border-color:var(--green);background:rgba(0,212,161,.06)}
+.ocard.sel .oi{filter:none}
+.oi{font-size:1.5rem;margin-bottom:.5rem;display:block}
+.ol{font-size:.9rem;font-weight:700}
+.os{font-size:.75rem;color:var(--text2);margin-top:.2rem}
+
+/* Buttons */
+.btn-row{display:flex;gap:.85rem}
+.btn{padding:.75rem 1.5rem;border-radius:8px;font-family:'Segoe UI',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.b-primary{background:var(--green);color:#000;flex:1}
+.b-primary:hover{background:var(--green2)}
+.b-primary:disabled{opacity:.4;cursor:not-allowed}
+.b-outline{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.b-outline:hover{background:var(--bg4)}
+
+/* Estimation screen */
+.est-hl{background:linear-gradient(135deg,rgba(0,212,161,.08),rgba(59,130,246,.04));border:1px solid rgba(0,212,161,.2);border-radius:14px;padding:2rem;text-align:center;margin-bottom:1.5rem}
+.est-lbl{font-size:.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.est-amt{font-size:3rem;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;letter-spacing:-.02em}
+.est-rng{font-size:.82rem;color:var(--text2);margin-top:.4rem}
+.egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.5rem}
+.ec{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center}
+.ec .v{font-size:1.1rem;font-weight:700;font-family:'DM Mono',monospace}
+.ec .k{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:.25rem}
+.info-box{display:flex;gap:.6rem;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:.85rem 1rem;font-size:.82rem;color:#3b82f6;margin-bottom:1.5rem}
+.disc{font-size:.72rem;color:var(--text3);padding:.85rem 1rem;background:var(--bg3);border-radius:8px;line-height:1.6;border-left:3px solid var(--border2);margin-bottom:1.5rem}
+
+@media(max-width:480px){.ogrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="logo">Auto<span>Trader</span></div>
+
+<div class="box">
+  <div class="prog-wrap">
+    <div class="prog-bar" id="prog-bar"></div>
+    <div class="prog-label" id="prog-label">Paso 1 de 5</div>
+  </div>
+  <div id="step-content"></div>
+</div>
+
+<script>
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
+
+const STEPS = [
+  {
+    key:'capital', tag:'Paso 1 de 5', title:'¿Cuánto capital querés invertir?', sub:'Esto nos ayuda a calcular tu estrategia óptima y el tamaño de cada operación.',
+    opts:[
+      {i:'💵',l:'$100 – $500',v:'micro',s:'Capital inicial'},
+      {i:'💰',l:'$500 – $2,000',v:'small',s:'Capital pequeño'},
+      {i:'💎',l:'$2,000 – $10,000',v:'medium',s:'Capital medio'},
+      {i:'🏦',l:'$10,000+',v:'large',s:'Capital grande'}
+    ]
+  },
+  {
+    key:'objetivo', tag:'Paso 2 de 5', title:'¿Cuál es tu objetivo principal?', sub:'Tu meta determina cómo el sistema va a priorizar las operaciones.',
+    opts:[
+      {i:'🌱',l:'Crecimiento lento',v:'conservative',s:'Priorizar seguridad'},
+      {i:'⚖️',l:'Balance moderado',v:'balanced',s:'Riesgo controlado'},
+      {i:'🚀',l:'Crecimiento rápido',v:'aggressive',s:'Mayor rendimiento'},
+      {i:'🎯',l:'Generar ingresos',v:'income',s:'Flujo de caja mensual'}
+    ]
+  },
+  {
+    key:'tiempo', tag:'Paso 3 de 5', title:'¿Cuánto tiempo podés dedicarle?', sub:'Esto define si el sistema opera de forma totalmente autónoma o con tu supervisión.',
+    opts:[
+      {i:'⚡',l:'Nada, quiero automatizar todo',v:'none',s:'100% automático'},
+      {i:'📱',l:'Reviso 1 vez al día',v:'little',s:'Supervisión mínima'},
+      {i:'💻',l:'Varias horas por día',v:'moderate',s:'Seguimiento activo'},
+      {i:'🎮',l:'Estoy disponible siempre',v:'full',s:'Control total'}
+    ]
+  },
+  {
+    key:'riesgo', tag:'Paso 4 de 5', title:'¿Cuánto riesgo tolerás?', sub:'Define el porcentaje máximo de pérdida que aceptás por operación.',
+    opts:[
+      {i:'🛡️',l:'Bajo — máx 3%/mes',v:'low',s:'Muy conservador'},
+      {i:'⚖️',l:'Medio — máx 8%/mes',v:'medium',s:'Equilibrado'},
+      {i:'🔥',l:'Alto — máx 15%/mes',v:'high',s:'Agresivo'},
+      {i:'💥',l:'Muy alto — sin límite',v:'extreme',s:'Máximo rendimiento'}
+    ]
+  },
+  {
+    key:'experiencia', tag:'Paso 5 de 5', title:'¿Qué experiencia tenés en trading?', sub:'Personalizamos la configuración y el nivel de detalle según tu nivel.',
+    opts:[
+      {i:'👶',l:'Principiante',v:'beginner',s:'Nunca hice trading'},
+      {i:'📚',l:'Básico',v:'basic',s:'Conozco los conceptos'},
+      {i:'💼',l:'Intermedio',v:'intermediate',s:'Tengo experiencia'},
+      {i:'🧠',l:'Avanzado',v:'advanced',s:'Trader profesional'}
+    ]
+  }
+]
+
+let step = 0
+let answers = {}
+let userId = null
+
+// Check auth
+async function init() {
+  const {data:{session}} = await client.auth.getSession()
+  if(!session) return window.location.href = 'login.html'
+  userId = session.user.id
+
+  // Check if already did onboarding
+  const {data} = await client.from('perfiles').select('user_id').eq('user_id', userId).single()
+  if(data) return window.location.href = 'dashboard.html'
+
+  renderStep()
+}
+
+function renderProg() {
+  document.getElementById('prog-bar').innerHTML = STEPS.map((_,i) =>
+    `<div class="pdot ${i < step ? 'done' : i === step ? 'cur' : ''}"></div>`
+  ).join('')
+  document.getElementById('prog-label').textContent = `Paso ${step+1} de ${STEPS.length}`
+}
+
+function renderStep() {
+  const s = STEPS[step]
+  renderProg()
+  document.getElementById('step-content').innerHTML = `
+    <div class="step-tag">${s.tag}</div>
+    <div class="step-title">${s.title}</div>
+    <div class="step-sub">${s.sub}</div>
+    <div class="ogrid">
+      ${s.opts.map(o => `
+        <div class="ocard ${answers[s.key]===o.v?'sel':''}" onclick="pick('${s.key}','${o.v}')">
+          <span class="oi">${o.i}</span>
+          <div class="ol">${o.l}</div>
+          <div class="os">${o.s}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="btn-row">
+      ${step > 0 ? `<button class="btn b-outline" onclick="prev()">← Atrás</button>` : ''}
+      <button class="btn b-primary" id="btn-next" onclick="next()" ${!answers[s.key]?'disabled':''}>
+        ${step < STEPS.length-1 ? 'Siguiente →' : 'Ver mi estimación →'}
+      </button>
+    </div>
+  `
+}
+
+function pick(key, val) {
+  answers[key] = val
+  renderStep()
+}
+
+function next() {
+  if(step < STEPS.length - 1) {
+    step++
+    renderStep()
+  } else {
+    showEstimation()
+  }
+}
+
+function prev() {
+  if(step > 0) { step--; renderStep() }
+}
+
+function showEstimation() {
+  const capMap = {micro:300, small:1000, medium:5000, large:20000}
+  const rMap = {low:.03, medium:.08, high:.15, extreme:.22}
+  const oMap = {conservative:.03, balanced:.07, aggressive:.14, income:.06}
+
+  const cap = capMap[answers.capital] || 1000
+  const r = ((rMap[answers.riesgo]||.08) + (oMap[answers.objetivo]||.08)) / 2
+  const mo = cap * r
+  const lo = mo * .6
+  const hi = mo * 1.4
+  const mos = Math.ceil(cap * .5 / mo)
+  const rec = r >= .1 ? 'PRO' : 'BASIC'
+
+  const advs = {
+    low:'Tu perfil conservador se adapta bien a la estrategia RSI básica con stop-loss ajustado.',
+    medium:'El balance riesgo/retorno es óptimo para la estrategia RSI + EMA estándar.',
+    high:'Tu tolerancia al riesgo permite aprovechar la optimización dinámica del plan Pro.',
+    extreme:'Con alto riesgo, el plan Pro con ajuste automático maximizará tu exposición controlada.'
+  }
+
+  renderProg()
+  document.getElementById('prog-label').textContent = 'Tu estimación personalizada'
+
+  document.getElementById('step-content').innerHTML = `
+    <div class="step-tag">Resultado</div>
+    <div class="step-title">Tu estimación personalizada</div>
+    <div class="step-sub">Basada en tu capital, objetivos y perfil de riesgo:</div>
+
+    <div class="est-hl">
+      <div class="est-lbl">Ganancia estimada mensual</div>
+      <div class="est-amt">+$${mo.toFixed(0)}</div>
+      <div class="est-rng">Rango estimado: $${lo.toFixed(0)} – $${hi.toFixed(0)}</div>
+    </div>
+
+    <div class="egrid">
+      <div class="ec"><div class="v">${(r*100).toFixed(1)}%</div><div class="k">Rendimiento</div></div>
+      <div class="ec"><div class="v">${mos} meses</div><div class="k">Objetivo en</div></div>
+      <div class="ec"><div class="v">${rec}</div><div class="k">Plan recomendado</div></div>
+    </div>
+
+    <div class="info-box"><span>💡</span><div>${advs[answers.riesgo]||advs.medium}</div></div>
+    <div class="disc">⚠️ Los valores son proyecciones basadas en rendimientos históricos. El trading implica riesgo y los resultados no están garantizados. Invertí solo lo que estás dispuesto a perder.</div>
+
+    <div class="btn-row">
+      <button class="btn b-outline" onclick="step=4;renderStep()">← Atrás</button>
+      <button class="btn b-primary" onclick="guardarYContinuar()">Ver planes disponibles →</button>
+    </div>
+  `
+}
+
+async function guardarYContinuar() {
+  const btn = document.querySelector('.b-primary')
+  btn.disabled = true
+  btn.textContent = 'Guardando...'
+
+  try {
+    await client.from('perfiles').insert({
+      user_id: userId,
+      capital: answers.capital,
+      objetivo: answers.objetivo,
+      tiempo: answers.tiempo,
+      riesgo: answers.riesgo,
+      experiencia: answers.experiencia
+    })
+  } catch(e) {
+    console.log('Error guardando perfil:', e)
+  }
+
+  window.location.href = 'planes.html'
+}
+
+init()
+</script>
+</body>
+</html>
