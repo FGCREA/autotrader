@@ -76,7 +76,7 @@
     const {error}=await client.auth.signUp({email,password:pass,options:{data:{name}}})
     if(error) return showMsg('Error: '+error.message,'err')
     showMsg('✅ Cuenta creada! Redirigiendo...','ok')
-    setTimeout(()=>window.location.href='dashboard.html',1500)
+    setTimeout(()=>window.location.href='onboarding.html',1500)
   }
   async function login(){
     const email=document.getElementById('le').value
