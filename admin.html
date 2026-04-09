@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTrader — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
+.nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
+.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
+.logo span{color:#e8edf5}
+.admin-badge{background:rgba(139,92,246,.15);color:#8b5cf6;border:1px solid rgba(139,92,246,.3);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif}
+.btn-sm:hover{background:#1c2333}
+.main{padding:1.75rem;max-width:1200px;margin:0 auto}
+.page-title{font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
+.page-sub{font-size:.82rem;color:#8b9cb5;margin-bottom:2rem}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:2rem}
+.metric{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1.1rem}
+.mlabel{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.mval{font-size:1.6rem;font-weight:800}
+.green{color:#00d4a1}.red{color:#ff4d6d}.purple{color:#8b5cf6}.gold{color:#f59e0b}
+.msub{font-size:.72rem;color:#4a5a6e;margin-top:.2rem}
+.cc{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.ctitle{font-size:.95rem;font-weight:700}
+.csub{font-size:.75rem;color:#8b9cb5}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;padding:.65rem 1rem;color:#4a5a6e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #1e2d40}
+td{padding:.7rem 1rem;border-bottom:1px solid rgba(30,45,64,.4);color:#8b9cb5}
+tr:hover td{background:rgba(255,255,255,.015)}
+.tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.tag-trial{background:rgba(0,212,161,.15);color:#00d4a1}
+.tag-vencido{background:rgba(255,77,109,.15);color:#ff4d6d}
+.tag-pagado{background:rgba(139,92,246,.15);color:#8b5cf6}
+.tag-buy{background:rgba(0,212,161,.15);color:#00d4a1}
+.tag-sell{background:rgba(255,77,109,.15);color:#ff4d6d}
+.empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.85rem}
+.loading{text-align:center;padding:2rem;color:#4a5a6e;font-size:.85rem;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.perfil-pills{display:flex;gap:.4rem;flex-wrap:wrap}
+.pill{background:#1c2333;border-radius:4px;padding:2px 7px;font-size:.7rem;color:#8b9cb5}
+.dot-live{width:7px;height:7px;border-radius:50%;background:#00d4a1;animation:pulse 1.5s infinite;display:inline-block;margin-right:4px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.refresh-btn{background:transparent;border:1px solid #1e2d40;color:#4a5a6e;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:.75rem;font-family:'Segoe UI',sans-serif}
+.refresh-btn:hover{border-color:#2a3f5a;color:#8b9cb5}
+.dias-bar{height:4px;background:#1e2d40;border-radius:2px;margin-top:.35rem;overflow:hidden}
+.dias-fill{height:100%;border-radius:2px;transition:width .3s}
+@media(max-width:768px){.mgrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <div class="logo">Auto<span>Trader</span></div>
+    <span class="admin-badge">⚙️ Admin</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <span style="font-size:.78rem;color:#4a5a6e" id="last-update"></span>
+    <button class="refresh-btn" onclick="cargarTodo()">↻ Actualizar</button>
+    <button class="btn-sm" onclick="logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-title">Panel de administración</div>
+  <div class="page-sub">Vista general de usuarios, trials y operaciones del bot</div>
+
+  <!-- Métricas -->
+  <div class="mgrid">
+    <div class="metric">
+      <div class="mlabel">Usuarios totales</div>
+      <div class="mval purple" id="m-total">–</div>
+      <div class="msub" id="m-total-sub">Cargando...</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">En trial activo</div>
+      <div class="mval green" id="m-trial">–</div>
+      <div class="msub" id="m-trial-sub">Cargando...</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Trial vencido</div>
+      <div class="mval red" id="m-vencido">–</div>
+      <div class="msub">Sin pagar aún</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Trades del bot</div>
+      <div class="mval gold" id="m-trades">–</div>
+      <div class="msub" id="m-trades-sub">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- Usuarios -->
+  <div class="cc">
+    <div class="ch">
+      <div>
+        <div class="ctitle">👥 Usuarios registrados</div>
+        <div class="csub" id="users-count">Cargando...</div>
+      </div>
+      <div class="dot-live"></div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Nombre</th>
+          <th>Registrado</th>
+          <th>Trial</th>
+          <th>Días restantes</th>
+          <th>Perfil</th>
+        </tr>
+      </thead>
+      <tbody id="users-body">
+        <tr><td colspan="6" class="loading">Cargando usuarios...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Perfiles de onboarding -->
+  <div class="cc">
+    <div class="ch">
+      <div>
+        <div class="ctitle">🎯 Perfiles de inversión</div>
+        <div class="csub">Respuestas del onboarding</div>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Capital</th>
+          <th>Objetivo</th>
+          <th>Riesgo</th>
+          <th>Experiencia</th>
+          <th>Tiempo</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="perfiles-body">
+        <tr><td colspan="6" class="loading">Cargando perfiles...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Trades del bot -->
+  <div class="cc">
+    <div class="ch">
+      <div>
+        <div class="ctitle">🤖 Trades del bot</div>
+        <div class="csub" id="trades-count">Cargando...</div>
+      </div>
+      <div class="dot-live"></div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Par</th>
+          <th>Señal</th>
+          <th>Precio</th>
+          <th>RSI</th>
+          <th>PnL</th>
+        </tr>
+      </thead>
+      <tbody id="trades-body">
+        <tr><td colspan="6" class="loading">Cargando trades...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
+
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
+
+const capMap={micro:'$100–$500',small:'$500–$2k',medium:'$2k–$10k',large:'$10k+'}
+const objMap={conservative:'Conservador',balanced:'Moderado',aggressive:'Agresivo',income:'Ingresos'}
+const riesgMap={low:'Bajo',medium:'Medio',high:'Alto',extreme:'Muy alto'}
+const expMap={beginner:'Principiante',basic:'Básico',intermediate:'Intermedio',advanced:'Avanzado'}
+const tMap={none:'Automático',little:'1h/día',moderate:'Varias h',full:'Completo'}
+
+async function init() {
+  const {data:{session}} = await client.auth.getSession()
+  if(!session) return window.location.href = 'login.html'
+  if(session.user.id !== ADMIN_ID) return window.location.href = 'dashboard.html'
+  cargarTodo()
+}
+
+async function cargarTodo() {
+  document.getElementById('last-update').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-AR')
+  await Promise.all([cargarUsuarios(), cargarPerfiles(), cargarTrades()])
+}
+
+async function cargarUsuarios() {
+  const {data, error} = await client.from('perfiles').select('*').order('created_at', {ascending: false})
+  
+  if(error || !data) {
+    document.getElementById('users-body').innerHTML = `<tr><td colspan="6" class="empty">Error cargando usuarios</td></tr>`
+    return
+  }
+
+  const now = new Date()
+  let totalTrial = 0
+  let totalVencido = 0
+
+  // Simular datos de usuarios basados en perfiles
+  const rows = data.map(p => {
+    // Calculamos el trial basándonos en created_at del perfil
+    const created = new Date(p.created_at)
+    const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
+    const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
+    const vencio = now > trialEnd
+    const pct = Math.max(0, Math.min(100, (daysLeft/7)*100))
+
+    if(vencio) totalVencido++
+    else totalTrial++
+
+    return `
+      <tr>
+        <td style="color:#e8edf5">${p.user_id.slice(0,8)}...</td>
+        <td>–</td>
+        <td>${created.toLocaleDateString('es-AR')}</td>
+        <td><span class="tag ${vencio?'tag-vencido':'tag-trial'}">${vencio?'Vencido':'Activo'}</span></td>
+        <td>
+          <span style="font-size:.78rem">${vencio?'0':''+daysLeft} días</span>
+          <div class="dias-bar"><div class="dias-fill" style="width:${pct}%;background:${vencio?'#ff4d6d':'#00d4a1'}"></div></div>
+        </td>
+        <td>
+          <div class="perfil-pills">
+            <span class="pill">${capMap[p.capital]||p.capital}</span>
+            <span class="pill">${riesgMap[p.riesgo]||p.riesgo}</span>
+          </div>
+        </td>
+      </tr>
+    `
+  })
+
+  document.getElementById('users-body').innerHTML = rows.length ? rows.join('') : `<tr><td colspan="6" class="empty">No hay usuarios aún</td></tr>`
+  document.getElementById('users-count').textContent = `${data.length} usuarios registrados`
+  document.getElementById('m-total').textContent = data.length
+  document.getElementById('m-total-sub').textContent = `${data.length} con onboarding completo`
+  document.getElementById('m-trial').textContent = totalTrial
+  document.getElementById('m-trial-sub').textContent = `${totalVencido} vencidos`
+  document.getElementById('m-vencido').textContent = totalVencido
+}
+
+async function cargarPerfiles() {
+  const {data, error} = await client.from('perfiles').select('*').order('created_at', {ascending: false})
+  if(error || !data) return
+
+  document.getElementById('perfiles-body').innerHTML = data.length ? data.map(p => `
+    <tr>
+      <td><span class="pill">${capMap[p.capital]||p.capital}</span></td>
+      <td><span class="pill">${objMap[p.objetivo]||p.objetivo}</span></td>
+      <td><span class="pill">${riesgMap[p.riesgo]||p.riesgo}</span></td>
+      <td><span class="pill">${expMap[p.experiencia]||p.experiencia}</span></td>
+      <td><span class="pill">${tMap[p.tiempo]||p.tiempo}</span></td>
+      <td>${new Date(p.created_at).toLocaleDateString('es-AR')}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="6" class="empty">No hay perfiles aún</td></tr>`
+}
+
+async function cargarTrades() {
+  const {data, error} = await client.from('trades').select('*').order('created_at', {ascending: false}).limit(30)
+  if(error || !data) return
+
+  const pnlTotal = data.reduce((a,b)=>a+b.pnl, 0)
+  const wins = data.filter(t=>t.pnl>0).length
+  const wr = data.length ? (wins/data.length*100).toFixed(0) : 0
+
+  document.getElementById('m-trades').textContent = data.length
+  document.getElementById('m-trades-sub').textContent = `Win rate: ${wr}% · PnL: ${pnlTotal>=0?'+':''}$${pnlTotal.toFixed(2)}`
+  document.getElementById('trades-count').textContent = `${data.length} operaciones · Win rate: ${wr}%`
+
+  document.getElementById('trades-body').innerHTML = data.length ? data.map(t => `
+    <tr>
+      <td>${new Date(t.created_at).toLocaleString('es-AR')}</td>
+      <td style="font-weight:600">${t.symbol}</td>
+      <td><span class="tag tag-${t.side.toLowerCase()}">${t.side}</span></td>
+      <td>$${t.price.toLocaleString()}</td>
+      <td>${t.rsi.toFixed(1)}</td>
+      <td class="${t.pnl>=0?'green':'red'}">${t.pnl>=0?'+':'-'}$${Math.abs(t.pnl).toFixed(2)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="6" class="empty">No hay trades aún</td></tr>`
+}
+
+async function logout() {
+  await client.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+init()
+</script>
+</body>
+</html>
