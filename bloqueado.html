@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTrader — Activá tu plan</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.box{background:#0d1117;border:1px solid #1e2d40;border-radius:16px;padding:2.5rem;width:100%;max-width:480px;text-align:center}
+.logo{font-size:1.2rem;font-weight:800;color:#00d4a1;margin-bottom:2rem}
+.logo span{color:#e8edf5}
+.icon{font-size:4rem;margin-bottom:1.5rem}
+h2{font-size:1.8rem;font-weight:800;margin-bottom:1rem}
+p{color:#8b9cb5;margin-bottom:1.5rem;line-height:1.7;font-size:.9rem}
+.plan-box{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1.25rem;margin-bottom:1.5rem}
+.plan-label{font-size:.75rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem}
+.plan-name{font-size:1.3rem;font-weight:800}
+.sep{height:1px;background:#1e2d40;margin:1.5rem 0}
+.btn-green{width:100%;background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.9rem;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:.75rem;font-family:'Segoe UI',sans-serif}
+.btn-green:hover{background:#00b389}
+.btn-outline{width:100%;background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.75rem;font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:.75rem;font-family:'Segoe UI',sans-serif}
+.btn-outline:hover{background:#1c2333}
+.btn-ghost{background:none;border:none;color:#4a5a6e;font-size:.8rem;cursor:pointer;font-family:'Segoe UI',sans-serif}
+.btn-ghost:hover{color:#8b9cb5}
+.features{list-style:none;text-align:left;margin-bottom:1.5rem}
+.features li{display:flex;gap:.6rem;font-size:.83rem;color:#8b9cb5;padding:.4rem 0}
+.ck{color:#00d4a1}
+.disc{font-size:.72rem;color:#4a5a6e;line-height:1.6;margin-top:1rem}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">Auto<span>Trader</span></div>
+  <div class="icon">🔒</div>
+  <h2>Tu prueba gratuita terminó</h2>
+  <p>Tuviste 7 días completos para explorar AutoTrader. Para seguir operando activá tu plan y el bot continuará trabajando por vos.</p>
+
+  <div class="plan-box">
+    <div class="plan-label">Tu plan recomendado</div>
+    <div class="plan-name" id="plan-name">Plan Pro — $30/mes</div>
+  </div>
+
+  <ul class="features">
+    <li><span class="ck">✓</span> Bot RSI + EMA activo 24/7</li>
+    <li><span class="ck">✓</span> Dashboard con resultados en tiempo real</li>
+    <li><span class="ck">✓</span> Stop-loss automático en cada operación</li>
+    <li><span class="ck">✓</span> Alertas por Telegram</li>
+    <li><span class="ck">✓</span> Cancelá cuando quieras</li>
+  </ul>
+
+  <button class="btn-green" id="btn-pro" onclick="activarPro()">Activar Plan Pro — $30/mes →</button>
+  <button class="btn-outline" onclick="activarBasic()">Prefiero el Plan Basic — $15/mes</button>
+
+  <div class="sep"></div>
+
+  <button class="btn-ghost" onclick="logout()">Cerrar sesión</button>
+
+  <div class="disc">⚠️ El trading implica riesgo. Los resultados no están garantizados. AutoTrader es una herramienta de automatización — no somos asesores financieros.</div>
+</div>
+
+<script>
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
+
+const URL_PRO = 'https://autotrader-pro.lemonsqueezy.com/checkout/buy/204b37f5-ba1c-4f83-83c6-5dbf9328862d'
+const URL_BASIC = 'https://autotrader-pro.lemonsqueezy.com/checkout/buy/fda9e6a9-ba13-4017-a551-521968b28e3d'
+
+async function init() {
+  const {data:{session}} = await client.auth.getSession()
+  if(!session) return window.location.href = 'login.html'
+
+  // Verificar si realmente venció el trial
+  const created = new Date(session.user.created_at)
+  const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
+  const now = new Date()
+
+  if(now < trialEnd) {
+    // Trial todavía activo — redirigir al dashboard
+    window.location.href = 'dashboard.html'
+    return
+  }
+
+  // Mostrar plan recomendado según su perfil
+  const {data} = await client.from('perfiles').select('riesgo').eq('user_id', session.user.id).single()
+  if(data && (data.riesgo === 'high' || data.riesgo === 'extreme')) {
+    document.getElementById('plan-name').textContent = 'Plan Pro — $30/mes'
+  } else {
+    document.getElementById('plan-name').textContent = 'Plan Basic — $15/mes'
+  }
+}
+
+function activarPro() {
+  window.location.href = URL_PRO
+}
+
+function activarBasic() {
+  window.location.href = URL_BASIC
+}
+
+async function logout() {
+  await client.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+init()
+</script>
+</body>
+</html>
