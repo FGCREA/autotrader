@@ -5,64 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AutoTrader — Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
-  .nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
-  .logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
-  .logo span{color:#e8edf5}
-  .nav-right{display:flex;align-items:center;gap:.75rem;font-size:.82rem;color:#8b9cb5}
-  .btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif}
-  .btn-sm:hover{background:#1c2333}
-  .badge{background:rgba(0,212,161,.12);color:#00d4a1;border:1px solid rgba(0,212,161,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
-  .badge-warn{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
-  .main{padding:1.75rem;max-width:1200px;margin:0 auto}
-  .dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem}
-  .dt{font-size:1.3rem;font-weight:800}
-  .ds{font-size:.8rem;color:#8b9cb5;margin-top:.15rem}
-  .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.75rem}
-  .metric{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1.1rem}
-  .mlabel{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
-  .mval{font-size:1.45rem;font-weight:800;font-family:'DM Mono',monospace}
-  .green{color:#00d4a1}.red{color:#ff4d6d}.muted{color:#4a5a6e}
-  .cc{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
-  .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
-  .ctitle{font-size:.9rem;font-weight:700}
-  .live{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#8b9cb5}
-  .dot{width:7px;height:7px;border-radius:50%;background:#00d4a1;animation:pulse 1.5s infinite;display:inline-block}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  table{width:100%;border-collapse:collapse;font-size:.8rem}
-  th{text-align:left;padding:.6rem .85rem;color:#4a5a6e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #1e2d40}
-  td{padding:.65rem .85rem;border-bottom:1px solid rgba(30,45,64,.4);color:#8b9cb5}
-  tr:hover td{background:rgba(255,255,255,.015)}
-  .tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
-  .tag-buy{background:rgba(0,212,161,.15);color:#00d4a1}
-  .tag-sell{background:rgba(255,77,109,.15);color:#ff4d6d}
-  .empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.85rem}
-  .pbar{height:5px;background:#1e2d40;border-radius:3px;overflow:hidden;margin-top:.35rem}
-  .pfill{height:100%;background:linear-gradient(90deg,#00d4a1,#3b82f6);border-radius:3px;transition:width .5s}
-  .btn-green{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.55rem 1.1rem;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'Segoe UI',sans-serif}
-  .btn-green:hover{background:#00b389}
-  .trial-banner{border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-  .trial-ok{background:linear-gradient(135deg,rgba(0,212,161,.08),rgba(59,130,246,.05));border:1px solid rgba(0,212,161,.2)}
-  .trial-warn{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(255,77,109,.05));border:1px solid rgba(245,158,11,.2)}
-  .trial-text h3{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
-  .trial-text p{font-size:.78rem;color:#8b9cb5}
-  .perfil-card{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
-  .perfil-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-top:.85rem}
-  .perfil-item{background:#111827;border-radius:8px;padding:.75rem;text-align:center}
-  .perfil-val{font-size:.85rem;font-weight:700;color:#00d4a1;margin-bottom:.2rem}
-  .perfil-key{font-size:.68rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em}
-  .demo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-top:.75rem}
-  .demo-item{background:#111827;border-radius:8px;padding:.85rem;text-align:center}
-  .demo-val{font-size:.85rem;font-weight:700;color:#00d4a1}
-  .demo-key{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
-  .demo-note{margin-top:.85rem;padding:.85rem 1rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;font-size:.78rem;color:#8b9cb5;line-height:1.6}
-  @media(max-width:768px){
-    .mgrid{grid-template-columns:1fr 1fr}
-    .perfil-grid{grid-template-columns:1fr 1fr}
-    .demo-grid{grid-template-columns:1fr}
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
+.nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
+.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
+.logo span{color:#e8edf5}
+.nav-right{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:#8b9cb5;flex-wrap:wrap}
+.btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif;text-decoration:none;display:inline-block}
+.btn-sm:hover{background:#1c2333}
+.badge{background:rgba(0,212,161,.12);color:#00d4a1;border:1px solid rgba(0,212,161,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-warn{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-pro{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.main{padding:1.5rem;max-width:1300px;margin:0 auto}
+.dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
+.dt{font-size:1.25rem;font-weight:800}
+.ds{font-size:.78rem;color:#8b9cb5;margin-top:.15rem}
+
+/* MÉTRICAS */
+.mgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem;margin-bottom:1.5rem}
+.metric{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1rem}
+.mlabel{font-size:.68rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem}
+.mval{font-size:1.3rem;font-weight:800;font-family:'DM Mono',monospace}
+.mval.up{color:#00d4a1}.mval.dn{color:#ff4d6d}.mval.neu{color:#e8edf5}
+.msub{font-size:.7rem;margin-top:.2rem;font-family:'DM Mono',monospace}
+.msub.up{color:#00d4a1}.msub.dn{color:#ff4d6d}.msub.neu{color:#4a5a6e}
+.pbar{height:4px;background:#1e2d40;border-radius:2px;overflow:hidden;margin-top:.35rem}
+.pfill{height:100%;background:linear-gradient(90deg,#00d4a1,#3b82f6);border-radius:2px;transition:width .5s}
+
+/* CARDS */
+.cc{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem}
+.ctitle{font-size:.88rem;font-weight:700}
+.live{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:#8b9cb5}
+.dot{width:7px;height:7px;border-radius:50%;background:#00d4a1;animation:pulse 1.5s infinite;display:inline-block;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* LAYOUT */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.row3{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+
+/* GRÁFICO */
+.chart-wrap{height:200px;position:relative}
+
+/* TABLA */
+table{width:100%;border-collapse:collapse;font-size:.79rem}
+th{text-align:left;padding:.55rem .85rem;color:#4a5a6e;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #1e2d40}
+td{padding:.6rem .85rem;border-bottom:1px solid rgba(30,45,64,.4);color:#8b9cb5}
+tr:hover td{background:rgba(255,255,255,.015)}
+.tag{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:.68rem;font-weight:600}
+.tag-buy{background:rgba(0,212,161,.15);color:#00d4a1}
+.tag-sell{background:rgba(255,77,109,.15);color:#ff4d6d}
+.empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.82rem}
+
+/* TRIAL BANNER */
+.trial-banner{border-radius:10px;padding:.9rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.trial-ok{background:linear-gradient(135deg,rgba(0,212,161,.08),rgba(59,130,246,.04));border:1px solid rgba(0,212,161,.2)}
+.trial-warn{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(255,77,109,.04));border:1px solid rgba(245,158,11,.2)}
+.trial-text h3{font-size:.88rem;font-weight:700;margin-bottom:.15rem}
+.trial-text p{font-size:.75rem;color:#8b9cb5}
+.btn-green{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.5rem 1rem;font-weight:700;cursor:pointer;font-size:.8rem;font-family:'Segoe UI',sans-serif;white-space:nowrap}
+.btn-green:hover{background:#00b389}
+
+/* DEMO BOT */
+.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.75rem}
+.demo-item{background:#111827;border-radius:8px;padding:.75rem;text-align:center}
+.demo-val{font-size:.85rem;font-weight:700;color:#00d4a1}
+.demo-key{font-size:.68rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem}
+.demo-note{margin-top:.85rem;padding:.75rem 1rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;font-size:.76rem;color:#8b9cb5;line-height:1.6}
+
+/* PERFIL */
+.perfil-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-top:.75rem}
+.perfil-item{background:#111827;border-radius:7px;padding:.65rem;text-align:center}
+.perfil-val{font-size:.8rem;font-weight:700;color:#00d4a1;margin-bottom:.15rem}
+.perfil-key{font-size:.65rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.04em}
+
+/* TABS */
+.tabs{display:flex;gap:.35rem}
+.tab-btn{background:transparent;border:1px solid #1e2d40;color:#4a5a6e;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:.75rem;font-family:'Segoe UI',sans-serif}
+.tab-btn.on{background:#1c2333;border-color:#2a3f5a;color:#e8edf5}
+
+/* PRO EXTRAS */
+.pro-section{display:none}
+.stat-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(30,45,64,.4);font-size:.82rem}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:#8b9cb5}
+.stat-val{font-weight:600;font-family:'DM Mono',monospace}
+
+@media(max-width:900px){
+  .mgrid{grid-template-columns:repeat(3,1fr)}
+  .row2,.row3{grid-template-columns:1fr}
+  .demo-grid{grid-template-columns:1fr}
+  .perfil-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .mgrid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
@@ -70,43 +109,91 @@
 <nav class="nav">
   <div class="logo">Auto<span>Trader</span></div>
   <div class="nav-right">
-    <span id="user-email"></span>
+    <span id="user-email" style="font-size:.78rem"></span>
+    <span id="plan-badge"></span>
     <span id="trial-nav"></span>
+    <a href="configuracion.html" class="btn-sm">⚙️ Config</a>
     <a href="planes.html" class="btn-sm">Planes</a>
     <button class="btn-sm" onclick="logout()">Salir</button>
   </div>
 </nav>
 
 <div class="main">
+  <!-- Header -->
   <div class="dh">
     <div>
       <div class="dt" id="greeting">Dashboard</div>
-      <div class="ds">Bot demo activo · Resultados en tiempo real</div>
+      <div class="ds" id="ds-sub">Bot demo activo · Resultados en tiempo real</div>
     </div>
-    <div style="font-size:.72rem;color:#4a5a6e" id="dtime"></div>
+    <div style="font-size:.7rem;color:#4a5a6e;font-family:'DM Mono',monospace" id="dtime"></div>
   </div>
 
   <!-- Trial banner -->
   <div class="trial-banner trial-ok" id="trial-banner" style="display:none">
     <div class="trial-text">
       <h3 id="trial-title">🎁 Prueba gratuita activa</h3>
-      <p id="trial-desc">El bot está operando en demo. Activá tu plan para conectar tu Binance real.</p>
+      <p id="trial-desc">El bot opera en demo. Activá tu plan para conectar tu Binance real.</p>
     </div>
     <a href="planes.html" class="btn-green">Activar plan →</a>
   </div>
 
-  <!-- Métricas -->
+  <!-- Métricas principales -->
   <div class="mgrid">
-    <div class="metric"><div class="mlabel">Balance demo</div><div class="mval green" id="m1">$100.00</div></div>
-    <div class="metric"><div class="mlabel">PnL total</div><div class="mval" id="m2">$0.00</div></div>
-    <div class="metric"><div class="mlabel">Trades</div><div class="mval" id="m3">0</div></div>
-    <div class="metric"><div class="mlabel">Win rate</div><div class="mval green" id="m4">0%</div><div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div></div>
+    <div class="metric">
+      <div class="mlabel">Balance demo</div>
+      <div class="mval neu" id="m-balance">$100.00</div>
+      <div class="msub neu" id="m-balance-ch">Capital inicial</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">PnL total</div>
+      <div class="mval" id="m-pnl">$0.00</div>
+      <div class="msub" id="m-pnl-ch">0 trades</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Win rate</div>
+      <div class="mval" id="m-wr">0%</div>
+      <div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Mejor trade</div>
+      <div class="mval up" id="m-best">$0.00</div>
+      <div class="msub neu" id="m-best-sym">–</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Trades hoy</div>
+      <div class="mval neu" id="m-today">0</div>
+      <div class="msub up" id="m-today-pnl">$0.00</div>
+    </div>
   </div>
 
-  <!-- Perfil del usuario -->
-  <div class="perfil-card" id="perfil-card" style="display:none">
-    <div class="ch"><div class="ctitle">👤 Tu perfil de inversión</div></div>
-    <div class="perfil-grid" id="perfil-grid"></div>
+  <!-- Gráfico + Stats -->
+  <div class="row3">
+    <div class="cc">
+      <div class="ch">
+        <div class="ctitle">📈 Evolución del balance</div>
+        <div class="tabs">
+          <button class="tab-btn on" onclick="cambiarPeriodo('7d',this)">7D</button>
+          <button class="tab-btn" onclick="cambiarPeriodo('30d',this)">30D</button>
+          <button class="tab-btn" onclick="cambiarPeriodo('all',this)">Todo</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="balance-chart"></canvas></div>
+    </div>
+
+    <div class="cc">
+      <div class="ch"><div class="ctitle">📊 Estadísticas</div></div>
+      <div id="stats-content">
+        <div class="stat-row"><span class="stat-label">Total trades</span><span class="stat-val" id="s-total">0</span></div>
+        <div class="stat-row"><span class="stat-label">Wins</span><span class="stat-val up" id="s-wins">0</span></div>
+        <div class="stat-row"><span class="stat-label">Losses</span><span class="stat-val dn" id="s-losses">0</span></div>
+        <div class="stat-row"><span class="stat-label">Ganancia prom.</span><span class="stat-val up" id="s-avg-win">$0</span></div>
+        <div class="stat-row"><span class="stat-label">Pérdida prom.</span><span class="stat-val dn" id="s-avg-loss">$0</span></div>
+        <div class="stat-row"><span class="stat-label">Profit factor</span><span class="stat-val neu" id="s-pf">0</span></div>
+        <div class="stat-row"><span class="stat-label">BTC trades</span><span class="stat-val neu" id="s-btc">0</span></div>
+        <div class="stat-row"><span class="stat-label">ETH trades</span><span class="stat-val neu" id="s-eth">0</span></div>
+        <div class="stat-row"><span class="stat-label">BNB trades</span><span class="stat-val neu" id="s-bnb">0</span></div>
+      </div>
+    </div>
   </div>
 
   <!-- Bot demo info -->
@@ -120,8 +207,19 @@
       <div class="demo-item"><div class="demo-key">Pares</div><div class="demo-val">BTC · ETH · BNB</div></div>
       <div class="demo-item"><div class="demo-key">Intervalo</div><div class="demo-val">Cada 5 min</div></div>
     </div>
-    <div class="demo-note">
-      💡 Durante tu prueba gratuita el bot opera con nuestra cuenta demo para que veas cómo funciona en tiempo real. Cuando activés tu plan conectás tu propia cuenta de Binance y el bot opera con tu capital real.
+    <div class="demo-note">💡 Durante tu prueba el bot opera con nuestra cuenta demo. Cuando activés tu plan conectás tu propio Binance y el bot opera con tu capital real.</div>
+  </div>
+
+  <!-- Row: Perfil + Distribución pares -->
+  <div class="row2">
+    <div class="cc" id="perfil-card" style="display:none">
+      <div class="ch"><div class="ctitle">👤 Tu perfil de inversión</div></div>
+      <div class="perfil-grid" id="perfil-grid"></div>
+    </div>
+
+    <div class="cc">
+      <div class="ch"><div class="ctitle">🥧 Distribución por par</div></div>
+      <div style="height:150px;position:relative"><canvas id="pie-chart"></canvas></div>
     </div>
   </div>
 
@@ -132,133 +230,286 @@
       <div class="live"><div class="dot"></div>En vivo</div>
     </div>
     <table>
-      <thead><tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr></thead>
-      <tbody id="trades-body"><tr><td colspan="6" class="empty">El bot está analizando el mercado...</td></tr></tbody>
+      <thead>
+        <tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr>
+      </thead>
+      <tbody id="trades-body">
+        <tr><td colspan="6" class="empty">El bot está analizando el mercado...</td></tr>
+      </tbody>
     </table>
   </div>
 </div>
 
 <script>
-  const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
+const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
 
-  const {createClient} = supabase
-  const client = createClient(
-    'https://hmpxnorawqppbxptbyeu.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
-  )
+let allTrades = []
+let chartInst = null
+let pieInst = null
+let periodoActual = '7d'
 
-  async function init() {
-    const {data:{session}} = await client.auth.getSession()
-    if(!session) return window.location.href = 'login.html'
+async function init() {
+  const {data:{session}} = await client.auth.getSession()
+  if(!session) return window.location.href = 'login.html'
 
-    const email = session.user.email
-    const name = session.user.user_metadata?.name || email.split('@')[0]
-    document.getElementById('user-email').textContent = email
-    document.getElementById('greeting').textContent = 'Bienvenido, '+name+' 👋'
+  const email = session.user.email
+  const name = session.user.user_metadata?.name || email.split('@')[0]
+  document.getElementById('user-email').textContent = email
+  document.getElementById('greeting').textContent = 'Bienvenido, ' + name + ' 👋'
 
-    const created = new Date(session.user.created_at)
-    const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
-    const now = new Date()
-    const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
+  // Trial
+  const created = new Date(session.user.created_at)
+  const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
+  const now = new Date()
+  const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
 
-    // Bloquear si venció el trial (excepto admin)
-    if(now > trialEnd && session.user.id !== ADMIN_ID) {
-      return window.location.href = 'bloqueado.html'
-    }
+  if(now > trialEnd && session.user.id !== ADMIN_ID) return window.location.href = 'bloqueado.html'
 
-    // Trial banner
-    const banner = document.getElementById('trial-banner')
+  // Plan
+  let userPlan = 'basic'
+  try {
+    const {data:cfg} = await client.from('configuraciones').select('plan').eq('user_id', session.user.id).single()
+    if(cfg) userPlan = cfg.plan || 'basic'
+  } catch(e){}
+
+  const planBadge = document.getElementById('plan-badge')
+  if(session.user.id === ADMIN_ID) {
+    planBadge.innerHTML = '<span class="badge-pro">⚙️ Admin</span>'
+    document.getElementById('trial-nav').innerHTML = ''
+  } else if(userPlan === 'pro') {
+    planBadge.innerHTML = '<span class="badge-pro">⭐ Pro</span>'
+    document.getElementById('trial-nav').innerHTML = `<span class="badge">🎁 ${daysLeft}d</span>`
+  } else {
+    planBadge.innerHTML = '<span class="badge">Basic</span>'
+    document.getElementById('trial-nav').innerHTML = `<span class="badge">🎁 ${daysLeft}d</span>`
+  }
+
+  // Banner
+  const banner = document.getElementById('trial-banner')
+  if(session.user.id !== ADMIN_ID) {
     banner.style.display = 'flex'
-
-    if(session.user.id === ADMIN_ID) {
-      document.getElementById('trial-nav').innerHTML = `<span class="badge">⚙️ Admin</span>`
-      document.getElementById('trial-title').textContent = '⚙️ Cuenta de administrador'
-      document.getElementById('trial-desc').textContent = 'Tenés acceso permanente al sistema.'
-    } else if(daysLeft <= 2) {
+    if(daysLeft <= 2) {
       banner.className = 'trial-banner trial-warn'
-      document.getElementById('trial-nav').innerHTML = `<span class="badge-warn">⚠️ ${daysLeft}d restantes</span>`
       document.getElementById('trial-title').textContent = `⚠️ Tu prueba vence en ${daysLeft} días`
       document.getElementById('trial-desc').textContent = 'Activá tu plan ahora para no perder el acceso.'
     } else {
-      document.getElementById('trial-nav').innerHTML = `<span class="badge">🎁 ${daysLeft}d trial</span>`
       document.getElementById('trial-title').textContent = `🎁 Prueba gratuita — ${daysLeft} días restantes`
-      document.getElementById('trial-desc').textContent = 'El bot está operando en demo. Activá tu plan para conectar tu Binance real.'
     }
-
-    // Reloj
-    setInterval(()=>{
-      const el = document.getElementById('dtime')
-      if(el) el.textContent = new Date().toLocaleString('es-AR')
-    }, 1000)
-
-    cargarPerfil(session.user.id)
-    cargarTrades()
-    suscribirTrades()
   }
 
-  async function cargarPerfil(userId) {
-    const {data} = await client.from('perfiles').select('*').eq('user_id', userId).single()
-    if(!data) return
-    const capMap={micro:'$100–$500',small:'$500–$2k',medium:'$2k–$10k',large:'$10k+'}
-    const objMap={conservative:'Conservador',balanced:'Moderado',aggressive:'Agresivo',income:'Ingresos'}
-    const riesgMap={low:'Bajo',medium:'Medio',high:'Alto',extreme:'Muy alto'}
-    const expMap={beginner:'Principiante',basic:'Básico',intermediate:'Intermedio',advanced:'Avanzado'}
-    const tMap={none:'Automático',little:'1h/día',moderate:'Varias h',full:'Completo'}
-    document.getElementById('perfil-card').style.display = 'block'
-    document.getElementById('perfil-grid').innerHTML = `
-      <div class="perfil-item"><div class="perfil-val">${capMap[data.capital]||data.capital}</div><div class="perfil-key">Capital</div></div>
-      <div class="perfil-item"><div class="perfil-val">${objMap[data.objetivo]||data.objetivo}</div><div class="perfil-key">Objetivo</div></div>
-      <div class="perfil-item"><div class="perfil-val">${riesgMap[data.riesgo]||data.riesgo}</div><div class="perfil-key">Riesgo</div></div>
-      <div class="perfil-item"><div class="perfil-val">${expMap[data.experiencia]||data.experiencia}</div><div class="perfil-key">Experiencia</div></div>
-      <div class="perfil-item"><div class="perfil-val">${tMap[data.tiempo]||data.tiempo}</div><div class="perfil-key">Tiempo</div></div>
-    `
+  // Reloj
+  setInterval(() => {
+    const el = document.getElementById('dtime')
+    if(el) el.textContent = new Date().toLocaleString('es-AR')
+  }, 1000)
+
+  cargarPerfil(session.user.id)
+  cargarTrades()
+  suscribirTrades()
+}
+
+async function cargarPerfil(userId) {
+  const {data} = await client.from('perfiles').select('*').eq('user_id', userId).single()
+  if(!data) return
+  const capMap={micro:'$100–$500',small:'$500–$2k',medium:'$2k–$10k',large:'$10k+'}
+  const objMap={conservative:'Conservador',balanced:'Moderado',aggressive:'Agresivo',income:'Ingresos'}
+  const riesgMap={low:'Bajo',medium:'Medio',high:'Alto',extreme:'Muy alto'}
+  const expMap={beginner:'Principiante',basic:'Básico',intermediate:'Intermedio',advanced:'Avanzado'}
+  const tMap={none:'Automático',little:'1h/día',moderate:'Varias h',full:'Completo'}
+  document.getElementById('perfil-card').style.display = 'block'
+  document.getElementById('perfil-grid').innerHTML = `
+    <div class="perfil-item"><div class="perfil-val">${capMap[data.capital]||data.capital}</div><div class="perfil-key">Capital</div></div>
+    <div class="perfil-item"><div class="perfil-val">${objMap[data.objetivo]||data.objetivo}</div><div class="perfil-key">Objetivo</div></div>
+    <div class="perfil-item"><div class="perfil-val">${riesgMap[data.riesgo]||data.riesgo}</div><div class="perfil-key">Riesgo</div></div>
+    <div class="perfil-item"><div class="perfil-val">${expMap[data.experiencia]||data.experiencia}</div><div class="perfil-key">Experiencia</div></div>
+    <div class="perfil-item"><div class="perfil-val">${tMap[data.tiempo]||data.tiempo}</div><div class="perfil-key">Tiempo</div></div>
+  `
+}
+
+async function cargarTrades() {
+  const {data,error} = await client.from('trades').select('*').order('created_at',{ascending:false}).limit(100)
+  if(error||!data||data.length===0) return
+  allTrades = data
+  renderTrades(data.slice(0,15))
+  actualizarMetricas(data)
+  renderChart(data, periodoActual)
+  renderPie(data)
+}
+
+function suscribirTrades() {
+  client.channel('trades')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'trades'},()=>{cargarTrades()})
+    .subscribe()
+}
+
+function renderTrades(trades) {
+  document.getElementById('trades-body').innerHTML = trades.map(t=>`
+    <tr>
+      <td>${new Date(t.created_at).toLocaleString('es-AR')}</td>
+      <td style="font-weight:600">${t.symbol}</td>
+      <td><span class="tag tag-${t.side.toLowerCase()}">${t.side}</span></td>
+      <td>$${t.price.toLocaleString()}</td>
+      <td>${t.rsi.toFixed(1)}</td>
+      <td style="color:${t.pnl>=0?'#00d4a1':'#ff4d6d'};font-family:'DM Mono',monospace">${t.pnl>=0?'+':'-'}$${Math.abs(t.pnl).toFixed(2)}</td>
+    </tr>
+  `).join('')
+}
+
+function actualizarMetricas(trades) {
+  const pnl = trades.reduce((a,b)=>a+b.pnl,0)
+  const wins = trades.filter(t=>t.pnl>0)
+  const losses = trades.filter(t=>t.pnl<=0)
+  const wr = trades.length?(wins.length/trades.length*100):0
+  const balance = 100+pnl
+  const best = wins.length?Math.max(...wins.map(t=>t.pnl)):0
+  const bestSym = wins.length?wins.find(t=>t.pnl===best)?.symbol||'–':'–'
+
+  const now = new Date()
+  const todayTrades = trades.filter(t=>new Date(t.created_at).toDateString()===now.toDateString())
+  const todayPnl = todayTrades.reduce((a,b)=>a+b.pnl,0)
+
+  const avgWin = wins.length?wins.reduce((a,b)=>a+b.pnl,0)/wins.length:0
+  const avgLoss = losses.length?losses.reduce((a,b)=>a+b.pnl,0)/losses.length:0
+  const sumWins = wins.reduce((a,b)=>a+b.pnl,0)
+  const sumLoss = Math.abs(losses.reduce((a,b)=>a+b.pnl,0))
+  const pf = sumLoss>0?(sumWins/sumLoss):0
+
+  const btcT = trades.filter(t=>t.symbol==='BTCUSDT').length
+  const ethT = trades.filter(t=>t.symbol==='ETHUSDT').length
+  const bnbT = trades.filter(t=>t.symbol==='BNBUSDT').length
+
+  document.getElementById('m-balance').textContent = '$'+balance.toFixed(2)
+  document.getElementById('m-balance').className = 'mval '+(pnl>=0?'up':'dn')
+  document.getElementById('m-balance-ch').textContent = (pnl>=0?'+':'')+pnl.toFixed(2)+' PnL'
+  document.getElementById('m-balance-ch').className = 'msub '+(pnl>=0?'up':'dn')
+
+  document.getElementById('m-pnl').textContent = (pnl>=0?'+':'')+' $'+Math.abs(pnl).toFixed(2)
+  document.getElementById('m-pnl').className = 'mval '+(pnl>=0?'up':'dn')
+  document.getElementById('m-pnl-ch').textContent = trades.length+' trades total'
+
+  document.getElementById('m-wr').textContent = wr.toFixed(0)+'%'
+  document.getElementById('m-wr').className = 'mval '+(wr>=50?'up':'dn')
+  document.getElementById('wr-bar').style.width = wr+'%'
+
+  document.getElementById('m-best').textContent = '+$'+best.toFixed(2)
+  document.getElementById('m-best-sym').textContent = bestSym
+
+  document.getElementById('m-today').textContent = todayTrades.length
+  document.getElementById('m-today-pnl').textContent = (todayPnl>=0?'+':'')+' $'+todayPnl.toFixed(2)
+  document.getElementById('m-today-pnl').className = 'msub '+(todayPnl>=0?'up':'dn')
+
+  document.getElementById('s-total').textContent = trades.length
+  document.getElementById('s-wins').textContent = wins.length
+  document.getElementById('s-losses').textContent = losses.length
+  document.getElementById('s-avg-win').textContent = '+$'+avgWin.toFixed(2)
+  document.getElementById('s-avg-loss').textContent = '$'+avgLoss.toFixed(2)
+  document.getElementById('s-pf').textContent = pf.toFixed(2)
+  document.getElementById('s-btc').textContent = btcT
+  document.getElementById('s-eth').textContent = ethT
+  document.getElementById('s-bnb').textContent = bnbT
+}
+
+function renderChart(trades, periodo) {
+  const ctx = document.getElementById('balance-chart')
+  if(!ctx) return
+  if(chartInst) chartInst.destroy()
+
+  const dias = periodo==='7d'?7:periodo==='30d'?30:90
+  const labels = []
+  const data = []
+  let bal = 100
+
+  for(let i=dias;i>=0;i--) {
+    const d = new Date()
+    d.setDate(d.getDate()-i)
+    labels.push(d.toLocaleDateString('es-AR',{day:'numeric',month:'short'}))
+    const dt = trades.filter(t=>new Date(t.created_at).toDateString()===d.toDateString())
+    bal += dt.reduce((a,x)=>a+x.pnl,0)
+    data.push(+bal.toFixed(2))
   }
 
-  async function cargarTrades() {
-    const {data,error} = await client.from('trades').select('*').order('created_at',{ascending:false}).limit(20)
-    if(error||!data||data.length===0) return
-    renderTrades(data)
-    actualizarMetricas(data)
-  }
+  const color = data[data.length-1]>=data[0]?'#00d4a1':'#ff4d6d'
 
-  function suscribirTrades() {
-    client.channel('trades')
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'trades'},()=>{cargarTrades()})
-      .subscribe()
-  }
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: color,
+        backgroundColor: color==='#00d4a1'?'rgba(0,212,161,.07)':'rgba(255,77,109,.07)',
+        fill: true,
+        tension: .4,
+        pointRadius: 3,
+        pointBackgroundColor: color,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {legend:{display:false}},
+      scales: {
+        x:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10}}},
+        y:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10},callback:v=>'$'+v}}
+      }
+    }
+  })
+}
 
-  function renderTrades(trades) {
-    document.getElementById('trades-body').innerHTML = trades.map(t=>`
-      <tr>
-        <td>${new Date(t.created_at).toLocaleString('es-AR')}</td>
-        <td style="font-weight:600">${t.symbol}</td>
-        <td><span class="tag tag-${t.side.toLowerCase()}">${t.side}</span></td>
-        <td>$${t.price.toLocaleString()}</td>
-        <td>${t.rsi.toFixed(1)}</td>
-        <td class="${t.pnl>=0?'green':'red'}">${t.pnl>=0?'+':'-'}$${Math.abs(t.pnl).toFixed(2)}</td>
-      </tr>
-    `).join('')
-  }
+function renderPie(trades) {
+  const ctx = document.getElementById('pie-chart')
+  if(!ctx) return
+  if(pieInst) pieInst.destroy()
 
-  function actualizarMetricas(trades) {
-    const pnl = trades.reduce((a,b)=>a+b.pnl, 0)
-    const wins = trades.filter(t=>t.pnl>0).length
-    const wr = trades.length ? (wins/trades.length*100) : 0
-    const balance = 100 + pnl
-    document.getElementById('m1').textContent = '$'+balance.toFixed(2)
-    document.getElementById('m2').textContent = (pnl>=0?'+':'')+' $'+pnl.toFixed(2)
-    document.getElementById('m2').className = 'mval '+(pnl>=0?'green':'red')
-    document.getElementById('m3').textContent = trades.length
-    document.getElementById('m4').textContent = wr.toFixed(0)+'%'
-    document.getElementById('wr-bar').style.width = wr+'%'
-  }
+  const btc = trades.filter(t=>t.symbol==='BTCUSDT').length
+  const eth = trades.filter(t=>t.symbol==='ETHUSDT').length
+  const bnb = trades.filter(t=>t.symbol==='BNBUSDT').length
+  const total = btc+eth+bnb
 
-  async function logout() {
-    await client.auth.signOut()
-    window.location.href = 'login.html'
-  }
+  if(total===0) return
 
-  init()
+  pieInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['BTC','ETH','BNB'],
+      datasets: [{
+        data: [btc,eth,bnb],
+        backgroundColor: ['#f59e0b','#3b82f6','#8b5cf6'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {color:'#8b9cb5',font:{size:11},padding:12}
+        }
+      }
+    }
+  })
+}
+
+function cambiarPeriodo(periodo, el) {
+  periodoActual = periodo
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'))
+  el.classList.add('on')
+  if(allTrades.length) renderChart(allTrades, periodo)
+}
+
+async function logout() {
+  await client.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+init()
 </script>
 </body>
 </html>
