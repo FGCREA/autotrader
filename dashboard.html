@@ -161,9 +161,10 @@
     const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
 
     // Bloquear si venció el trial
-    if(now > trialEnd) {
-      return window.location.href = 'bloqueado.html'
-    }
+   const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
+   if(now > trialEnd && session.user.id !== ADMIN_ID) {
+   return window.location.href = 'bloqueado.html'
+   }
 
     const banner = document.getElementById('trial-banner')
     banner.style.display = 'flex'
