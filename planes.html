@@ -4,74 +4,172 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AutoTrader — Planes</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
-  .logo{font-size:1.2rem;font-weight:800;color:#00d4a1;margin-bottom:.5rem}
-  .logo span{color:#e8edf5}
-  .back{font-size:.8rem;color:#4a5a6e;text-decoration:none;margin-bottom:2rem;display:block;text-align:center}
-  .back:hover{color:#8b9cb5}
-  h2{font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:.5rem}
-  p{color:#8b9cb5;text-align:center;margin-bottom:2.5rem}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:700px;width:100%}
-  .plan{background:#0d1117;border:1px solid #1e2d40;border-radius:14px;padding:2rem;position:relative}
-  .plan.feat{border-color:#00d4a1;background:rgba(0,212,161,.03)}
-  .pbadge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#00d4a1;color:#000;font-size:.7rem;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap}
-  .pname{font-size:.78rem;color:#8b9cb5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
-  .pprice{font-size:2.2rem;font-weight:800;margin-bottom:.2rem}
-  .pper{font-size:.75rem;color:#4a5a6e;margin-bottom:1.25rem}
-  .psep{height:1px;background:#1e2d40;margin:.85rem 0}
-  ul{list-style:none;display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem}
-  ul li{display:flex;gap:.5rem;font-size:.83rem;color:#8b9cb5}
-  .ck{color:#00d4a1}
-  .btn-outline{width:100%;background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.75rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif;transition:all .2s}
-  .btn-outline:hover{background:#1c2333}
-  .btn-green{width:100%;background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.75rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
-  .btn-green:hover{background:#00b389}
-  .trial{font-size:.78rem;color:#8b9cb5;text-align:center;margin-top:1.25rem;padding:.65rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;max-width:700px;width:100%}
-  .disc{font-size:.72rem;color:#4a5a6e;text-align:center;max-width:600px;margin-top:1.5rem;line-height:1.6}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem}
+.logo{font-size:1.2rem;font-weight:800;color:#00d4a1;margin-bottom:.5rem}
+.logo span{color:#e8edf5}
+.back{font-size:.8rem;color:#4a5a6e;text-decoration:none;margin-bottom:2rem;display:block;text-align:center}
+.back:hover{color:#8b9cb5}
+h2{font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:.5rem}
+p{color:#8b9cb5;text-align:center;margin-bottom:2.5rem;font-size:.9rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:780px;width:100%}
+.plan{background:#0d1117;border:1px solid #1e2d40;border-radius:14px;padding:2rem;position:relative;transition:all .2s}
+.plan.featured{border-color:#00d4a1;background:rgba(0,212,161,.03)}
+.pbadge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#00d4a1;color:#000;font-size:.7rem;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap}
+.pname{font-size:.78rem;color:#8b9cb5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
+.pprice{font-size:2.2rem;font-weight:800;margin-bottom:.2rem;font-family:'DM Mono',monospace}
+.pper{font-size:.75rem;color:#4a5a6e;margin-bottom:1.25rem}
+.psep{height:1px;background:#1e2d40;margin:.85rem 0}
+.pfeats{list-style:none;display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem}
+.pfeats li{display:flex;gap:.5rem;font-size:.83rem;color:#8b9cb5;align-items:flex-start}
+.ck{color:#00d4a1;flex-shrink:0;margin-top:.1rem}
+.x{color:#ff4d6d;flex-shrink:0;margin-top:.1rem}
+.highlight{color:#e8edf5;font-weight:600}
+.btn-outline{width:100%;background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.75rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif;transition:all .2s}
+.btn-outline:hover{background:#1c2333}
+.btn-green{width:100%;background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.75rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
+.btn-green:hover{background:#00b389}
+.trial{font-size:.78rem;color:#8b9cb5;text-align:center;margin-top:1.25rem;padding:.65rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;max-width:780px;width:100%}
+.disc{font-size:.72rem;color:#4a5a6e;text-align:center;max-width:650px;margin-top:1.25rem;line-height:1.6}
+.tag-nuevo{background:rgba(139,92,246,.15);color:#8b5cf6;font-size:.68rem;padding:2px 7px;border-radius:4px;font-weight:600;margin-left:.4rem}
+.comparacion{max-width:780px;width:100%;margin-top:2rem;background:#0d1117;border:1px solid #1e2d40;border-radius:12px;overflow:hidden}
+.comp-title{padding:1rem 1.5rem;font-size:.85rem;font-weight:700;border-bottom:1px solid #1e2d40;color:#8b9cb5;text-transform:uppercase;letter-spacing:.05em}
+.comp-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:.75rem 1.5rem;border-bottom:1px solid rgba(30,45,64,.4);font-size:.82rem}
+.comp-row:last-child{border-bottom:none}
+.comp-feature{color:#8b9cb5}
+.comp-basic{text-align:center;color:#8b9cb5}
+.comp-pro{text-align:center;color:#00d4a1;font-weight:600}
+.comp-header{background:#111827;font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:#4a5a6e}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.comp-row{grid-template-columns:1fr 1fr 1fr;font-size:.75rem}}
 </style>
 </head>
 <body>
-  <div class="logo">Auto<span>Trader</span></div>
-  <a href="dashboard.html" class="back">← Volver al dashboard</a>
-  <h2>Elegí tu plan</h2>
-  <p>7 días de prueba gratuita incluidos. Cancelá cuando quieras.</p>
-  <div class="grid">
-    <div class="plan">
-      <div class="pname">Basic</div>
-      <div class="pprice">$15<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
-      <div class="pper">después del trial gratuito</div>
-      <div class="psep"></div>
-      <ul>
-        <li><span class="ck">✓</span> Bot RSI + EMA activo 24/7</li>
-        <li><span class="ck">✓</span> Dashboard con PnL en tiempo real</li>
-        <li><span class="ck">✓</span> Stop-loss y take-profit automático</li>
-        <li><span class="ck">✓</span> Alertas por Telegram</li>
-        <li><span class="ck">✓</span> 1 par de trading</li>
-        <li><span class="ck">✓</span> Soporte por email</li>
-      </ul>
-      <button class="btn-outline" onclick="window.location.href='https://autotrader-pro.lemonsqueezy.com/checkout/buy/fda9e6a9-ba13-4017-a551-521968b28e3d'">Elegir Basic</button>
-    </div>
-    <div class="plan feat">
-      <div class="pbadge">⭐ Más popular</div>
-      <div class="pname">Pro</div>
-      <div class="pprice">$30<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
-      <div class="pper">después del trial gratuito</div>
-      <div class="psep"></div>
-      <ul>
-        <li><span class="ck">✓</span> Todo lo de Basic</li>
-        <li><span class="ck">✓</span> Ajuste automático de riesgo</li>
-        <li><span class="ck">✓</span> Optimización dinámica</li>
-        <li><span class="ck">✓</span> Múltiples pares de trading</li>
-        <li><span class="ck">✓</span> Analytics avanzados</li>
-        <li><span class="ck">✓</span> Soporte prioritario</li>
-      </ul>
-      <button class="btn-green" onclick="window.location.href='https://autotrader-pro.lemonsqueezy.com/checkout/buy/204b37f5-ba1c-4f83-83c6-5dbf9328862d'">Elegir Pro</button>
-    </div>
+
+<div class="logo">Auto<span>Trader</span></div>
+<a href="dashboard.html" class="back">← Volver al dashboard</a>
+<h2>Elegí tu plan</h2>
+<p>7 días de prueba gratuita incluidos. Cancelá cuando quieras.</p>
+
+<div class="grid">
+  <!-- BASIC -->
+  <div class="plan">
+    <div class="pname">Basic</div>
+    <div class="pprice">$15<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
+    <div class="pper">después del trial gratuito</div>
+    <div class="psep"></div>
+    <ul class="pfeats">
+      <li><span class="ck">✓</span> <span>Bot activo <span class="highlight">24/7</span></span></li>
+      <li><span class="ck">✓</span> <span><span class="highlight">1 par</span> de trading — BTC/USDT</span></li>
+      <li><span class="ck">✓</span> <span>Estrategia RSI + EMA <span class="highlight">predefinida</span></span></li>
+      <li><span class="ck">✓</span> <span>Stop-loss y take-profit <span class="highlight">automáticos</span></span></li>
+      <li><span class="ck">✓</span> Dashboard básico con historial</li>
+      <li><span class="ck">✓</span> Alertas por Telegram</li>
+      <li><span class="x">✗</span> <span style="color:#4a5a6e">Parámetros configurables</span></li>
+      <li><span class="x">✗</span> <span style="color:#4a5a6e">Múltiples pares</span></li>
+      <li><span class="x">✗</span> <span style="color:#4a5a6e">Analytics avanzados</span></li>
+    </ul>
+    <button class="btn-outline" onclick="elegirPlan('basic')">Empezar con Basic</button>
   </div>
-  <div class="trial">🎁 No se cobra nada hasta que terminen los 7 días de prueba. Cancelá en cualquier momento.</div>
-  <div class="disc">⚠️ El trading implica riesgo. Los resultados no están garantizados. AutoTrader es una herramienta de automatización — no somos asesores financieros.</div>
+
+  <!-- PRO -->
+  <div class="plan featured">
+    <div class="pbadge">⭐ Más popular</div>
+    <div class="pname">Pro</div>
+    <div class="pprice">$30<span style="font-size:.9rem;color:#4a5a6e">/mes</span></div>
+    <div class="pper">después del trial gratuito</div>
+    <div class="psep"></div>
+    <ul class="pfeats">
+      <li><span class="ck">✓</span> <span>Bot activo <span class="highlight">24/7</span></span></li>
+      <li><span class="ck">✓</span> <span><span class="highlight">3 pares</span> — BTC, ETH, BNB</span></li>
+      <li><span class="ck">✓</span> <span>RSI, Stop-loss y Take-profit <span class="highlight">configurables</span> <span class="tag-nuevo">PRO</span></span></li>
+      <li><span class="ck">✓</span> <span>Ajuste automático según tu perfil de riesgo <span class="tag-nuevo">PRO</span></span></li>
+      <li><span class="ck">✓</span> <span>Dashboard avanzado con métricas <span class="tag-nuevo">PRO</span></span></li>
+      <li><span class="ck">✓</span> Alertas por Telegram</li>
+      <li><span class="ck">✓</span> <span>Capital por par configurable <span class="tag-nuevo">PRO</span></span></li>
+      <li><span class="ck">✓</span> <span>Soporte prioritario <span class="tag-nuevo">PRO</span></span></li>
+      <li><span class="ck">✓</span> <span>Historial completo de trades <span class="tag-nuevo">PRO</span></span></li>
+    </ul>
+    <button class="btn-green" onclick="elegirPlan('pro')">Empezar con Pro</button>
+  </div>
+</div>
+
+<!-- TABLA COMPARATIVA -->
+<div class="comparacion">
+  <div class="comp-title">Comparación detallada</div>
+  <div class="comp-row comp-header">
+    <div class="comp-feature">Característica</div>
+    <div class="comp-basic">Basic</div>
+    <div class="comp-pro">Pro</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Pares de trading</div>
+    <div class="comp-basic">1 (BTC)</div>
+    <div class="comp-pro">3 (BTC, ETH, BNB)</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Parámetros RSI</div>
+    <div class="comp-basic">Fijos</div>
+    <div class="comp-pro">Configurables</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Stop Loss</div>
+    <div class="comp-basic">1.5% fijo</div>
+    <div class="comp-pro">0.5% – 5% a elección</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Take Profit</div>
+    <div class="comp-basic">2.5% fijo</div>
+    <div class="comp-pro">1% – 10% a elección</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Intervalo de análisis</div>
+    <div class="comp-basic">5 minutos</div>
+    <div class="comp-pro">1, 5 o 15 minutos</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Dashboard</div>
+    <div class="comp-basic">Básico</div>
+    <div class="comp-pro">Avanzado con métricas</div>
+  </div>
+  <div class="comp-row">
+    <div class="comp-feature">Soporte</div>
+    <div class="comp-basic">Email</div>
+    <div class="comp-pro">Prioritario</div>
+  </div>
+</div>
+
+<div class="trial">🎁 No se cobra nada hasta que terminen los 7 días de prueba. Cancelá en cualquier momento.</div>
+<div class="disc">⚠️ El trading implica riesgo. Los resultados no están garantizados. AutoTrader es una herramienta de automatización — no somos asesores financieros.</div>
+
+<script>
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
+
+const URLS = {
+  basic: 'https://autotrader-pro.lemonsqueezy.com/checkout/buy/fda9e6a9-ba13-4017-a551-521968b28e3d',
+  pro: 'https://autotrader-pro.lemonsqueezy.com/checkout/buy/204b37f5-ba1c-4f83-83c6-5dbf9328862d'
+}
+
+async function elegirPlan(plan) {
+  try {
+    const {data:{session}} = await client.auth.getSession()
+    if(session) {
+      await client.from('configuraciones').upsert({
+        user_id: session.user.id,
+        plan: plan,
+        updated_at: new Date().toISOString()
+      }, {onConflict: 'user_id'})
+    }
+  } catch(e) {
+    console.log('Error guardando plan:', e)
+  }
+  window.location.href = URLS[plan]
+}
+</script>
 </body>
 </html>
