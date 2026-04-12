@@ -7,18 +7,17 @@ from supabase import create_client
 from datetime import datetime
 
 # ═══════════════════════════════
-# CONFIGURACIÓN SUPABASE
+# CONFIGURACIÓN
 # ═══════════════════════════════
 SUPABASE_URL = 'https://hmpxnorawqppbxptbyeu.supabase.co'
 SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
 
 TELEGRAM_TOKEN = '8665046077:AAGTHlPz2FZQo_7A7f_l3x0xthWlTqrDvmo'
 
-# Bot demo — keys del testnet para usuarios sin Binance configurado
 DEMO_API_KEY = '07FaPPGK74wa3YTcfJKU0cDPhUQI65Uv9gUilG3kpjnYnnCRAoectjhPs06qHsEw'
 DEMO_API_SECRET = 'rofqHXDzUcXRqSt8luc9zKtRnlMalKwEk09wdeaxjuVxDdVRsS39Lh86RUf3w97D'
 
-INTERVALO = 300  # 5 minutos
+INTERVALO_DEMO = 300  # 5 minutos para el bot demo
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -68,12 +67,8 @@ def calcular_bollinger(df, periodo=20):
 # ═══════════════════════════════
 # OBTENER VELAS
 # ═══════════════════════════════
-def get_candles(client, symbol):
-    candles = client.get_klines(
-        symbol=symbol,
-        interval=Client.KLINE_INTERVAL_5MINUTE,
-        limit=100
-    )
+def get_candles(client, symbol, intervalo=Client.KLINE_INTERVAL_5MINUTE):
+    candles = client.get_klines(symbol=symbol, interval=intervalo, limit=100)
     df = pd.DataFrame(candles, columns=[
         'time','open','high','low','close','volume',
         'close_time','quote_vol','trades','buy_base','buy_quote','ignore'
@@ -86,6 +81,7 @@ def get_candles(client, symbol):
 # SEÑAL DE TRADING
 # ═══════════════════════════════
 def obtener_senal(df, symbol, rsi_compra=40, rsi_venta=60):
+    df = df.copy()
     df['rsi'] = calcular_rsi(df)
     df['ema20'] = calcular_ema(df, 20)
     df['ema50'] = calcular_ema(df, 50)
@@ -117,11 +113,10 @@ def obtener_senal(df, symbol, rsi_compra=40, rsi_venta=60):
         return 'BUY', rsi, precio
     elif venta or venta_alt:
         return 'SELL', rsi, precio
-
     return 'HOLD', rsi, precio
 
 # ═══════════════════════════════
-# GUARDAR TRADE EN SUPABASE
+# GUARDAR TRADE
 # ═══════════════════════════════
 def guardar_trade(user_id, symbol, side, price, quantity, pnl, rsi, signal, telegram_id=None):
     try:
@@ -135,7 +130,7 @@ def guardar_trade(user_id, symbol, side, price, quantity, pnl, rsi, signal, tele
             'rsi': round(rsi, 2),
             'signal': signal
         }).execute()
-        print(f"    ✅ Trade guardado")
+        print(f"    ✅ Trade guardado en Supabase")
 
         emoji = '🟢' if side == 'BUY' else '🔴'
         msg = f"""{emoji} <b>AutoTrader — {side}</b>
@@ -156,139 +151,142 @@ def operar_usuario(config):
     api_key = config.get('api_key', '')
     api_secret = config.get('api_secret', '')
     capital = float(config.get('capital', 100))
-    stop_loss = float(config.get('stop_loss', 1.5)) / 100
-    take_profit = float(config.get('take_profit', 2.5)) / 100
-    par = config.get('par', 'BTCUSDT')
+    plan = config.get('plan', 'basic')
     telegram_id = config.get('telegram_id', '')
     es_demo = not api_key or len(api_key) < 10
+
+    # ─── Parámetros según plan ───
+    if plan == 'pro':
+        stop_loss = float(config.get('stop_loss', 1.5)) / 100
+        take_profit = float(config.get('take_profit', 2.5)) / 100
+        rsi_compra = int(config.get('rsi_compra', 40))
+        rsi_venta = int(config.get('rsi_venta', 60))
+        intervalo_seg = int(config.get('intervalo', 300))
+        pares_extra = config.get('pares_extra', '')
+        par_principal = config.get('par', 'BTCUSDT')
+        symbols = pares_extra.split(',') if pares_extra else [par_principal]
+        if par_principal not in symbols:
+            symbols.insert(0, par_principal)
+        symbols = [s for s in symbols if s]  # limpiar vacíos
+    else:
+        # Basic — parámetros fijos optimizados
+        stop_loss = 0.015
+        take_profit = 0.025
+        rsi_compra = 40
+        rsi_venta = 60
+        intervalo_seg = 300
+        symbols = ['BTCUSDT']
+
+    # Intervalo binance según segundos
+    if intervalo_seg <= 60:
+        intervalo_binance = Client.KLINE_INTERVAL_1MINUTE
+    elif intervalo_seg <= 300:
+        intervalo_binance = Client.KLINE_INTERVAL_5MINUTE
+    else:
+        intervalo_binance = Client.KLINE_INTERVAL_15MINUTE
 
     # Conectar a Binance
     try:
         if es_demo:
-            client = Client(DEMO_API_KEY, DEMO_API_SECRET, testnet=True)
+            binance = Client(DEMO_API_KEY, DEMO_API_SECRET, testnet=True)
             modo = "DEMO"
         else:
-            client = Client(api_key, api_secret)
+            binance = Client(api_key, api_secret)
             modo = "REAL"
     except Exception as e:
-        print(f"    ❌ Error conectando Binance para {user_id}: {e}")
+        print(f"    ❌ Error conectando Binance: {e}")
         return
 
-    # RSI personalizado según perfil
-    try:
-        perfil = supabase.table('perfiles').select('riesgo').eq('user_id', user_id).single().execute()
-        riesgo = perfil.data.get('riesgo', 'medium') if perfil.data else 'medium'
-    except:
-        riesgo = 'medium'
+    print(f"  👤 {user_id[:8]}... | Plan: {plan.upper()} | Modo: {modo} | Pares: {', '.join(symbols)} | Capital: ${capital}")
 
-    rsi_map = {'low': (35, 65), 'medium': (40, 60), 'high': (45, 55), 'extreme': (48, 52)}
-    rsi_compra, rsi_venta = rsi_map.get(riesgo, (40, 60))
+    for symbol in symbols:
+        try:
+            df = get_candles(binance, symbol, intervalo_binance)
+            senal, rsi, precio = obtener_senal(df, symbol, rsi_compra, rsi_venta)
 
-    print(f"  👤 Usuario {user_id[:8]}... | Modo: {modo} | Par: {par} | Capital: ${capital}")
+            if senal == 'BUY':
+                cantidad = round(capital / precio, 5)
+                pnl = round(capital * take_profit, 2)
+                stop = round(precio * (1 - stop_loss), 2)
+                tp = round(precio * (1 + take_profit), 2)
+                print(f"    🟢 COMPRANDO {cantidad} {symbol} a ${precio:,.2f}")
+                print(f"       SL: ${stop:,.2f} | TP: ${tp:,.2f} | Plan: {plan.upper()}")
 
-    try:
-        df = get_candles(client, par)
-        senal, rsi, precio = obtener_senal(df, par, rsi_compra, rsi_venta)
+                if not es_demo:
+                    try:
+                        binance.order_market_buy(symbol=symbol, quantity=cantidad)
+                    except BinanceAPIException as e:
+                        print(f"    ⚠️ Error orden real: {e}")
 
-        if senal == 'BUY':
-            cantidad = round(capital / precio, 5)
-            pnl = round(capital * take_profit, 2)
-            stop = round(precio * (1 - stop_loss), 2)
-            tp = round(precio * (1 + take_profit), 2)
-            print(f"    🟢 COMPRANDO {cantidad} {par} a ${precio:,.2f}")
-            print(f"       SL: ${stop:,.2f} | TP: ${tp:,.2f}")
+                guardar_trade(user_id, symbol, 'BUY', precio, cantidad, pnl, rsi, senal, telegram_id)
 
-            if not es_demo:
-                try:
-                    client.order_market_buy(symbol=par, quantity=cantidad)
-                except BinanceAPIException as e:
-                    print(f"    ⚠️ Error ejecutando orden real: {e}")
+            elif senal == 'SELL':
+                cantidad = round(capital / precio, 5)
+                pnl = round(capital * take_profit * -0.4, 2)
+                print(f"    🔴 VENDIENDO {cantidad} {symbol} a ${precio:,.2f}")
 
-            guardar_trade(user_id, par, 'BUY', precio, cantidad, pnl, rsi, senal, telegram_id)
+                if not es_demo:
+                    try:
+                        binance.order_market_sell(symbol=symbol, quantity=cantidad)
+                    except BinanceAPIException as e:
+                        print(f"    ⚠️ Error orden real: {e}")
 
-        elif senal == 'SELL':
-            cantidad = round(capital / precio, 5)
-            pnl = round(capital * take_profit * -0.4, 2)
-            print(f"    🔴 VENDIENDO {cantidad} {par} a ${precio:,.2f}")
+                guardar_trade(user_id, symbol, 'SELL', precio, cantidad, pnl, rsi, senal, telegram_id)
 
-            if not es_demo:
-                try:
-                    client.order_market_sell(symbol=par, quantity=cantidad)
-                except BinanceAPIException as e:
-                    print(f"    ⚠️ Error ejecutando orden real: {e}")
+            else:
+                print(f"    ⏳ {symbol}: HOLD")
 
-            guardar_trade(user_id, par, 'SELL', precio, cantidad, pnl, rsi, senal, telegram_id)
-
-        else:
-            print(f"    ⏳ HOLD — sin señal")
-
-    except Exception as e:
-        print(f"    ❌ Error operando para {user_id[:8]}: {e}")
+        except Exception as e:
+            print(f"    ❌ Error operando {symbol}: {e}")
 
 # ═══════════════════════════════
-# OBTENER USUARIOS ACTIVOS
-# ═══════════════════════════════
-def get_usuarios_activos():
-    try:
-        result = supabase.table('configuraciones').select('*').execute()
-        usuarios = result.data or []
-        print(f"  📋 {len(usuarios)} usuario(s) con configuración")
-        return usuarios
-    except Exception as e:
-        print(f"  ❌ Error obteniendo usuarios: {e}")
-        return []
-
-# ═══════════════════════════════
-# DEMO — operar con cuenta demo
-# para usuarios sin configuración
+# BOT DEMO (para usuarios en trial)
 # ═══════════════════════════════
 def operar_demo():
-    """Opera el bot demo para mostrar en el dashboard a todos los usuarios"""
-    demo_config = {
-        'user_id': 'demo',
-        'api_key': '',
-        'api_secret': '',
-        'capital': 100,
-        'stop_loss': 1.5,
-        'take_profit': 2.5,
-        'par': 'BTCUSDT',
-        'telegram_id': '5192044301'
-    }
-
     symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
-
     try:
-        client = Client(DEMO_API_KEY, DEMO_API_SECRET, testnet=True)
+        binance = Client(DEMO_API_KEY, DEMO_API_SECRET, testnet=True)
         for symbol in symbols:
             try:
-                df = get_candles(client, symbol)
+                df = get_candles(binance, symbol)
                 senal, rsi, precio = obtener_senal(df, symbol)
-
                 if senal != 'HOLD':
                     cantidad = round(100 / precio, 5)
                     pnl = round(100 * 0.025, 2) if senal == 'BUY' else round(100 * 0.025 * -0.4, 2)
                     guardar_trade('demo', symbol, senal, precio, cantidad, pnl, rsi, senal, None)
                 else:
                     print(f"    ⏳ {symbol}: HOLD")
-
             except Exception as e:
                 print(f"    ❌ Error demo {symbol}: {e}")
-
     except Exception as e:
         print(f"  ❌ Error iniciando demo: {e}")
+
+# ═══════════════════════════════
+# OBTENER USUARIOS ACTIVOS
+# ═══════════════════════════════
+def get_usuarios_activos():
+    try:
+        result = supabase.table('configuraciones').select('*').eq('bot_activo', True).execute()
+        usuarios = result.data or []
+        print(f"  📋 {len(usuarios)} usuario(s) con bot activo")
+        return usuarios
+    except Exception as e:
+        print(f"  ❌ Error obteniendo usuarios: {e}")
+        return []
 
 # ═══════════════════════════════
 # LOOP PRINCIPAL
 # ═══════════════════════════════
 def main():
     print("\n" + "═"*60)
-    print("  🤖 AutoTrader Bot Multi-Usuario v3.0 ACTUALIZADO")
+    print("  🤖 AutoTrader Bot Multi-Usuario v3.1")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    print("  Diferenciación: Basic (BTC, params fijos) | Pro (multi-par, configurable)")
     print("═"*60)
 
-    enviar_telegram('5192044301', """🤖 <b>AutoTrader Bot v3.0 iniciado</b>
+    enviar_telegram('5192044301', """🤖 <b>AutoTrader Bot v3.1 iniciado</b>
 Modo: Multi-usuario
-Intervalo: 5 minutos
+Planes: Basic y Pro diferenciados
 Estrategia: RSI + EMA + MACD""")
 
     while True:
@@ -296,26 +294,25 @@ Estrategia: RSI + EMA + MACD""")
             print(f"\n⏰ {datetime.now().strftime('%H:%M:%S')} — Analizando mercado...")
             print("─"*60)
 
-            # 1. Operar bot demo (para todos los usuarios en trial)
-            print("\n🎮 Bot demo:")
+            # 1. Bot demo para usuarios en trial
+            print("\n🎮 Bot demo (trial):")
             operar_demo()
 
-            # 2. Operar para usuarios con Binance configurado
+            # 2. Usuarios con bot activado
             usuarios = get_usuarios_activos()
             if usuarios:
-                print(f"\n👥 Usuarios con Binance real:")
+                print(f"\n👥 Usuarios activos:")
                 for config in usuarios:
-                    if config.get('bot_activo'):
-                        operar_usuario(config)
-                    else:
-                        print(f"  ⏸️  Usuario {config.get('user_id','')[:8]}... — bot pausado")
+                    operar_usuario(config)
+            else:
+                print("\n👥 Sin usuarios con bot activo aún")
 
             print("\n" + "─"*60)
-            print(f"⏳ Próximo análisis en {INTERVALO//60} minutos...")
-            time.sleep(INTERVALO)
+            print(f"⏳ Próximo ciclo en {INTERVALO_DEMO//60} minutos...")
+            time.sleep(INTERVALO_DEMO)
 
         except KeyboardInterrupt:
-            print("\n🛑 Bot detenido manualmente")
+            print("\n🛑 Bot detenido")
             break
         except Exception as e:
             print(f"❌ Error general: {e}")
