@@ -282,7 +282,7 @@ def operar_demo():
 # ═══════════════════════════════
 def main():
     print("\n" + "═"*60)
-    print("  🤖 AutoTrader Bot Multi-Usuario v3.0")
+    print("  🤖 AutoTrader Bot Multi-Usuario v3.0 ACTUALIZADO")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print("═"*60)
 
