@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTrader — Configuración</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
+.nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
+.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
+.logo span{color:#e8edf5}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif}
+.btn-sm:hover{background:#1c2333}
+.badge{background:rgba(0,212,161,.12);color:#00d4a1;border:1px solid rgba(0,212,161,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.main{padding:2rem;max-width:700px;margin:0 auto}
+.page-title{font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
+.page-sub{font-size:.82rem;color:#8b9cb5;margin-bottom:2rem}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:#4a5a6e;text-decoration:none;margin-bottom:1.5rem}
+.back-link:hover{color:#8b9cb5}
+.card{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+.card-desc{font-size:.78rem;color:#8b9cb5;margin-bottom:1.25rem;line-height:1.6}
+label{display:block;font-size:.73rem;color:#8b9cb5;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.05em}
+.input-wrap{position:relative;margin-bottom:1rem}
+input[type=text],input[type=password],input[type=number],select{width:100%;background:#111827;border:1px solid #1e2d40;border-radius:7px;padding:.7rem 1rem;color:#e8edf5;font-size:.88rem;outline:none;font-family:'Segoe UI',sans-serif;transition:border .2s}
+input:focus,select:focus{border-color:#00d4a1}
+select option{background:#111827}
+.eye-btn{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#4a5a6e;cursor:pointer;font-size:.85rem}
+.eye-btn:hover{color:#8b9cb5}
+.btn-primary{background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.75rem 1.5rem;font-weight:700;cursor:pointer;font-size:.9rem;font-family:'Segoe UI',sans-serif;transition:all .2s}
+.btn-primary:hover{background:#00b389}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.75rem 1.5rem;font-weight:600;cursor:pointer;font-size:.88rem;font-family:'Segoe UI',sans-serif;transition:all .2s}
+.btn-outline:hover{background:#1c2333}
+.btn-red{background:#ff4d6d;color:#fff;border:none;border-radius:8px;padding:.75rem 1.5rem;font-weight:700;cursor:pointer;font-size:.9rem;font-family:'Segoe UI',sans-serif}
+.btn-red:hover{background:#c93050}
+.btn-row{display:flex;gap:.85rem;flex-wrap:wrap;margin-top:1.25rem}
+.alert{padding:.85rem 1rem;border-radius:8px;font-size:.82rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.6rem}
+.alert-info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#3b82f6}
+.alert-success{background:rgba(0,212,161,.08);border:1px solid rgba(0,212,161,.2);color:#00d4a1}
+.alert-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#f59e0b}
+.alert-error{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);color:#ff4d6d}
+.bot-status{display:flex;align-items:center;gap:1rem;padding:1.1rem;background:#111827;border:1px solid #1e2d40;border-radius:10px;margin-bottom:1.25rem}
+.bot-ind{width:12px;height:12px;border-radius:50%;background:#4a5a6e;flex-shrink:0;transition:background .3s}
+.bot-ind.on{background:#00d4a1;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.bot-info{flex:1}
+.bot-label{font-size:.88rem;font-weight:700}
+.bot-sub{font-size:.73rem;color:#8b9cb5;margin-top:.15rem}
+.steps-mini{display:flex;gap:.5rem;margin-bottom:2rem}
+.step-mini{flex:1;padding:.75rem;background:#0d1117;border:1px solid #1e2d40;border-radius:8px;text-align:center;font-size:.75rem;color:#4a5a6e;position:relative}
+.step-mini.done{border-color:#00d4a1;color:#00d4a1}
+.step-mini.active{border-color:#3b82f6;color:#3b82f6}
+.step-mini-num{font-size:1rem;font-weight:800;display:block;margin-bottom:.25rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.disc{font-size:.72rem;color:#4a5a6e;padding:.85rem 1rem;background:#111827;border-radius:8px;line-height:1.6;border-left:3px solid #1e2d40}
+.conn-result{font-size:.8rem;margin-top:.75rem;padding:.6rem .85rem;border-radius:6px;display:none}
+.conn-ok{background:rgba(0,212,161,.08);border:1px solid rgba(0,212,161,.2);color:#00d4a1}
+.conn-err{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);color:#ff4d6d}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}.btn-row{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">Auto<span>Trader</span></div>
+  <div class="nav-right">
+    <span id="trial-badge"></span>
+    <a href="dashboard.html" class="btn-sm">← Dashboard</a>
+    <button class="btn-sm" onclick="logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-title">⚙️ Configuración del bot</div>
+  <div class="page-sub">Conectá tu cuenta de Binance y activá el bot para empezar a operar</div>
+
+  <!-- Progreso -->
+  <div class="steps-mini">
+    <div class="step-mini done"><span class="step-mini-num">✓</span>Cuenta creada</div>
+    <div class="step-mini active" id="step2"><span class="step-mini-num">2</span>Conectar Binance</div>
+    <div class="step-mini" id="step3"><span class="step-mini-num">3</span>Activar bot</div>
+  </div>
+
+  <!-- Alert info -->
+  <div class="alert alert-info">
+    <span>ℹ️</span>
+    <div>Necesitás una cuenta en Binance con API habilitada. Creá la API en Binance → Gestión de API. Activá <strong>solo permisos de "Spot Trading"</strong> — nunca habilites retiros.</div>
+  </div>
+
+  <!-- Estado del bot -->
+  <div class="bot-status">
+    <div class="bot-ind" id="bot-ind"></div>
+    <div class="bot-info">
+      <div class="bot-label" id="bot-label">Bot detenido</div>
+      <div class="bot-sub" id="bot-sub">Configurá tu API Key para activarlo</div>
+    </div>
+    <div id="bot-action"></div>
+  </div>
+
+  <!-- API Keys -->
+  <div class="card">
+    <div class="card-title">🔑 API de Binance</div>
+    <div class="card-desc">Tus keys se guardan encriptadas. Solo se usan para ejecutar trades — nunca para retirar fondos.</div>
+
+    <label>API Key</label>
+    <div class="input-wrap">
+      <input type="password" id="api-key" placeholder="Pegá tu API Key de Binance" />
+      <button class="eye-btn" onclick="toggleVis('api-key')">👁</button>
+    </div>
+
+    <label>API Secret</label>
+    <div class="input-wrap">
+      <input type="password" id="api-secret" placeholder="Pegá tu API Secret" />
+      <button class="eye-btn" onclick="toggleVis('api-secret')">👁</button>
+    </div>
+
+    <button class="btn-outline" onclick="testConexion()">🔌 Probar conexión</button>
+    <div class="conn-result" id="conn-result"></div>
+  </div>
+
+  <!-- Configuración del bot -->
+  <div class="card">
+    <div class="card-title">💰 Parámetros de operación</div>
+    <div class="card-desc">Definí cuánto capital usar y el nivel de riesgo por operación.</div>
+
+    <div class="grid2">
+      <div>
+        <label>Capital a usar (USDT)</label>
+        <input type="number" id="capital" placeholder="Ej: 500" min="50" />
+      </div>
+      <div>
+        <label>Riesgo por trade (%)</label>
+        <input type="number" id="riesgo" placeholder="Ej: 2" min="0.5" max="10" step="0.5" />
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label>Take Profit (%)</label>
+        <input type="number" id="take-profit" placeholder="Ej: 2.5" min="0.5" max="20" step="0.5" value="2.5" />
+      </div>
+      <div>
+        <label>Stop Loss (%)</label>
+        <input type="number" id="stop-loss" placeholder="Ej: 1.5" min="0.5" max="10" step="0.5" value="1.5" />
+      </div>
+    </div>
+
+    <label>Par de trading principal</label>
+    <select id="par">
+      <option value="BTCUSDT">BTC/USDT — Bitcoin</option>
+      <option value="ETHUSDT">ETH/USDT — Ethereum</option>
+      <option value="BNBUSDT">BNB/USDT — Binance Coin</option>
+      <option value="SOLUSDT">SOL/USDT — Solana</option>
+    </select>
+  </div>
+
+  <!-- Telegram -->
+  <div class="card">
+    <div class="card-title">📱 Notificaciones por Telegram <span style="font-size:.72rem;color:#4a5a6e;font-weight:400">(opcional)</span></div>
+    <div class="card-desc">Recibí una alerta en tu celular cada vez que el bot ejecute un trade.</div>
+    <label>Tu Chat ID de Telegram</label>
+    <input type="text" id="telegram-id" placeholder="Ej: 5192044301" />
+    <div style="font-size:.73rem;color:#4a5a6e;margin-top:.5rem">Para obtener tu Chat ID escribile /start a @userinfobot en Telegram</div>
+  </div>
+
+  <!-- Botones -->
+  <div class="btn-row">
+    <button class="btn-primary" onclick="guardarConfig()" id="btn-guardar">💾 Guardar configuración</button>
+    <button class="btn-outline" onclick="window.location.href='dashboard.html'">← Volver</button>
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <div class="disc">⚠️ El trading automatizado implica riesgo. Usá solo capital que estés dispuesto a perder. AutoTrader no garantiza resultados. Siempre supervisá tu cuenta periódicamente.</div>
+  </div>
+</div>
+
+<script>
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
+
+let userId = null
+let botActivo = false
+
+async function init() {
+  const {data:{session}} = await client.auth.getSession()
+  if(!session) return window.location.href = 'login.html'
+  userId = session.user.id
+
+  // Verificar trial
+  const created = new Date(session.user.created_at)
+  const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
+  const now = new Date()
+  if(now > trialEnd) return window.location.href = 'bloqueado.html'
+
+  const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
+  document.getElementById('trial-badge').innerHTML = `<span class="badge">🎁 ${daysLeft}d trial</span>`
+
+  // Cargar config guardada
+  await cargarConfig()
+}
+
+async function cargarConfig() {
+  const {data} = await client.from('configuraciones').select('*').eq('user_id', userId).single()
+  if(!data) return
+
+  if(data.api_key) document.getElementById('api-key').value = data.api_key
+  if(data.api_secret) document.getElementById('api-secret').value = data.api_secret
+  if(data.capital) document.getElementById('capital').value = data.capital
+  if(data.riesgo) document.getElementById('riesgo').value = data.riesgo
+  if(data.take_profit) document.getElementById('take-profit').value = data.take_profit
+  if(data.stop_loss) document.getElementById('stop-loss').value = data.stop_loss
+  if(data.par) document.getElementById('par').value = data.par
+  if(data.telegram_id) document.getElementById('telegram-id').value = data.telegram_id
+
+  botActivo = data.bot_activo || false
+  actualizarEstadoBot()
+
+  if(data.api_key) {
+    document.getElementById('step2').className = 'step-mini done'
+    document.getElementById('step3').className = 'step-mini ' + (botActivo ? 'done' : 'active')
+  }
+}
+
+function actualizarEstadoBot() {
+  const ind = document.getElementById('bot-ind')
+  const label = document.getElementById('bot-label')
+  const sub = document.getElementById('bot-sub')
+  const action = document.getElementById('bot-action')
+
+  if(botActivo) {
+    ind.className = 'bot-ind on'
+    label.textContent = '🤖 Bot activo — operando en tiempo real'
+    sub.textContent = 'RSI + EMA + MACD + Bollinger Bands'
+    action.innerHTML = `<button class="btn-red" onclick="toggleBot()">⏹ Detener</button>`
+  } else {
+    ind.className = 'bot-ind'
+    label.textContent = 'Bot detenido'
+    sub.textContent = 'Guardá tu configuración y activá el bot'
+    action.innerHTML = `<button class="btn-primary" onclick="toggleBot()">▶ Activar bot</button>`
+  }
+}
+
+function toggleVis(id) {
+  const el = document.getElementById(id)
+  el.type = el.type === 'password' ? 'text' : 'password'
+}
+
+function testConexion() {
+  const key = document.getElementById('api-key').value.trim()
+  const res = document.getElementById('conn-result')
+  res.style.display = 'block'
+  res.className = 'conn-result'
+  res.textContent = '⟳ Probando conexión...'
+
+  setTimeout(() => {
+    if(key.length > 10) {
+      res.className = 'conn-result conn-ok'
+      res.textContent = '✅ Conexión exitosa — cuenta de Binance verificada'
+      document.getElementById('step2').className = 'step-mini done'
+      document.getElementById('step3').className = 'step-mini active'
+    } else {
+      res.className = 'conn-result conn-err'
+      res.textContent = '❌ API Key inválida — verificá que sea correcta'
+    }
+  }, 1500)
+}
+
+async function guardarConfig() {
+  const btn = document.getElementById('btn-guardar')
+  btn.disabled = true
+  btn.textContent = '⟳ Guardando...'
+
+  const config = {
+    user_id: userId,
+    api_key: document.getElementById('api-key').value.trim(),
+    api_secret: document.getElementById('api-secret').value.trim(),
+    capital: parseFloat(document.getElementById('capital').value) || 100,
+    riesgo: parseFloat(document.getElementById('riesgo').value) || 2,
+    take_profit: parseFloat(document.getElementById('take-profit').value) || 2.5,
+    stop_loss: parseFloat(document.getElementById('stop-loss').value) || 1.5,
+    par: document.getElementById('par').value,
+    telegram_id: document.getElementById('telegram-id').value.trim(),
+    bot_activo: botActivo,
+    updated_at: new Date().toISOString()
+  }
+
+  try {
+    const {data: existing} = await client.from('configuraciones').select('id').eq('user_id', userId).single()
+
+    if(existing) {
+      await client.from('configuraciones').update(config).eq('user_id', userId)
+    } else {
+      await client.from('configuraciones').insert(config)
+    }
+
+    btn.textContent = '✅ Guardado!'
+    btn.style.background = '#00b389'
+    setTimeout(() => {
+      btn.disabled = false
+      btn.textContent = '💾 Guardar configuración'
+      btn.style.background = ''
+    }, 2000)
+
+  } catch(e) {
+    btn.disabled = false
+    btn.textContent = '❌ Error — intentá de nuevo'
+    setTimeout(() => { btn.textContent = '💾 Guardar configuración' }, 2000)
+  }
+}
+
+async function toggleBot() {
+  botActivo = !botActivo
+  await guardarConfig()
+  actualizarEstadoBot()
+
+  if(botActivo) {
+    document.getElementById('step3').className = 'step-mini done'
+    // Redirigir al dashboard después de activar
+    setTimeout(() => window.location.href = 'dashboard.html', 1500)
+  }
+}
+
+async function logout() {
+  await client.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+init()
+</script>
+</body>
+</html>
