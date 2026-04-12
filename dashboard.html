@@ -25,7 +25,6 @@
   .mlabel{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
   .mval{font-size:1.45rem;font-weight:800;font-family:'DM Mono',monospace}
   .green{color:#00d4a1}.red{color:#ff4d6d}.muted{color:#4a5a6e}
-  .mch{font-size:.72rem;margin-top:.2rem}
   .cc{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
   .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
   .ctitle{font-size:.9rem;font-weight:700}
@@ -42,15 +41,6 @@
   .empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.85rem}
   .pbar{height:5px;background:#1e2d40;border-radius:3px;overflow:hidden;margin-top:.35rem}
   .pfill{height:100%;background:linear-gradient(90deg,#00d4a1,#3b82f6);border-radius:3px;transition:width .5s}
-  .steps-card{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
-  .step-item{display:flex;align-items:center;gap:1rem;padding:.85rem;background:#111827;border-radius:8px;margin-bottom:.6rem;border:1px solid #1e2d40}
-  .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex-shrink:0}
-  .s-done{background:#00d4a1;color:#000}
-  .s-active{background:rgba(0,212,161,.15);color:#00d4a1;border:1px solid rgba(0,212,161,.3)}
-  .s-pending{background:#1c2333;color:#4a5a6e}
-  .step-text{flex:1}
-  .step-title{font-size:.88rem;font-weight:600}
-  .step-sub{font-size:.75rem;color:#8b9cb5;margin-top:.15rem}
   .btn-green{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.55rem 1.1rem;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'Segoe UI',sans-serif}
   .btn-green:hover{background:#00b389}
   .trial-banner{border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
@@ -63,9 +53,15 @@
   .perfil-item{background:#111827;border-radius:8px;padding:.75rem;text-align:center}
   .perfil-val{font-size:.85rem;font-weight:700;color:#00d4a1;margin-bottom:.2rem}
   .perfil-key{font-size:.68rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em}
+  .demo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-top:.75rem}
+  .demo-item{background:#111827;border-radius:8px;padding:.85rem;text-align:center}
+  .demo-val{font-size:.85rem;font-weight:700;color:#00d4a1}
+  .demo-key{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+  .demo-note{margin-top:.85rem;padding:.85rem 1rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;font-size:.78rem;color:#8b9cb5;line-height:1.6}
   @media(max-width:768px){
     .mgrid{grid-template-columns:1fr 1fr}
     .perfil-grid{grid-template-columns:1fr 1fr}
+    .demo-grid{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -85,61 +81,66 @@
   <div class="dh">
     <div>
       <div class="dt" id="greeting">Dashboard</div>
-      <div class="ds">Resultados en tiempo real · Bot activo 24/7</div>
+      <div class="ds">Bot demo activo · Resultados en tiempo real</div>
     </div>
     <div style="font-size:.72rem;color:#4a5a6e" id="dtime"></div>
   </div>
 
+  <!-- Trial banner -->
   <div class="trial-banner trial-ok" id="trial-banner" style="display:none">
     <div class="trial-text">
       <h3 id="trial-title">🎁 Prueba gratuita activa</h3>
-      <p id="trial-desc">Tenés acceso completo al sistema.</p>
+      <p id="trial-desc">El bot está operando en demo. Activá tu plan para conectar tu Binance real.</p>
     </div>
-    <a href="planes.html" class="btn-green">Ver planes →</a>
+    <a href="planes.html" class="btn-green">Activar plan →</a>
   </div>
 
+  <!-- Métricas -->
   <div class="mgrid">
-    <div class="metric"><div class="mlabel">Balance</div><div class="mval green" id="m1">$0.00</div></div>
+    <div class="metric"><div class="mlabel">Balance demo</div><div class="mval green" id="m1">$100.00</div></div>
     <div class="metric"><div class="mlabel">PnL total</div><div class="mval" id="m2">$0.00</div></div>
     <div class="metric"><div class="mlabel">Trades</div><div class="mval" id="m3">0</div></div>
     <div class="metric"><div class="mlabel">Win rate</div><div class="mval green" id="m4">0%</div><div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div></div>
   </div>
 
+  <!-- Perfil del usuario -->
   <div class="perfil-card" id="perfil-card" style="display:none">
     <div class="ch"><div class="ctitle">👤 Tu perfil de inversión</div></div>
     <div class="perfil-grid" id="perfil-grid"></div>
   </div>
 
-  <div class="steps-card" id="steps-card">
-    <div class="ch"><div class="ctitle">🚀 Pasos para empezar</div></div>
-    <div class="step-item">
-      <div class="step-circle s-done">✓</div>
-      <div class="step-text"><div class="step-title">Cuenta creada</div><div class="step-sub">Tu cuenta está activa y lista</div></div>
+  <!-- Bot demo info -->
+  <div class="cc">
+    <div class="ch">
+      <div class="ctitle">🤖 Bot demo activo</div>
+      <div class="live"><div class="dot"></div>En vivo</div>
     </div>
-    <div class="step-item">
-      <div class="step-circle s-active">2</div>
-      <div class="step-text"><div class="step-title">Conectar Binance</div><div class="step-sub">Ingresá tu API Key y Secret de Binance</div></div>
-      <a href="configuracion.html" class="btn-green">Configurar →</a>
+    <div class="demo-grid">
+      <div class="demo-item"><div class="demo-key">Estrategia</div><div class="demo-val">RSI + EMA + MACD</div></div>
+      <div class="demo-item"><div class="demo-key">Pares</div><div class="demo-val">BTC · ETH · BNB</div></div>
+      <div class="demo-item"><div class="demo-key">Intervalo</div><div class="demo-val">Cada 5 min</div></div>
     </div>
-    <div class="step-item">
-      <div class="step-circle s-pending">3</div>
-      <div class="step-text"><div class="step-title">Activar el bot</div><div class="step-sub">El bot comenzará a operar automáticamente</div></div>
+    <div class="demo-note">
+      💡 Durante tu prueba gratuita el bot opera con nuestra cuenta demo para que veas cómo funciona en tiempo real. Cuando activés tu plan conectás tu propia cuenta de Binance y el bot opera con tu capital real.
     </div>
   </div>
 
+  <!-- Historial de trades -->
   <div class="cc">
     <div class="ch">
-      <div class="ctitle">Historial de trades</div>
+      <div class="ctitle">Historial de trades del bot demo</div>
       <div class="live"><div class="dot"></div>En vivo</div>
     </div>
     <table>
       <thead><tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr></thead>
-      <tbody id="trades-body"><tr><td colspan="6" class="empty">Esperando trades del bot...</td></tr></tbody>
+      <tbody id="trades-body"><tr><td colspan="6" class="empty">El bot está analizando el mercado...</td></tr></tbody>
     </table>
   </div>
 </div>
 
 <script>
+  const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
+
   const {createClient} = supabase
   const client = createClient(
     'https://hmpxnorawqppbxptbyeu.supabase.co',
@@ -160,16 +161,20 @@
     const now = new Date()
     const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
 
-    // Bloquear si venció el trial
-   const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
-   if(now > trialEnd && session.user.id !== ADMIN_ID) {
-   return window.location.href = 'bloqueado.html'
-   }
+    // Bloquear si venció el trial (excepto admin)
+    if(now > trialEnd && session.user.id !== ADMIN_ID) {
+      return window.location.href = 'bloqueado.html'
+    }
 
+    // Trial banner
     const banner = document.getElementById('trial-banner')
     banner.style.display = 'flex'
 
-    if(daysLeft <= 2) {
+    if(session.user.id === ADMIN_ID) {
+      document.getElementById('trial-nav').innerHTML = `<span class="badge">⚙️ Admin</span>`
+      document.getElementById('trial-title').textContent = '⚙️ Cuenta de administrador'
+      document.getElementById('trial-desc').textContent = 'Tenés acceso permanente al sistema.'
+    } else if(daysLeft <= 2) {
       banner.className = 'trial-banner trial-warn'
       document.getElementById('trial-nav').innerHTML = `<span class="badge-warn">⚠️ ${daysLeft}d restantes</span>`
       document.getElementById('trial-title').textContent = `⚠️ Tu prueba vence en ${daysLeft} días`
@@ -177,13 +182,14 @@
     } else {
       document.getElementById('trial-nav').innerHTML = `<span class="badge">🎁 ${daysLeft}d trial</span>`
       document.getElementById('trial-title').textContent = `🎁 Prueba gratuita — ${daysLeft} días restantes`
-      document.getElementById('trial-desc').textContent = 'Tenés acceso completo. Activá tu plan antes de que termine.'
+      document.getElementById('trial-desc').textContent = 'El bot está operando en demo. Activá tu plan para conectar tu Binance real.'
     }
 
+    // Reloj
     setInterval(()=>{
-      const el=document.getElementById('dtime')
-      if(el) el.textContent=new Date().toLocaleString('es-AR')
-    },1000)
+      const el = document.getElementById('dtime')
+      if(el) el.textContent = new Date().toLocaleString('es-AR')
+    }, 1000)
 
     cargarPerfil(session.user.id)
     cargarTrades()
@@ -210,16 +216,15 @@
 
   async function cargarTrades() {
     const {data,error} = await client.from('trades').select('*').order('created_at',{ascending:false}).limit(20)
-    if(error||!data) return
-    if(data.length > 0) {
-      document.getElementById('steps-card').style.display = 'none'
-      renderTrades(data)
-      actualizarMetricas(data)
-    }
+    if(error||!data||data.length===0) return
+    renderTrades(data)
+    actualizarMetricas(data)
   }
 
   function suscribirTrades() {
-    client.channel('trades').on('postgres_changes',{event:'INSERT',schema:'public',table:'trades'},()=>{cargarTrades()}).subscribe()
+    client.channel('trades')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'trades'},()=>{cargarTrades()})
+      .subscribe()
   }
 
   function renderTrades(trades) {
@@ -236,16 +241,16 @@
   }
 
   function actualizarMetricas(trades) {
-    const pnl=trades.reduce((a,b)=>a+b.pnl,0)
-    const wins=trades.filter(t=>t.pnl>0).length
-    const wr=trades.length?(wins/trades.length*100):0
-    const balance=100+pnl
-    document.getElementById('m1').textContent='$'+balance.toFixed(2)
-    document.getElementById('m2').textContent=(pnl>=0?'+':'')+' $'+pnl.toFixed(2)
-    document.getElementById('m2').className='mval '+(pnl>=0?'green':'red')
-    document.getElementById('m3').textContent=trades.length
-    document.getElementById('m4').textContent=wr.toFixed(0)+'%'
-    document.getElementById('wr-bar').style.width=wr+'%'
+    const pnl = trades.reduce((a,b)=>a+b.pnl, 0)
+    const wins = trades.filter(t=>t.pnl>0).length
+    const wr = trades.length ? (wins/trades.length*100) : 0
+    const balance = 100 + pnl
+    document.getElementById('m1').textContent = '$'+balance.toFixed(2)
+    document.getElementById('m2').textContent = (pnl>=0?'+':'')+' $'+pnl.toFixed(2)
+    document.getElementById('m2').className = 'mval '+(pnl>=0?'green':'red')
+    document.getElementById('m3').textContent = trades.length
+    document.getElementById('m4').textContent = wr.toFixed(0)+'%'
+    document.getElementById('wr-bar').style.width = wr+'%'
   }
 
   async function logout() {
