@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTrader — Referidos</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
+.nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
+.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
+.logo span{color:#e8edf5}
+.btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif;text-decoration:none;display:inline-block}
+.btn-sm:hover{background:#1c2333}
+.main{padding:2rem;max-width:800px;margin:0 auto}
+.page-title{font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
+.page-sub{font-size:.82rem;color:#8b9cb5;margin-bottom:2rem}
+.hero-ref{background:linear-gradient(135deg,rgba(0,212,161,.08),rgba(59,130,246,.05));border:1px solid rgba(0,212,161,.2);border-radius:14px;padding:2rem;margin-bottom:1.5rem;text-align:center}
+.hero-ref h2{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+.hero-ref p{color:#8b9cb5;font-size:.88rem;margin-bottom:1.5rem;line-height:1.7}
+.reward-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.reward{background:rgba(0,0,0,.2);border-radius:10px;padding:1rem;text-align:center}
+.reward-icon{font-size:1.75rem;margin-bottom:.5rem}
+.reward-title{font-size:.85rem;font-weight:700;margin-bottom:.25rem}
+.reward-text{font-size:.75rem;color:#8b9cb5}
+.link-box{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1.25rem;margin-bottom:1.5rem}
+.link-label{font-size:.75rem;color:#8b9cb5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.link-row{display:flex;gap:.75rem;align-items:center}
+.link-input{flex:1;background:#060810;border:1px solid #2a3f5a;border-radius:7px;padding:.7rem 1rem;color:#00d4a1;font-family:'DM Mono',monospace;font-size:.82rem;outline:none}
+.btn-copy{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.7rem 1.25rem;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'Segoe UI',sans-serif;white-space:nowrap;transition:all .2s}
+.btn-copy:hover{background:#00b389}
+.btn-copy.copied{background:#111827;color:#00d4a1;border:1px solid #00d4a1}
+.share-btns{display:flex;gap:.75rem;margin-top:.75rem;flex-wrap:wrap}
+.share-btn{flex:1;padding:.6rem;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;font-family:'Segoe UI',sans-serif;transition:all .2s;min-width:100px}
+.share-wa{background:#25D366;color:#fff}.share-wa:hover{background:#1fb954}
+.share-tg{background:#2CA5E0;color:#fff}.share-tg:hover{background:#229fd4}
+.share-tw{background:#1DA1F2;color:#fff}.share-tw:hover{background:#1a91da}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.5rem}
+.metric{background:#0d1117;border:1px solid #1e2d40;border-radius:10px;padding:1.1rem;text-align:center}
+.mlabel{font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.mval{font-size:1.6rem;font-weight:800;font-family:'DM Mono',monospace}
+.green{color:#00d4a1}.gold{color:#f59e0b}
+.cc{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+.ctitle{font-size:.9rem;font-weight:700;margin-bottom:1rem}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{text-align:left;padding:.6rem .85rem;color:#4a5a6e;font-size:.7rem;text-transform:uppercase;border-bottom:1px solid #1e2d40}
+td{padding:.65rem .85rem;border-bottom:1px solid rgba(30,45,64,.4);color:#8b9cb5}
+.tag-pagado{background:rgba(0,212,161,.15);color:#00d4a1;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.tag-pendiente{background:rgba(245,158,11,.15);color:#f59e0b;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.85rem}
+.como-funciona{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+.paso{display:flex;gap:1rem;align-items:flex-start;margin-bottom:.85rem}
+.paso:last-child{margin-bottom:0}
+.paso-num{width:28px;height:28px;border-radius:50%;background:rgba(0,212,161,.15);color:#00d4a1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0}
+.paso-text{font-size:.83rem;color:#8b9cb5;line-height:1.6}
+.paso-text strong{color:#e8edf5}
+@media(max-width:600px){.reward-grid,.mgrid{grid-template-columns:1fr 1fr}.share-btns{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">Auto<span>Trader</span></div>
+  <div style="display:flex;gap:.6rem">
+    <a href="dashboard.html" class="btn-sm">← Dashboard</a>
+    <button class="btn-sm" onclick="logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-title">🎁 Programa de referidos</div>
+  <div class="page-sub">Compartí AutoTrader y ganás recompensas por cada amigo que se suscribe</div>
+
+  <!-- Hero -->
+  <div class="hero-ref">
+    <h2>Ganás 1 mes gratis por cada referido</h2>
+    <p>Cuando alguien se registra con tu link y activa un plan de pago, vos recibís automáticamente <strong>1 mes gratis</strong> de tu plan actual.</p>
+    <div class="reward-grid">
+      <div class="reward">
+        <div class="reward-icon">1️⃣</div>
+        <div class="reward-title">1 referido</div>
+        <div class="reward-text">1 mes gratis</div>
+      </div>
+      <div class="reward">
+        <div class="reward-icon">3️⃣</div>
+        <div class="reward-title">3 referidos</div>
+        <div class="reward-text">3 meses gratis</div>
+      </div>
+      <div class="reward">
+        <div class="reward-icon">🏆</div>
+        <div class="reward-title">5+ referidos</div>
+        <div class="reward-text">Plan gratis por siempre</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link de referido -->
+  <div class="link-box">
+    <div class="link-label">Tu link de referido</div>
+    <div class="link-row">
+      <input class="link-input" id="ref-link" readonly value="Cargando..." />
+      <button class="btn-copy" id="btn-copy" onclick="copiarLink()">📋 Copiar</button>
+    </div>
+    <div class="share-btns">
+      <button class="share-btn share-wa" onclick="compartirWA()">📱 WhatsApp</button>
+      <button class="share-btn share-tg" onclick="compartirTG()">✈️ Telegram</button>
+      <button class="share-btn share-tw" onclick="compartirTW()">🐦 Twitter/X</button>
+    </div>
+  </div>
+
+  <!-- Métricas -->
+  <div class="mgrid">
+    <div class="metric">
+      <div class="mlabel">Referidos totales</div>
+      <div class="mval green" id="m-total">0</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Pagaron</div>
+      <div class="mval gold" id="m-pagados">0</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Meses ganados</div>
+      <div class="mval green" id="m-meses">0</div>
+    </div>
+  </div>
+
+  <!-- Cómo funciona -->
+  <div class="como-funciona">
+    <div class="ctitle">¿Cómo funciona?</div>
+    <div class="paso">
+      <div class="paso-num">1</div>
+      <div class="paso-text"><strong>Compartí tu link</strong> — Enviá tu link único a amigos, en grupos de crypto o en redes sociales.</div>
+    </div>
+    <div class="paso">
+      <div class="paso-num">2</div>
+      <div class="paso-text"><strong>Se registran</strong> — Cuando alguien entra con tu link y se registra, queda vinculado a vos automáticamente.</div>
+    </div>
+    <div class="paso">
+      <div class="paso-num">3</div>
+      <div class="paso-text"><strong>Activan un plan</strong> — Cuando tu referido elige Basic o Pro y paga, vos ganás 1 mes gratis.</div>
+    </div>
+    <div class="paso">
+      <div class="paso-num">4</div>
+      <div class="paso-text"><strong>Recibís la recompensa</strong> — El mes gratis se aplica automáticamente a tu próxima renovación.</div>
+    </div>
+  </div>
+
+  <!-- Lista de referidos -->
+  <div class="cc">
+    <div class="ctitle">Tus referidos</div>
+    <table>
+      <thead>
+        <tr><th>Email</th><th>Fecha</th><th>Estado</th></tr>
+      </thead>
+      <tbody id="ref-body">
+        <tr><td colspan="3" class="empty">Todavía no tenés referidos. ¡Compartí tu link!</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const {createClient} = supabase
+const client = createClient(
+  'https://hmpxnorawqppbxptbyeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
+)
+
+let userId = null
+let refLink = ''
+
+function generarCodigo(id) {
+  return btoa(id).replace(/[^a-zA-Z0-9]/g,'').slice(0,8).toUpperCase()
+}
+
+async function init() {
+  const {data:{session}} = await client.auth.getSession()
+  if(!session) return window.location.href = 'login.html'
+  userId = session.user.id
+
+  const codigo = generarCodigo(userId)
+  refLink = `https://autotraderpro.netlify.app?ref=${codigo}`
+  document.getElementById('ref-link').value = refLink
+
+  cargarReferidos()
+}
+
+async function cargarReferidos() {
+  const {data,error} = await client.from('referidos').select('*').eq('referidor_id', userId).order('fecha',{ascending:false})
+  if(error||!data) return
+
+  const pagados = data.filter(r=>r.pagado)
+  document.getElementById('m-total').textContent = data.length
+  document.getElementById('m-pagados').textContent = pagados.length
+  document.getElementById('m-meses').textContent = pagados.length
+
+  if(data.length === 0) return
+
+  document.getElementById('ref-body').innerHTML = data.map(r=>`
+    <tr>
+      <td>${r.referido_email||'–'}</td>
+      <td>${new Date(r.fecha).toLocaleDateString('es-AR')}</td>
+      <td><span class="${r.pagado?'tag-pagado':'tag-pendiente'}">${r.pagado?'✅ Pagó':'⏳ Pendiente'}</span></td>
+    </tr>
+  `).join('')
+}
+
+function copiarLink() {
+  navigator.clipboard.writeText(refLink).then(()=>{
+    const btn = document.getElementById('btn-copy')
+    btn.textContent = '✅ Copiado!'
+    btn.className = 'btn-copy copied'
+    setTimeout(()=>{btn.textContent='📋 Copiar';btn.className='btn-copy'},2000)
+  })
+}
+
+function compartirWA() {
+  const msg = encodeURIComponent(`🤖 Probá AutoTrader — un bot que opera crypto 24/7 automáticamente.\n7 días gratis sin tarjeta 👇\n${refLink}`)
+  window.open(`https://wa.me/?text=${msg}`)
+}
+
+function compartirTG() {
+  const msg = encodeURIComponent(`🤖 AutoTrader opera crypto 24/7 con IA. 7 días gratis 👇`)
+  window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${msg}`)
+}
+
+function compartirTW() {
+  const msg = encodeURIComponent(`🤖 Probá AutoTrader — bot de trading crypto 24/7 automático. 7 días gratis sin tarjeta. ${refLink} #crypto #bitcoin #trading`)
+  window.open(`https://twitter.com/intent/tweet?text=${msg}`)
+}
+
+async function logout() {
+  await client.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+init()
+</script>
+</body>
+</html>

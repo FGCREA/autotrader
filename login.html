@@ -25,16 +25,23 @@
   .ok{background:rgba(0,212,161,.1);color:#00d4a1}
   .err{background:rgba(255,77,109,.1);color:#ff4d6d}
   .note{font-size:.73rem;color:#4a5a6e;text-align:center;margin-top:.85rem;line-height:1.6}
+  .ref-banner{background:rgba(0,212,161,.07);border:1px solid rgba(0,212,161,.2);border-radius:8px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.8rem;color:#00d4a1;text-align:center;display:none}
 </style>
 </head>
 <body>
 <div class="box">
   <div class="logo">Auto<span>Trader</span></div>
   <a href="index.html" class="back">← Volver al inicio</a>
+
+  <div class="ref-banner" id="ref-banner">
+    🎁 Fuiste invitado por un amigo — tu prueba gratuita está lista
+  </div>
+
   <div class="atabs">
     <div class="atab on" id="at-reg" onclick="authTab('register')">Registrarse</div>
     <div class="atab" id="at-log" onclick="authTab('login')">Iniciar sesión</div>
   </div>
+
   <div id="f-reg">
     <label>Nombre</label>
     <input id="rn" placeholder="Tu nombre" />
@@ -45,6 +52,7 @@
     <button class="btn" onclick="registrar()">Crear cuenta gratuita →</button>
     <div class="note">7 días de prueba gratuita incluidos · Sin tarjeta de crédito</div>
   </div>
+
   <div id="f-log" style="display:none">
     <label>Email</label>
     <input id="le" type="email" placeholder="tu@email.com" />
@@ -52,14 +60,26 @@
     <input id="lp" type="password" placeholder="Tu contraseña" />
     <button class="btn" onclick="login()">Entrar →</button>
   </div>
+
   <div id="msg"></div>
 </div>
+
 <script>
   const {createClient} = supabase
   const client = createClient(
     'https://hmpxnorawqppbxptbyeu.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
   )
+
+  // Capturar código de referido de la URL
+  const urlParams = new URLSearchParams(window.location.search)
+  const refCode = urlParams.get('ref') || localStorage.getItem('ref_code') || ''
+
+  if(refCode) {
+    localStorage.setItem('ref_code', refCode)
+    document.getElementById('ref-banner').style.display = 'block'
+  }
+
   function authTab(t){
     document.getElementById('f-reg').style.display=t==='register'?'block':'none'
     document.getElementById('f-log').style.display=t==='login'?'block':'none'
@@ -67,25 +87,68 @@
     document.getElementById('at-log').className='atab'+(t==='login'?' on':'')
     document.getElementById('msg').innerHTML=''
   }
-  function showMsg(text,tipo){document.getElementById('msg').innerHTML=`<div class="msg ${tipo}">${text}</div>`}
-  async function registrar(){
-    const name=document.getElementById('rn').value||'Trader'
-    const email=document.getElementById('re').value
-    const pass=document.getElementById('rp').value
-    if(!email||!pass) return showMsg('Completá todos los campos','err')
-    const {error}=await client.auth.signUp({email,password:pass,options:{data:{name}}})
-    if(error) return showMsg('Error: '+error.message,'err')
-    showMsg('✅ Cuenta creada! Redirigiendo...','ok')
-    setTimeout(()=>window.location.href='onboarding.html',1500)
+
+  function showMsg(text,tipo){
+    document.getElementById('msg').innerHTML=`<div class="msg ${tipo}">${text}</div>`
   }
-  async function login(){
-    const email=document.getElementById('le').value
-    const pass=document.getElementById('lp').value
+
+  async function buscarReferidor(codigo) {
+    try {
+      const {data} = await client.from('perfiles').select('user_id').limit(200)
+      if(!data) return null
+      for(const row of data) {
+        const cod = btoa(row.user_id).replace(/[^a-zA-Z0-9]/g,'').slice(0,8).toUpperCase()
+        if(cod === codigo) return row.user_id
+      }
+    } catch(e) {}
+    return null
+  }
+
+  async function registrar(){
+    const name = document.getElementById('rn').value || 'Trader'
+    const email = document.getElementById('re').value
+    const pass = document.getElementById('rp').value
     if(!email||!pass) return showMsg('Completá todos los campos','err')
-    const {error}=await client.auth.signInWithPassword({email,password:pass})
+
+    const {data, error} = await client.auth.signUp({
+      email,
+      password: pass,
+      options: {data:{name}}
+    })
+
+    if(error) return showMsg('Error: '+error.message,'err')
+
+    // Guardar referido si hay código
+    const codigo = localStorage.getItem('ref_code')
+    if(codigo && data?.user) {
+      try {
+        const referidorId = await buscarReferidor(codigo)
+        if(referidorId && referidorId !== data.user.id) {
+          await client.from('referidos').insert({
+            referidor_id: referidorId,
+            referido_id: data.user.id,
+            referido_email: email,
+            pagado: false
+          })
+        }
+      } catch(e) {
+        console.log('Error referido:', e)
+      }
+      localStorage.removeItem('ref_code')
+    }
+
+    showMsg('✅ Cuenta creada! Redirigiendo...','ok')
+    setTimeout(()=>window.location.href='onboarding.html', 1500)
+  }
+
+  async function login(){
+    const email = document.getElementById('le').value
+    const pass = document.getElementById('lp').value
+    if(!email||!pass) return showMsg('Completá todos los campos','err')
+    const {error} = await client.auth.signInWithPassword({email, password:pass})
     if(error) return showMsg('Email o contraseña incorrectos','err')
     showMsg('✅ Bienvenido!','ok')
-    setTimeout(()=>window.location.href='dashboard.html',1500)
+    setTimeout(()=>window.location.href='dashboard.html', 1500)
   }
 </script>
 </body>
