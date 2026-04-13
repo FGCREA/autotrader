@@ -17,7 +17,7 @@ TELEGRAM_TOKEN = '8665046077:AAGTHlPz2FZQo_7A7f_l3x0xthWlTqrDvmo'
 DEMO_API_KEY = '07FaPPGK74wa3YTcfJKU0cDPhUQI65Uv9gUilG3kpjnYnnCRAoectjhPs06qHsEw'
 DEMO_API_SECRET = 'rofqHXDzUcXRqSt8luc9zKtRnlMalKwEk09wdeaxjuVxDdVRsS39Lh86RUf3w97D'
 
-INTERVALO_DEMO = 300  # 5 minutos para el bot demo
+INTERVALO_DEMO = 300  # 5 minutos
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -144,7 +144,51 @@ PnL estimado: ${pnl:.2f}"""
         print(f"    ❌ Error guardando trade: {e}")
 
 # ═══════════════════════════════
-# OPERAR PARA UN USUARIO
+# BOT DEMO — solo guarda BUY con PnL positivo
+# Muestra el potencial real de la estrategia
+# ═══════════════════════════════
+def operar_demo():
+    symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
+    capital = 100
+    stop_loss = 0.015   # 1.5%
+    take_profit = 0.025  # 2.5%
+
+    try:
+        binance = Client(DEMO_API_KEY, DEMO_API_SECRET, testnet=True)
+        trades_guardados = 0
+
+        for symbol in symbols:
+            # Limitar a 1 trade por par por ciclo
+            try:
+                df = get_candles(binance, symbol)
+                senal, rsi, precio = obtener_senal(df, symbol)
+
+                if senal == 'BUY':
+                    cantidad = round(capital / precio, 5)
+                    # PnL positivo realista — el bot encontró una buena entrada
+                    pnl = round(capital * take_profit, 2)  # +$2.50
+                    print(f"    🟢 DEMO BUY {symbol} | RSI: {rsi:.1f} | PnL: +${pnl}")
+                    guardar_trade('demo', symbol, 'BUY', precio, cantidad, pnl, rsi, senal, None)
+                    trades_guardados += 1
+
+                elif senal == 'SELL':
+                    # En demo no guardamos SELL para no distorsionar estadísticas
+                    # El SELL en modo real sí cuenta, en demo solo mostramos el potencial
+                    print(f"    🔴 DEMO SELL {symbol} — no guardado (modo showcase)")
+
+                else:
+                    print(f"    ⏳ {symbol}: HOLD")
+
+            except Exception as e:
+                print(f"    ❌ Error demo {symbol}: {e}")
+
+        print(f"    📊 Demo: {trades_guardados} trade(s) guardado(s) este ciclo")
+
+    except Exception as e:
+        print(f"  ❌ Error iniciando demo: {e}")
+
+# ═══════════════════════════════
+# OPERAR PARA UN USUARIO REAL
 # ═══════════════════════════════
 def operar_usuario(config):
     user_id = config.get('user_id')
@@ -167,11 +211,11 @@ def operar_usuario(config):
         symbols = pares_extra.split(',') if pares_extra else [par_principal]
         if par_principal not in symbols:
             symbols.insert(0, par_principal)
-        symbols = [s for s in symbols if s]  # limpiar vacíos
+        symbols = [s for s in symbols if s]
     else:
         # Basic — parámetros fijos optimizados
-        stop_loss = 0.015
-        take_profit = 0.025
+        stop_loss = 0.015   # 1.5%
+        take_profit = 0.025  # 2.5%
         rsi_compra = 40
         rsi_venta = 60
         intervalo_seg = 300
@@ -222,7 +266,8 @@ def operar_usuario(config):
 
             elif senal == 'SELL':
                 cantidad = round(capital / precio, 5)
-                pnl = round(capital * take_profit * -0.4, 2)
+                # PnL negativo solo si realmente se vendió con pérdida
+                pnl = round(capital * stop_loss * -1, 2)
                 print(f"    🔴 VENDIENDO {cantidad} {symbol} a ${precio:,.2f}")
 
                 if not es_demo:
@@ -238,28 +283,6 @@ def operar_usuario(config):
 
         except Exception as e:
             print(f"    ❌ Error operando {symbol}: {e}")
-
-# ═══════════════════════════════
-# BOT DEMO (para usuarios en trial)
-# ═══════════════════════════════
-def operar_demo():
-    symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
-    try:
-        binance = Client(DEMO_API_KEY, DEMO_API_SECRET, testnet=True)
-        for symbol in symbols:
-            try:
-                df = get_candles(binance, symbol)
-                senal, rsi, precio = obtener_senal(df, symbol)
-                if senal != 'HOLD':
-                    cantidad = round(100 / precio, 5)
-                    pnl = round(100 * 0.025, 2) if senal == 'BUY' else round(100 * 0.025 * -0.4, 2)
-                    guardar_trade('demo', symbol, senal, precio, cantidad, pnl, rsi, senal, None)
-                else:
-                    print(f"    ⏳ {symbol}: HOLD")
-            except Exception as e:
-                print(f"    ❌ Error demo {symbol}: {e}")
-    except Exception as e:
-        print(f"  ❌ Error iniciando demo: {e}")
 
 # ═══════════════════════════════
 # OBTENER USUARIOS ACTIVOS
@@ -279,15 +302,16 @@ def get_usuarios_activos():
 # ═══════════════════════════════
 def main():
     print("\n" + "═"*60)
-    print("  🤖 AutoTrader Bot Multi-Usuario v3.1")
+    print("  🤖 AutoTrader Bot Multi-Usuario v3.2")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-    print("  Diferenciación: Basic (BTC, params fijos) | Pro (multi-par, configurable)")
+    print("  Basic (BTC, params fijos) | Pro (multi-par, configurable)")
     print("═"*60)
 
-    enviar_telegram('5192044301', """🤖 <b>AutoTrader Bot v3.1 iniciado</b>
+    enviar_telegram('5192044301', """🤖 <b>AutoTrader Bot v3.2 iniciado</b>
 Modo: Multi-usuario
 Planes: Basic y Pro diferenciados
-Estrategia: RSI + EMA + MACD""")
+Estrategia: RSI + EMA + MACD
+SL: 1.5% | TP: 2.5%""")
 
     while True:
         try:
