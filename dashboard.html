@@ -88,11 +88,37 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .stat-row:last-child{border-bottom:none}
 .stat-label{color:#8b9cb5}
 .stat-val{font-weight:600;font-family:'DM Mono',monospace}
+
+/* ── Precios en vivo ── */
+.prices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.25rem}
+.price-card{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.price-left{display:flex;align-items:center;gap:.75rem}
+.price-icon{font-size:1.4rem}
+.price-name{font-size:.78rem;font-weight:700;color:#e8edf5}
+.price-sym{font-size:.65rem;color:#4a5a6e;margin-top:.1rem}
+.price-right{text-align:right}
+.price-val{font-size:1.1rem;font-weight:800;font-family:'DM Mono',monospace;color:#e8edf5}
+.price-chg{font-size:.72rem;font-family:'DM Mono',monospace;margin-top:.15rem}
+.price-chg.up{color:#00d4a1}
+.price-chg.dn{color:#ff4d6d}
+
+/* ── Config trading ── */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem}
+.config-item label{display:block;font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.config-item input,.config-item select{width:100%;background:#111827;border:1px solid #1e2d40;color:#e8edf5;padding:.55rem .75rem;border-radius:7px;font-size:.85rem;font-family:'DM Mono',monospace}
+.config-item input:focus,.config-item select:focus{outline:none;border-color:#00d4a1}
+.config-item select option{background:#111827}
+.config-save{margin-top:1rem;background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.6rem 1.25rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
+.config-save:hover{background:#00b389}
+.config-msg{margin-top:.6rem;font-size:.75rem;color:#00d4a1;display:none}
+
 @media(max-width:900px){
   .mgrid{grid-template-columns:repeat(3,1fr)}
   .row2,.row3{grid-template-columns:1fr}
   .demo-grid{grid-template-columns:1fr}
   .perfil-grid{grid-template-columns:repeat(3,1fr)}
+  .prices-grid{grid-template-columns:1fr}
+  .config-grid{grid-template-columns:1fr}
 }
 @media(max-width:600px){.mgrid{grid-template-columns:1fr 1fr}}
 </style>
@@ -127,6 +153,40 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <p id="trial-desc">El bot opera en demo. Activá tu plan para conectar tu Binance real.</p>
     </div>
     <a href="planes.html" class="btn-green">Activar plan →</a>
+  </div>
+
+  <!-- Precios en vivo -->
+  <div class="prices-grid">
+    <div class="price-card">
+      <div class="price-left">
+        <div class="price-icon">₿</div>
+        <div><div class="price-name">Bitcoin</div><div class="price-sym">BTC/USDT</div></div>
+      </div>
+      <div class="price-right">
+        <div class="price-val" id="p-btc">–</div>
+        <div class="price-chg" id="p-btc-chg">–</div>
+      </div>
+    </div>
+    <div class="price-card">
+      <div class="price-left">
+        <div class="price-icon">Ξ</div>
+        <div><div class="price-name">Ethereum</div><div class="price-sym">ETH/USDT</div></div>
+      </div>
+      <div class="price-right">
+        <div class="price-val" id="p-eth">–</div>
+        <div class="price-chg" id="p-eth-chg">–</div>
+      </div>
+    </div>
+    <div class="price-card">
+      <div class="price-left">
+        <div class="price-icon">🔶</div>
+        <div><div class="price-name">BNB</div><div class="price-sym">BNB/USDT</div></div>
+      </div>
+      <div class="price-right">
+        <div class="price-val" id="p-bnb">–</div>
+        <div class="price-chg" id="p-bnb-chg">–</div>
+      </div>
+    </div>
   </div>
 
   <div class="mgrid">
@@ -183,6 +243,38 @@ tr:hover td{background:rgba(255,255,255,.015)}
     </div>
   </div>
 
+  <!-- Config de trading -->
+  <div class="cc">
+    <div class="ch">
+      <div class="ctitle">⚙️ Configuración del bot demo</div>
+      <div class="live"><div class="dot"></div>Editable</div>
+    </div>
+    <div class="config-grid">
+      <div class="config-item">
+        <label>Capital a operar (USDT)</label>
+        <input type="number" id="cfg-capital" min="10" max="10000" step="10" value="100" placeholder="100">
+      </div>
+      <div class="config-item">
+        <label>Moneda principal</label>
+        <select id="cfg-par">
+          <option value="BTCUSDT">Bitcoin (BTC/USDT)</option>
+          <option value="ETHUSDT">Ethereum (ETH/USDT)</option>
+          <option value="BNBUSDT">BNB (BNB/USDT)</option>
+        </select>
+      </div>
+      <div class="config-item">
+        <label>Stop Loss (%)</label>
+        <input type="number" id="cfg-sl" min="0.5" max="10" step="0.1" value="1.5" placeholder="1.5">
+      </div>
+      <div class="config-item">
+        <label>Take Profit (%)</label>
+        <input type="number" id="cfg-tp" min="0.5" max="20" step="0.1" value="2.5" placeholder="2.5">
+      </div>
+    </div>
+    <button class="config-save" onclick="guardarConfig()">💾 Guardar configuración</button>
+    <div class="config-msg" id="cfg-msg">✅ Configuración guardada</div>
+  </div>
+
   <div class="cc">
     <div class="ch">
       <div class="ctitle">🤖 Bot demo activo</div>
@@ -190,7 +282,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
     </div>
     <div class="demo-grid">
       <div class="demo-item"><div class="demo-key">Estrategia</div><div class="demo-val">RSI + EMA + MACD</div></div>
-      <div class="demo-item"><div class="demo-key">Pares</div><div class="demo-val">BTC · ETH · BNB</div></div>
+      <div class="demo-item"><div class="demo-key">Pares</div><div class="demo-val" id="bot-pares">BTC · ETH · BNB</div></div>
       <div class="demo-item"><div class="demo-key">Intervalo</div><div class="demo-val">Cada 5 min</div></div>
     </div>
     <div class="demo-note">💡 Durante tu prueba el bot opera con nuestra cuenta demo. Cuando activés tu plan conectás tu propio Binance y el bot opera con tu capital real.</div>
@@ -227,12 +319,67 @@ const client = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
 )
 
-let allTrades=[], chartInst=null, pieInst=null, periodoActual='7d'
+let allTrades=[], chartInst=null, pieInst=null, periodoActual='7d', currentUserId=null
+
+// ── Precios en vivo desde Binance ──
+async function cargarPrecios() {
+  const symbols = ['BTCUSDT','ETHUSDT','BNBUSDT']
+  const ids = ['btc','eth','bnb']
+  try {
+    const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","BNBUSDT"]')
+    const data = await res.json()
+    data.forEach((t,i) => {
+      const price = parseFloat(t.lastPrice)
+      const chg = parseFloat(t.priceChangePercent)
+      const id = ids[i]
+      document.getElementById('p-'+id).textContent = '$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
+      const el = document.getElementById('p-'+id+'-chg')
+      el.textContent = (chg>=0?'+':'')+chg.toFixed(2)+'%'
+      el.className = 'price-chg '+(chg>=0?'up':'dn')
+    })
+  } catch(e) {
+    console.log('Error precios:', e)
+  }
+}
+
+// ── Config guardada en localStorage ──
+function cargarConfigLocal() {
+  const capital = localStorage.getItem('cfg_capital') || '100'
+  const par = localStorage.getItem('cfg_par') || 'BTCUSDT'
+  const sl = localStorage.getItem('cfg_sl') || '1.5'
+  const tp = localStorage.getItem('cfg_tp') || '2.5'
+  document.getElementById('cfg-capital').value = capital
+  document.getElementById('cfg-par').value = par
+  document.getElementById('cfg-sl').value = sl
+  document.getElementById('cfg-tp').value = tp
+  actualizarBotInfo(par)
+}
+
+function actualizarBotInfo(par) {
+  const nombres = {BTCUSDT:'BTC',ETHUSDT:'ETH',BNBUSDT:'BNB'}
+  document.getElementById('bot-pares').textContent = nombres[par] || par
+}
+
+function guardarConfig() {
+  const capital = document.getElementById('cfg-capital').value
+  const par = document.getElementById('cfg-par').value
+  const sl = document.getElementById('cfg-sl').value
+  const tp = document.getElementById('cfg-tp').value
+  localStorage.setItem('cfg_capital', capital)
+  localStorage.setItem('cfg_par', par)
+  localStorage.setItem('cfg_sl', sl)
+  localStorage.setItem('cfg_tp', tp)
+  actualizarBotInfo(par)
+  const msg = document.getElementById('cfg-msg')
+  msg.style.display = 'block'
+  setTimeout(()=>msg.style.display='none', 3000)
+}
 
 async function init() {
   const {data:{session}} = await client.auth.getSession()
   if(!session) return window.location.href='login.html'
 
+  currentUserId = session.user.id
   const email=session.user.email
   const name=session.user.user_metadata?.name||email.split('@')[0]
   document.getElementById('user-email').textContent=email
@@ -280,13 +427,20 @@ async function init() {
     if(el) el.textContent=new Date().toLocaleString('es-AR')
   },1000)
 
+  // Cargar precios y refrescar cada 30 seg
+  cargarPrecios()
+  setInterval(cargarPrecios, 30000)
+
+  // Cargar config guardada
+  cargarConfigLocal()
+
   cargarPerfil(session.user.id)
   cargarTrades()
   suscribirTrades()
 }
 
 async function cargarPerfil(userId) {
-  const {data}=await client.from('perfiles').select('*').eq('user_id',userId).single()
+  const {data}=await client.from('perfiles').select('*').eq('user_id',userId).maybeSingle()
   if(!data) return
   const capMap={micro:'$100–$500',small:'$500–$2k',medium:'$2k–$10k',large:'$10k+'}
   const objMap={conservative:'Conservador',balanced:'Moderado',aggressive:'Agresivo',income:'Ingresos'}
@@ -305,9 +459,9 @@ async function cargarPerfil(userId) {
 
 async function cargarTrades() {
   const {data:{session}}=await client.auth.getSession()
-const userId=session?.user?.id
-if(!userId) return
-const {data,error}=await client.from('trades').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(100)
+  const userId=session?.user?.id
+  if(!userId) return
+  const {data,error}=await client.from('trades').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(100)
   if(error||!data||data.length===0) return
   allTrades=data
   renderTrades(data.slice(0,15))
