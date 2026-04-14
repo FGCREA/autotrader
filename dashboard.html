@@ -304,7 +304,10 @@ async function cargarPerfil(userId) {
 }
 
 async function cargarTrades() {
-  const {data,error}=await client.from('trades').select('*').order('created_at',{ascending:false}).limit(100)
+  const {data:{session}}=await client.auth.getSession()
+const userId=session?.user?.id
+if(!userId) return
+const {data,error}=await client.from('trades').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(100)
   if(error||!data||data.length===0) return
   allTrades=data
   renderTrades(data.slice(0,15))
