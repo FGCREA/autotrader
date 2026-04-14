@@ -161,7 +161,7 @@ async function init() {
   userId = session.user.id
 
   // Check if already did onboarding
-  const {data} = await client.from('perfiles').select('user_id').eq('user_id', userId).single()
+  const {data} = await client.from('perfiles').select('user_id').eq('user_id', userId).maybeSingle()
   if(data) return window.location.href = 'dashboard.html'
 
   renderStep()
