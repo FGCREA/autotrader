@@ -144,13 +144,26 @@ PnL estimado: ${pnl:.2f}"""
         print(f"    ❌ Error guardando trade: {e}")
 
 # ═══════════════════════════════
-# BOT DEMO — solo guarda BUY con PnL positivo
-# Muestra el potencial real de la estrategia
+# OBTENER USUARIOS EN TRIAL
 # ═══════════════════════════════
-def operar_demo():
+def get_usuarios_trial():
+    try:
+        result = supabase.table('perfiles').select('id, telegram_id').eq('plan', 'trial').execute()
+        usuarios = result.data or []
+        print(f"  🎮 {len(usuarios)} usuario(s) en trial")
+        return usuarios
+    except Exception as e:
+        print(f"  ❌ Error obteniendo usuarios trial: {e}")
+        return []
+
+# ═══════════════════════════════
+# BOT DEMO — historial individual por usuario
+# Solo guarda BUY con PnL positivo para mostrar el potencial
+# ═══════════════════════════════
+def operar_demo(user_id, telegram_id=None):
     symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
     capital = 100
-    stop_loss = 0.015   # 1.5%
+    stop_loss = 0.015    # 1.5%
     take_profit = 0.025  # 2.5%
 
     try:
@@ -158,22 +171,20 @@ def operar_demo():
         trades_guardados = 0
 
         for symbol in symbols:
-            # Limitar a 1 trade por par por ciclo
             try:
                 df = get_candles(binance, symbol)
                 senal, rsi, precio = obtener_senal(df, symbol)
 
                 if senal == 'BUY':
                     cantidad = round(capital / precio, 5)
-                    # PnL positivo realista — el bot encontró una buena entrada
                     pnl = round(capital * take_profit, 2)  # +$2.50
-                    print(f"    🟢 DEMO BUY {symbol} | RSI: {rsi:.1f} | PnL: +${pnl}")
-                    guardar_trade('demo', symbol, 'BUY', precio, cantidad, pnl, rsi, senal, None)
+                    print(f"    🟢 DEMO BUY {symbol} | User: {user_id[:8]}... | RSI: {rsi:.1f} | PnL: +${pnl}")
+                    # ✅ user_id real del usuario, no 'demo'
+                    guardar_trade(user_id, symbol, 'BUY', precio, cantidad, pnl, rsi, senal, telegram_id)
                     trades_guardados += 1
 
                 elif senal == 'SELL':
-                    # En demo no guardamos SELL para no distorsionar estadísticas
-                    # El SELL en modo real sí cuenta, en demo solo mostramos el potencial
+                    # No guardamos SELL en demo para no distorsionar estadísticas
                     print(f"    🔴 DEMO SELL {symbol} — no guardado (modo showcase)")
 
                 else:
@@ -182,7 +193,7 @@ def operar_demo():
             except Exception as e:
                 print(f"    ❌ Error demo {symbol}: {e}")
 
-        print(f"    📊 Demo: {trades_guardados} trade(s) guardado(s) este ciclo")
+        print(f"    📊 Demo user {user_id[:8]}...: {trades_guardados} trade(s) este ciclo")
 
     except Exception as e:
         print(f"  ❌ Error iniciando demo: {e}")
@@ -214,7 +225,7 @@ def operar_usuario(config):
         symbols = [s for s in symbols if s]
     else:
         # Basic — parámetros fijos optimizados
-        stop_loss = 0.015   # 1.5%
+        stop_loss = 0.015    # 1.5%
         take_profit = 0.025  # 2.5%
         rsi_compra = 40
         rsi_venta = 60
@@ -266,7 +277,6 @@ def operar_usuario(config):
 
             elif senal == 'SELL':
                 cantidad = round(capital / precio, 5)
-                # PnL negativo solo si realmente se vendió con pérdida
                 pnl = round(capital * stop_loss * -1, 2)
                 print(f"    🔴 VENDIENDO {cantidad} {symbol} a ${precio:,.2f}")
 
@@ -302,13 +312,15 @@ def get_usuarios_activos():
 # ═══════════════════════════════
 def main():
     print("\n" + "═"*60)
-    print("  🤖 AutoTrader Bot Multi-Usuario v3.2")
+    print("  🤖 AutoTrader Bot Multi-Usuario v3.3")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print("  Basic (BTC, params fijos) | Pro (multi-par, configurable)")
+    print("  Demo: historial individual por usuario ✅")
     print("═"*60)
 
-    enviar_telegram('5192044301', """🤖 <b>AutoTrader Bot v3.2 iniciado</b>
+    enviar_telegram('5192044301', """🤖 <b>AutoTrader Bot v3.3 iniciado</b>
 Modo: Multi-usuario
+Demo: historial individual por usuario ✅
 Planes: Basic y Pro diferenciados
 Estrategia: RSI + EMA + MACD
 SL: 1.5% | TP: 2.5%""")
@@ -318,11 +330,16 @@ SL: 1.5% | TP: 2.5%""")
             print(f"\n⏰ {datetime.now().strftime('%H:%M:%S')} — Analizando mercado...")
             print("─"*60)
 
-            # 1. Bot demo para usuarios en trial
-            print("\n🎮 Bot demo (trial):")
-            operar_demo()
+            # 1. Bot demo — historial individual por cada usuario en trial
+            usuarios_trial = get_usuarios_trial()
+            if usuarios_trial:
+                print(f"\n🎮 Bot demo ({len(usuarios_trial)} usuarios en trial):")
+                for u in usuarios_trial:
+                    operar_demo(u['id'], u.get('telegram_id'))
+            else:
+                print("\n🎮 Sin usuarios en trial aún")
 
-            # 2. Usuarios con bot activado
+            # 2. Usuarios con bot activado (basic/pro)
             usuarios = get_usuarios_activos()
             if usuarios:
                 print(f"\n👥 Usuarios activos:")
