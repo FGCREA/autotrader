@@ -279,7 +279,8 @@ async function guardarYContinuar() {
       objetivo: answers.objetivo,
       tiempo: answers.tiempo,
       riesgo: answers.riesgo,
-      experiencia: answers.experiencia
+      experiencia: answers.experiencia,
+      plan: 'trial'
     })
   } catch(e) {
     console.log('Error guardando perfil:', e)
