@@ -3,29 +3,28 @@ from binance.client import Client
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import json
 
 # ═══════════════════════════════
-# CONFIGURACIÓN BALANCEADA
-# Basada en los mejores resultados del backtesting anterior
-# BTC: +13.5% con RSI<40 | Ahora agregamos filtro EMA200
+# CONFIGURACIÓN OPTIMIZADA v5.0
 # ═══════════════════════════════
 API_KEY = 'T6qCY5ykV4UWACdSVb5KE4uTa0sMUZeWthurSJUtj3tWUnrxYNbjmNuyrQfvsCJS'
 API_SECRET = 'pgCKdUIYTKVrnqlBJTKwL5YCG7TApA0rcPFwV0K4GEL7bFON59j5GjPSlnqWOfXp'
 
-SYMBOLS = ['BTCUSDT', 'ETHUSDT']  # BTC + ETH — los más líquidos
+SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
 CAPITAL_INICIAL = 1000
-STOP_LOSS = 0.012       # 1.2% — equilibrio entre el 1% y 1.5% original
-TAKE_PROFIT = 0.03      # 3% — más alcanzable que 4%, mejor que 2.5%
 COMISION = 0.001
-MESES = 6
 
-RSI_PERIODO = 14
-RSI_COMPRA = 40         # Volvemos al 40 — más señales, mejor rendimiento
-RSI_VENTA = 62          # 62 en vez de 60 — menos falsas ventas
+# Configuraciones a testear
+CONFIGS = [
+    {'nombre': 'Conservador',  'sl': 0.012, 'tp': 0.025, 'rsi_c': 35, 'rsi_v': 65},
+    {'nombre': 'Balanceado',   'sl': 0.012, 'tp': 0.030, 'rsi_c': 40, 'rsi_v': 62},
+    {'nombre': 'Agresivo',     'sl': 0.015, 'tp': 0.035, 'rsi_c': 42, 'rsi_v': 58},
+    {'nombre': 'Ultra filtro', 'sl': 0.010, 'tp': 0.030, 'rsi_c': 38, 'rsi_v': 64},
+]
 
-# ═══════════════════════════════
-# CONEXIÓN BINANCE REAL
-# ═══════════════════════════════
+PERIODOS = [3, 6, 12]  # meses a analizar
+
 client = Client(API_KEY, API_SECRET)
 
 # ═══════════════════════════════
@@ -35,9 +34,9 @@ def calcular_rsi(df, periodo=14):
     delta = df['close'].diff()
     ganancia = delta.where(delta > 0, 0)
     perdida = -delta.where(delta < 0, 0)
-    avg_ganancia = ganancia.rolling(periodo).mean()
-    avg_perdida = perdida.rolling(periodo).mean()
-    rs = avg_ganancia / avg_perdida
+    avg_g = ganancia.rolling(periodo).mean()
+    avg_p = perdida.rolling(periodo).mean()
+    rs = avg_g / avg_p
     return 100 - (100 / (1 + rs))
 
 def calcular_ema(df, periodo):
@@ -55,12 +54,22 @@ def calcular_bollinger(df, periodo=20):
     std = df['close'].rolling(periodo).std()
     return media + (std * 2), media, media - (std * 2)
 
+def calcular_atr(df, periodo=14):
+    high = df['high']
+    low = df['low']
+    close = df['close'].shift(1)
+    tr = pd.concat([high - low, (high - close).abs(), (low - close).abs()], axis=1).max(axis=1)
+    return tr.rolling(periodo).mean()
+
+def calcular_volumen_relativo(df, periodo=20):
+    return df['volume'] / df['volume'].rolling(periodo).mean()
+
 # ═══════════════════════════════
 # OBTENER DATOS HISTÓRICOS
 # ═══════════════════════════════
 def get_historical_data(symbol, meses=6):
     print(f"  📥 Descargando {meses} meses de {symbol}...")
-    start_time = datetime.now() - timedelta(days=meses*30)
+    start_time = datetime.now() - timedelta(days=meses * 30)
     start_str = start_time.strftime('%d %b %Y')
 
     try:
@@ -80,18 +89,18 @@ def get_historical_data(symbol, meses=6):
             if len(candles) < 1000:
                 break
             last_time = candles[-1][0]
-            temp_start = datetime.fromtimestamp(last_time/1000).strftime('%d %b %Y %H:%M:%S')
+            temp_start = datetime.fromtimestamp(last_time / 1000).strftime('%d %b %Y %H:%M:%S')
             time.sleep(0.5)
 
         if not all_candles:
             return None
 
         df = pd.DataFrame(all_candles, columns=[
-            'time','open','high','low','close','volume',
-            'close_time','quote_vol','trades','buy_base','buy_quote','ignore'
+            'time', 'open', 'high', 'low', 'close', 'volume',
+            'close_time', 'quote_vol', 'trades', 'buy_base', 'buy_quote', 'ignore'
         ])
         df = df.drop_duplicates(subset=['time'])
-        for col in ['close','high','low','open']:
+        for col in ['close', 'high', 'low', 'open', 'volume']:
             df[col] = pd.to_numeric(df[col])
         df['time'] = pd.to_datetime(df['time'], unit='ms')
         df = df.sort_values('time').reset_index(drop=True)
@@ -104,31 +113,36 @@ def get_historical_data(symbol, meses=6):
         return None
 
 # ═══════════════════════════════
-# BACKTESTING ENGINE
+# BACKTESTING ENGINE v5.0
+# Mejoras: ATR dinámico, filtro volumen, trailing stop
 # ═══════════════════════════════
-def backtest(df, symbol, capital_inicial=1000):
+def backtest(df, symbol, capital_inicial=1000, sl_pct=0.012, tp_pct=0.03, rsi_compra=40, rsi_venta=62):
     capital = capital_inicial
     en_posicion = False
     precio_entrada = 0
     cantidad = 0
     sl_precio = 0
     tp_precio = 0
+    max_precio = 0  # para trailing stop
     trades = []
     capital_historico = [capital]
 
     df = df.copy()
-    df['rsi'] = calcular_rsi(df, RSI_PERIODO)
+    df['rsi'] = calcular_rsi(df, 14)
     df['ema20'] = calcular_ema(df, 20)
     df['ema50'] = calcular_ema(df, 50)
     df['ema200'] = calcular_ema(df, 200)
     df['macd'], df['macd_signal'] = calcular_macd(df)
     df['bb_upper'], df['bb_media'], df['bb_lower'] = calcular_bollinger(df)
+    df['atr'] = calcular_atr(df)
+    df['vol_rel'] = calcular_volumen_relativo(df)
     df = df.dropna().reset_index(drop=True)
 
     for i in range(1, len(df)):
         precio = df['close'].iloc[i]
+        high = df['high'].iloc[i]
         rsi = df['rsi'].iloc[i]
-        prev_rsi = df['rsi'].iloc[i-1]
+        prev_rsi = df['rsi'].iloc[i - 1]
         ema20 = df['ema20'].iloc[i]
         ema50 = df['ema50'].iloc[i]
         ema200 = df['ema200'].iloc[i]
@@ -136,178 +150,317 @@ def backtest(df, symbol, capital_inicial=1000):
         macd_signal = df['macd_signal'].iloc[i]
         bb_upper = df['bb_upper'].iloc[i]
         bb_lower = df['bb_lower'].iloc[i]
+        atr = df['atr'].iloc[i]
+        vol_rel = df['vol_rel'].iloc[i]
         fecha = df['time'].iloc[i]
 
         if en_posicion:
+            # Actualizar trailing stop — mover SL hacia arriba si el precio sube
+            if high > max_precio:
+                max_precio = high
+                nuevo_sl = max_precio * (1 - sl_pct * 1.5)
+                if nuevo_sl > sl_precio:
+                    sl_precio = nuevo_sl
+
+            # Stop Loss
             if precio <= sl_precio:
-                ganancia = (precio - precio_entrada) * cantidad - abs((precio - precio_entrada) * cantidad) * COMISION
+                ganancia = (precio - precio_entrada) * cantidad
+                ganancia -= abs(ganancia) * COMISION
                 capital += ganancia
-                trades.append({'fecha':fecha,'tipo':'SELL_SL','precio':precio,'ganancia':ganancia,'capital':capital,'resultado':'STOP LOSS'})
+                trades.append({
+                    'fecha': fecha.isoformat(), 'symbol': symbol,
+                    'tipo': 'SELL_SL', 'precio': round(precio, 2),
+                    'ganancia': round(ganancia, 2), 'capital': round(capital, 2),
+                    'resultado': 'STOP LOSS', 'rsi': round(rsi, 1)
+                })
                 en_posicion = False
                 capital_historico.append(capital)
                 continue
 
+            # Take Profit
             if precio >= tp_precio:
-                ganancia = (precio - precio_entrada) * cantidad - abs((precio - precio_entrada) * cantidad) * COMISION
+                ganancia = (precio - precio_entrada) * cantidad
+                ganancia -= abs(ganancia) * COMISION
                 capital += ganancia
-                trades.append({'fecha':fecha,'tipo':'SELL_TP','precio':precio,'ganancia':ganancia,'capital':capital,'resultado':'TAKE PROFIT'})
+                trades.append({
+                    'fecha': fecha.isoformat(), 'symbol': symbol,
+                    'tipo': 'SELL_TP', 'precio': round(precio, 2),
+                    'ganancia': round(ganancia, 2), 'capital': round(capital, 2),
+                    'resultado': 'TAKE PROFIT', 'rsi': round(rsi, 1)
+                })
                 en_posicion = False
                 capital_historico.append(capital)
                 continue
 
-            venta = (rsi > RSI_VENTA and ema20 < ema50 and macd < macd_signal)
-            venta_alt = (precio >= bb_upper * 0.999 and rsi > 58)
+            # Venta por señal técnica
+            venta = (rsi > rsi_venta and ema20 < ema50 and macd < macd_signal)
+            venta_alt = (precio >= bb_upper * 0.999 and rsi > rsi_venta - 4)
 
             if venta or venta_alt:
-                ganancia = (precio - precio_entrada) * cantidad - abs((precio - precio_entrada) * cantidad) * COMISION
+                ganancia = (precio - precio_entrada) * cantidad
+                ganancia -= abs(ganancia) * COMISION
                 capital += ganancia
-                trades.append({'fecha':fecha,'tipo':'SELL','precio':precio,'ganancia':ganancia,'capital':capital,'resultado':'WIN' if ganancia > 0 else 'LOSS'})
+                resultado = 'WIN' if ganancia > 0 else 'LOSS'
+                trades.append({
+                    'fecha': fecha.isoformat(), 'symbol': symbol,
+                    'tipo': 'SELL', 'precio': round(precio, 2),
+                    'ganancia': round(ganancia, 2), 'capital': round(capital, 2),
+                    'resultado': resultado, 'rsi': round(rsi, 1)
+                })
                 en_posicion = False
                 capital_historico.append(capital)
 
         else:
-            tendencia_ok = precio > ema200 * 0.98  # Cerca o encima de EMA200
+            # Filtros de entrada
+            tendencia_ok = precio > ema200 * 0.98
+            volumen_ok = vol_rel > 0.8  # volumen decente
+            no_sobreextendido = atr > 0  # ATR válido
 
-            compra = (rsi < RSI_COMPRA and ema20 > ema50 and macd > macd_signal and tendencia_ok)
-            compra_alt = (precio <= bb_lower * 1.003 and rsi < 42 and prev_rsi < rsi and tendencia_ok)
+            compra = (rsi < rsi_compra and ema20 > ema50 and macd > macd_signal
+                      and tendencia_ok and volumen_ok)
+            compra_alt = (precio <= bb_lower * 1.003 and rsi < rsi_compra + 2
+                         and prev_rsi < rsi and tendencia_ok and volumen_ok)
 
             if compra or compra_alt:
                 capital_en_trade = capital * 0.95
                 cantidad = capital_en_trade / precio
                 precio_entrada = precio
-                sl_precio = precio * (1 - STOP_LOSS)
-                tp_precio = precio * (1 + TAKE_PROFIT)
+                sl_precio = precio * (1 - sl_pct)
+                tp_precio = precio * (1 + tp_pct)
+                max_precio = precio
                 en_posicion = True
-                trades.append({'fecha':fecha,'tipo':'BUY','precio':precio,'ganancia':0,'capital':capital,'resultado':'ENTRADA'})
+                trades.append({
+                    'fecha': fecha.isoformat(), 'symbol': symbol,
+                    'tipo': 'BUY', 'precio': round(precio, 2),
+                    'ganancia': 0, 'capital': round(capital, 2),
+                    'resultado': 'ENTRADA', 'rsi': round(rsi, 1)
+                })
 
+    # Cerrar posición abierta al final
     if en_posicion:
         precio_final = df['close'].iloc[-1]
-        ganancia = (precio_final - precio_entrada) * cantidad - abs((precio_final - precio_entrada) * cantidad) * COMISION
+        ganancia = (precio_final - precio_entrada) * cantidad
+        ganancia -= abs(ganancia) * COMISION
         capital += ganancia
-        trades.append({'fecha':df['time'].iloc[-1],'tipo':'SELL_FINAL','precio':precio_final,'ganancia':ganancia,'capital':capital,'resultado':'WIN' if ganancia > 0 else 'LOSS'})
+        trades.append({
+            'fecha': df['time'].iloc[-1].isoformat(), 'symbol': symbol,
+            'tipo': 'SELL_FINAL', 'precio': round(precio_final, 2),
+            'ganancia': round(ganancia, 2), 'capital': round(capital, 2),
+            'resultado': 'WIN' if ganancia > 0 else 'LOSS', 'rsi': 0
+        })
 
     return trades, capital, capital_historico
 
 # ═══════════════════════════════
-# ANÁLISIS
+# ANÁLISIS DE RESULTADOS
 # ═══════════════════════════════
-def analizar_resultados(trades, capital_inicial, capital_final, symbol):
-    if not trades:
-        return None
-
-    cerrados = [t for t in trades if t['tipo'] in ['SELL','SELL_SL','SELL_TP','SELL_FINAL']]
+def analizar(trades, capital_inicial, capital_final, symbol, config_nombre):
+    cerrados = [t for t in trades if t['tipo'] != 'BUY']
     if not cerrados:
         return None
 
     wins = [t for t in cerrados if t['ganancia'] > 0]
     losses = [t for t in cerrados if t['ganancia'] <= 0]
     total = len(cerrados)
-    wr = (len(wins)/total*100) if total > 0 else 0
+    wr = (len(wins) / total * 100) if total > 0 else 0
     ganancia_total = capital_final - capital_inicial
     retorno_pct = ganancia_total / capital_inicial * 100
     gp = np.mean([t['ganancia'] for t in wins]) if wins else 0
     pp = np.mean([t['ganancia'] for t in losses]) if losses else 0
-    sl = len([t for t in cerrados if t['tipo']=='SELL_SL'])
-    tp = len([t for t in cerrados if t['tipo']=='SELL_TP'])
     sw = sum(t['ganancia'] for t in wins)
     sl_sum = abs(sum(t['ganancia'] for t in losses))
-    pf = sw/sl_sum if sl_sum > 0 else float('inf')
+    pf = sw / sl_sum if sl_sum > 0 else float('inf')
 
+    # Max drawdown
     caps = [t['capital'] for t in cerrados]
     peak = capital_inicial
     max_dd = 0
     for c in caps:
-        if c > peak: peak = c
-        dd = (peak-c)/peak*100
-        if dd > max_dd: max_dd = dd
+        if c > peak:
+            peak = c
+        dd = (peak - c) / peak * 100
+        if dd > max_dd:
+            max_dd = dd
 
-    ratio_gp = abs(gp/pp) if pp != 0 else float('inf')
+    # Racha máxima de wins y losses
+    racha_win = racha_loss = max_racha_win = max_racha_loss = 0
+    for t in cerrados:
+        if t['ganancia'] > 0:
+            racha_win += 1
+            racha_loss = 0
+            max_racha_win = max(max_racha_win, racha_win)
+        else:
+            racha_loss += 1
+            racha_win = 0
+            max_racha_loss = max(max_racha_loss, racha_loss)
 
-    print(f"\n  {'─'*50}")
-    print(f"  📊 RESULTADOS {symbol} — {MESES} meses")
-    print(f"  {'─'*50}")
-    print(f"  💰 Capital inicial:     ${capital_inicial:,.2f}")
-    print(f"  💰 Capital final:       ${capital_final:,.2f}")
-    print(f"  📈 Ganancia/Pérdida:    ${ganancia_total:+,.2f} ({retorno_pct:+.1f}%)")
-    print(f"  📉 Max Drawdown:        {max_dd:.1f}%")
-    print(f"  {'─'*50}")
-    print(f"  🎯 Total trades:        {total}")
-    print(f"  ✅ Wins:                {len(wins)} ({wr:.1f}%)")
-    print(f"  ❌ Losses:              {len(losses)} ({100-wr:.1f}%)")
-    print(f"  🛑 Stop losses:         {sl}")
-    print(f"  🎯 Take profits:        {tp}")
-    print(f"  {'─'*50}")
-    print(f"  📊 Win rate:            {wr:.1f}%")
-    print(f"  💵 Ganancia promedio:   ${gp:+,.2f}")
-    print(f"  💸 Pérdida promedio:    ${pp:+,.2f}")
-    print(f"  ⚖️  Ratio G/P:           {ratio_gp:.2f}")
-    print(f"  ⚡ Profit factor:       {pf:.2f}")
-    print(f"  {'─'*50}")
+    # Retorno mensual promedio
+    if cerrados:
+        primer_trade = datetime.fromisoformat(cerrados[0]['fecha'])
+        ultimo_trade = datetime.fromisoformat(cerrados[-1]['fecha'])
+        meses_reales = max(1, (ultimo_trade - primer_trade).days / 30)
+        retorno_mensual = retorno_pct / meses_reales
+    else:
+        retorno_mensual = 0
 
-    return {'symbol':symbol,'capital_final':capital_final,'ganancia':ganancia_total,'retorno_pct':retorno_pct,'total_trades':total,'win_rate':wr,'profit_factor':pf,'max_drawdown':max_dd}
+    sl_count = len([t for t in cerrados if t['tipo'] == 'SELL_SL'])
+    tp_count = len([t for t in cerrados if t['tipo'] == 'SELL_TP'])
+
+    print(f"\n  {'─' * 55}")
+    print(f"  📊 {symbol} — Config: {config_nombre}")
+    print(f"  {'─' * 55}")
+    print(f"  💰 ${capital_inicial:,.0f} → ${capital_final:,.2f}  ({retorno_pct:+.1f}%)")
+    print(f"  📈 Retorno mensual:     {retorno_mensual:+.1f}%/mes")
+    print(f"  📉 Max drawdown:        {max_dd:.1f}%")
+    print(f"  {'─' * 55}")
+    print(f"  🎯 Trades: {total}  |  ✅ Wins: {len(wins)} ({wr:.0f}%)  |  ❌ Losses: {len(losses)}")
+    print(f"  🛑 Stop losses: {sl_count}  |  🎯 Take profits: {tp_count}")
+    print(f"  💵 Ganancia prom: ${gp:+.2f}  |  💸 Pérdida prom: ${pp:.2f}")
+    print(f"  ⚡ Profit factor: {pf:.2f}  |  Ratio G/P: {abs(gp/pp) if pp else 0:.2f}")
+    print(f"  🔥 Racha max wins: {max_racha_win}  |  ❄️ Racha max losses: {max_racha_loss}")
+
+    return {
+        'symbol': symbol, 'config': config_nombre,
+        'capital_final': round(capital_final, 2),
+        'ganancia': round(ganancia_total, 2),
+        'retorno_pct': round(retorno_pct, 1),
+        'retorno_mensual': round(retorno_mensual, 1),
+        'total_trades': total,
+        'win_rate': round(wr, 1),
+        'profit_factor': round(pf, 2),
+        'max_drawdown': round(max_dd, 1),
+        'max_racha_win': max_racha_win,
+        'max_racha_loss': max_racha_loss,
+        'trades': trades
+    }
 
 # ═══════════════════════════════
 # MAIN
 # ═══════════════════════════════
 def main():
-    print("\n" + "═"*60)
-    print("  🤖 AutoTrader — Backtesting Engine v4.0")
-    print(f"  Período: {MESES} meses | Capital: ${CAPITAL_INICIAL:,}")
-    print(f"  Stop Loss: {STOP_LOSS*100}% | Take Profit: {TAKE_PROFIT*100}%")
-    print(f"  RSI Compra: <{RSI_COMPRA} | RSI Venta: >{RSI_VENTA}")
-    print(f"  Filtro EMA200: activo (no opera en tendencia bajista)")
+    print("\n" + "═" * 60)
+    print("  🤖 AutoTrader — Backtesting Engine v5.0")
+    print(f"  Capital: ${CAPITAL_INICIAL:,}")
+    print(f"  Pares: {', '.join(SYMBOLS)}")
+    print(f"  Mejoras: Trailing stop, filtro volumen, ATR dinámico")
+    print(f"  Configuraciones a testear: {len(CONFIGS)}")
+    print(f"  Períodos: {PERIODOS} meses")
     print(f"  ⚠️  Solo lectura — no ejecuta trades reales")
-    print("═"*60)
+    print("═" * 60)
 
-    resultados = []
+    todos_resultados = []
+    mejor_resultado = None
+    mejor_score = -999
 
-    for symbol in SYMBOLS:
-        print(f"\n🔍 Analizando {symbol}...")
-        df = get_historical_data(symbol, MESES)
-        if df is None:
-            continue
-        trades, capital_final, hist = backtest(df, symbol, CAPITAL_INICIAL)
-        r = analizar_resultados(trades, CAPITAL_INICIAL, capital_final, symbol)
-        if r:
-            resultados.append(r)
-        time.sleep(1)
+    for meses in PERIODOS:
+        print(f"\n{'═' * 60}")
+        print(f"  📅 PERÍODO: {meses} MESES")
+        print(f"{'═' * 60}")
 
-    if resultados:
-        print("\n" + "═"*60)
-        print("  📊 RESUMEN GENERAL")
-        print("═"*60)
+        # Descargar datos una vez por par por período
+        datos = {}
+        for symbol in SYMBOLS:
+            df = get_historical_data(symbol, meses)
+            if df is not None:
+                datos[symbol] = df
+            time.sleep(1)
 
-        wr_prom = np.mean([r['win_rate'] for r in resultados])
-        ret_prom = np.mean([r['retorno_pct'] for r in resultados])
-        dd_prom = np.mean([r['max_drawdown'] for r in resultados])
-        trades_total = sum(r['total_trades'] for r in resultados)
+        for cfg in CONFIGS:
+            print(f"\n  🔧 Config: {cfg['nombre']} — SL:{cfg['sl']*100}% TP:{cfg['tp']*100}% RSI<{cfg['rsi_c']} RSI>{cfg['rsi_v']}")
 
-        print(f"  Pares:                 {len(resultados)}")
-        print(f"  Total trades:          {trades_total}")
-        print(f"  Win rate promedio:     {wr_prom:.1f}%")
-        print(f"  Retorno promedio:      {ret_prom:+.1f}%")
-        print(f"  Max drawdown prom:     {dd_prom:.1f}%")
-        print()
+            for symbol, df in datos.items():
+                trades, cap_final, hist = backtest(
+                    df, symbol, CAPITAL_INICIAL,
+                    sl_pct=cfg['sl'], tp_pct=cfg['tp'],
+                    rsi_compra=cfg['rsi_c'], rsi_venta=cfg['rsi_v']
+                )
+                r = analizar(trades, CAPITAL_INICIAL, cap_final, symbol, cfg['nombre'])
+                if r:
+                    r['meses'] = meses
+                    todos_resultados.append(r)
 
-        for r in resultados:
-            e = '✅' if r['ganancia'] > 0 else '❌'
-            print(f"  {e} {r['symbol']}: {r['retorno_pct']:+.1f}% | WR: {r['win_rate']:.0f}% | {r['total_trades']} trades | DD: {r['max_drawdown']:.1f}%")
+                    # Score = retorno - drawdown + win_rate bonus
+                    score = r['retorno_pct'] - r['max_drawdown'] * 0.5 + (r['win_rate'] - 50) * 0.3
+                    if score > mejor_score:
+                        mejor_score = score
+                        mejor_resultado = r
 
-        print("\n" + "═"*60)
-        print("  💡 VEREDICTO")
-        print("═"*60)
+    # ═══════════════════════════════
+    # RESUMEN FINAL
+    # ═══════════════════════════════
+    if todos_resultados:
+        print("\n" + "═" * 60)
+        print("  🏆 RANKING DE RESULTADOS")
+        print("═" * 60)
 
-        if wr_prom >= 55 and ret_prom > 8:
+        # Ordenar por retorno
+        ranking = sorted(todos_resultados, key=lambda x: x['retorno_pct'], reverse=True)
+
+        for i, r in enumerate(ranking[:15]):
+            emoji = '🥇' if i == 0 else '🥈' if i == 1 else '🥉' if i == 2 else '  '
+            estado = '✅' if r['retorno_pct'] > 5 else '⚠️' if r['retorno_pct'] > 0 else '❌'
+            print(f"  {emoji} {estado} {r['symbol']} | {r['config']} | {r['meses']}m | "
+                  f"Ret: {r['retorno_pct']:+.1f}% | WR: {r['win_rate']:.0f}% | "
+                  f"PF: {r['profit_factor']:.2f} | DD: {r['max_drawdown']:.1f}% | "
+                  f"{r['total_trades']} trades")
+
+        print(f"\n  {'─' * 55}")
+        print(f"  🏆 MEJOR COMBINACIÓN:")
+        print(f"  {'─' * 55}")
+        if mejor_resultado:
+            m = mejor_resultado
+            print(f"  Par:           {m['symbol']}")
+            print(f"  Config:        {m['config']}")
+            print(f"  Período:       {m['meses']} meses")
+            print(f"  Retorno:       {m['retorno_pct']:+.1f}% (${m['ganancia']:+,.2f})")
+            print(f"  Ret. mensual:  {m['retorno_mensual']:+.1f}%/mes")
+            print(f"  Win rate:      {m['win_rate']:.0f}%")
+            print(f"  Profit factor: {m['profit_factor']:.2f}")
+            print(f"  Max drawdown:  {m['max_drawdown']:.1f}%")
+            print(f"  Trades:        {m['total_trades']}")
+
+        # Guardar mejor resultado a JSON
+        if mejor_resultado:
+            export = {
+                'meta': {
+                    'fecha': datetime.now().isoformat(),
+                    'version': 'v5.0',
+                    'capital_inicial': CAPITAL_INICIAL,
+                    'mejor_config': mejor_resultado['config'],
+                    'mejor_par': mejor_resultado['symbol'],
+                    'mejor_periodo': mejor_resultado['meses'],
+                },
+                'resultado': {
+                    'retorno_pct': mejor_resultado['retorno_pct'],
+                    'win_rate': mejor_resultado['win_rate'],
+                    'profit_factor': mejor_resultado['profit_factor'],
+                    'max_drawdown': mejor_resultado['max_drawdown'],
+                    'total_trades': mejor_resultado['total_trades'],
+                },
+                'trades': mejor_resultado['trades']
+            }
+            with open('backtesting_resultado.json', 'w') as f:
+                json.dump(export, f, indent=2, default=str)
+            print(f"\n  💾 Resultado guardado en backtesting_resultado.json")
+
+        # Veredicto
+        print(f"\n  {'─' * 55}")
+        rentables = [r for r in todos_resultados if r['retorno_pct'] > 5]
+        viables = [r for r in todos_resultados if 0 < r['retorno_pct'] <= 5]
+        negativos = [r for r in todos_resultados if r['retorno_pct'] <= 0]
+
+        print(f"  📊 RESUMEN: {len(rentables)} rentables | {len(viables)} marginales | {len(negativos)} negativos")
+
+        if mejor_resultado and mejor_resultado['retorno_pct'] > 10 and mejor_resultado['win_rate'] > 55:
             print("  🏆 ESTRATEGIA EXCELENTE — Lista para producción")
-        elif wr_prom >= 50 and ret_prom > 5:
+        elif mejor_resultado and mejor_resultado['retorno_pct'] > 5:
             print("  ✅ ESTRATEGIA VIABLE — Buena para operar")
-        elif ret_prom > 0:
+        elif mejor_resultado and mejor_resultado['retorno_pct'] > 0:
             print("  ⚠️  ESTRATEGIA MARGINAL — Seguir optimizando")
         else:
-            print("  ❌ ESTRATEGIA NO RENTABLE — Cambiar parámetros")
+            print("  ❌ ESTRATEGIA NO RENTABLE — Cambiar enfoque")
 
-        print(f"\n  Parámetros usados: SL={STOP_LOSS*100}% | TP={TAKE_PROFIT*100}% | RSI<{RSI_COMPRA} | RSI>{RSI_VENTA}")
-        print("═"*60)
+        print("═" * 60)
 
 if __name__ == "__main__":
     main()
