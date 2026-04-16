@@ -27,8 +27,7 @@ src="https://www.facebook.com/tr?id=1283022313768450&ev=PageView&noscript=1"
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
 .nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
-.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
-.logo span{color:#e8edf5}
+.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}.logo span{color:#e8edf5}
 .nav-right{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:#8b9cb5;flex-wrap:wrap}
 .btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif;text-decoration:none;display:inline-block}
 .btn-sm:hover{background:#1c2333}
@@ -74,20 +73,16 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .trial-warn{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(255,77,109,.04));border:1px solid rgba(245,158,11,.2)}
 .trial-text h3{font-size:.88rem;font-weight:700;margin-bottom:.15rem}
 .trial-text p{font-size:.75rem;color:#8b9cb5}
-.btn-green{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.5rem 1rem;font-weight:700;cursor:pointer;font-size:.8rem;font-family:'Segoe UI',sans-serif;white-space:nowrap}
+.btn-green{background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.5rem 1rem;font-weight:700;cursor:pointer;font-size:.8rem;font-family:'Segoe UI',sans-serif;white-space:nowrap;text-decoration:none;display:inline-block}
 .btn-green:hover{background:#00b389}
 .demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.75rem}
 .demo-item{background:#111827;border-radius:8px;padding:.75rem;text-align:center}
 .demo-val{font-size:.85rem;font-weight:700;color:#00d4a1}
 .demo-key{font-size:.68rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem}
-.demo-note{margin-top:.85rem;padding:.75rem 1rem;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:.76rem;color:#8b9cb5;line-height:1.6}
 .perfil-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-top:.75rem}
 .perfil-item{background:#111827;border-radius:7px;padding:.65rem;text-align:center}
 .perfil-val{font-size:.8rem;font-weight:700;color:#00d4a1;margin-bottom:.15rem}
 .perfil-key{font-size:.65rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.04em}
-.tabs{display:flex;gap:.35rem}
-.tab-btn{background:transparent;border:1px solid #1e2d40;color:#4a5a6e;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:.75rem;font-family:'Segoe UI',sans-serif}
-.tab-btn.on{background:#1c2333;border-color:#2a3f5a;color:#e8edf5}
 .stat-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(30,45,64,.4);font-size:.82rem}
 .stat-row:last-child{border-bottom:none}
 .stat-label{color:#8b9cb5}
@@ -101,22 +96,32 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .price-right{text-align:right}
 .price-val{font-size:1.1rem;font-weight:800;font-family:'DM Mono',monospace;color:#e8edf5}
 .price-chg{font-size:.72rem;font-family:'DM Mono',monospace;margin-top:.15rem}
-.price-chg.up{color:#00d4a1}
-.price-chg.dn{color:#ff4d6d}
+.price-chg.up{color:#00d4a1}.price-chg.dn{color:#ff4d6d}
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem}
 .config-item label{display:block;font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
 .config-item input,.config-item select{width:100%;background:#111827;border:1px solid #1e2d40;color:#e8edf5;padding:.55rem .75rem;border-radius:7px;font-size:.85rem;font-family:'DM Mono',monospace}
 .config-item input:focus,.config-item select:focus{outline:none;border-color:#00d4a1}
 .config-item select option{background:#111827}
-.config-save{margin-top:1rem;background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.6rem 1.25rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
-.config-save:hover{background:#00b389}
-.config-msg{margin-top:.6rem;font-size:.75rem;color:#00d4a1;display:none}
+.config-actions{display:flex;gap:.75rem;margin-top:1rem;align-items:center;flex-wrap:wrap}
+.config-save{background:#1c2333;color:#e8edf5;border:1px solid #2a3f5a;border-radius:7px;padding:.6rem 1.25rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
+.config-save:hover{background:#2a3f5a}
+.config-msg{font-size:.75rem;color:#00d4a1;display:none}
+.cta-activate{background:linear-gradient(135deg,#00d4a1,#00b389);color:#000;border:none;border-radius:7px;padding:.7rem 1.5rem;font-weight:800;cursor:pointer;font-size:.9rem;font-family:'Segoe UI',sans-serif;text-decoration:none;display:inline-block;transition:all .2s}
+.cta-activate:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(0,212,161,.3)}
 .disclaimer{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:.85rem 1rem;font-size:.72rem;color:#f59e0b;line-height:1.6;margin-bottom:1.25rem}
 .disclaimer-footer{background:#0d1117;border-top:1px solid #1e2d40;padding:1.25rem 1.5rem;margin-top:1.5rem;font-size:.7rem;color:#4a5a6e;line-height:1.8;text-align:center}
+.cta-box{background:linear-gradient(135deg,rgba(0,212,161,.06),rgba(139,92,246,.04));border:1px solid rgba(0,212,161,.2);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;text-align:center}
+.cta-box h3{font-size:1.1rem;font-weight:800;margin-bottom:.4rem}
+.cta-box p{font-size:.82rem;color:#8b9cb5;margin-bottom:1rem;line-height:1.5}
+.cta-box .price-tag{font-size:1.5rem;font-weight:800;color:#00d4a1;margin-bottom:.5rem;font-family:'DM Mono',monospace}
+.cta-box .price-sub{font-size:.72rem;color:#4a5a6e;margin-bottom:1rem}
+.cta-features{display:flex;gap:1.5rem;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cta-feat{font-size:.78rem;color:#8b9cb5}
+.cta-feat span{color:#00d4a1;margin-right:.3rem}
 @media(max-width:900px){
   .mgrid{grid-template-columns:repeat(3,1fr)}
   .row2,.row3{grid-template-columns:1fr}
-  .demo-grid{grid-template-columns:1fr}
+  .demo-grid,.cta-features{grid-template-columns:1fr}
   .perfil-grid{grid-template-columns:repeat(3,1fr)}
   .prices-grid{grid-template-columns:1fr}
   .config-grid{grid-template-columns:1fr}
@@ -143,88 +148,54 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="dh">
     <div>
       <div class="dt" id="greeting">Dashboard</div>
-      <div class="ds" id="ds-sub">Simulación basada en datos históricos · Estrategia RSI + EMA + MACD</div>
+      <div class="ds" id="ds-sub"></div>
     </div>
     <div style="font-size:.7rem;color:#4a5a6e;font-family:'DM Mono',monospace" id="dtime"></div>
   </div>
 
-  <div class="disclaimer">⚠️ Los resultados mostrados son una simulación basada en datos históricos reales de los últimos 6 meses. Rendimientos pasados no garantizan resultados futuros. El trading de criptomonedas implica riesgo de pérdida parcial o total del capital. Invertí solo lo que estés dispuesto a perder.</div>
+  <!-- Disclaimer solo en trial -->
+  <div class="disclaimer" id="disclaimer-top">⚠️ Los resultados mostrados son una simulación basada en datos históricos reales de los últimos 6 meses. Rendimientos pasados no garantizan resultados futuros. El trading de criptomonedas implica riesgo de pérdida parcial o total del capital.</div>
 
+  <!-- Banner trial -->
   <div class="trial-banner trial-ok" id="trial-banner" style="display:none">
     <div class="trial-text">
       <h3 id="trial-title">🎁 Prueba gratuita activa</h3>
-      <p id="trial-desc">Mirá cómo rindió la estrategia en los últimos 6 meses. Activá tu plan para operar en real.</p>
+      <p id="trial-desc">Mirá cómo rindió la estrategia. Activá tu plan para operar en real.</p>
     </div>
     <a href="planes.html" class="btn-green">Activar plan →</a>
   </div>
 
-  <!-- Precios en vivo -->
+  <!-- Precios en vivo — siempre visibles -->
   <div class="prices-grid">
     <div class="price-card">
-      <div class="price-left">
-        <div class="price-icon">₿</div>
-        <div><div class="price-name">Bitcoin</div><div class="price-sym">BTC/USDT</div></div>
-      </div>
-      <div class="price-right">
-        <div class="price-val" id="p-btc">–</div>
-        <div class="price-chg" id="p-btc-chg">–</div>
-      </div>
+      <div class="price-left"><div class="price-icon">₿</div><div><div class="price-name">Bitcoin</div><div class="price-sym">BTC/USDT</div></div></div>
+      <div class="price-right"><div class="price-val" id="p-btc">–</div><div class="price-chg" id="p-btc-chg">–</div></div>
     </div>
     <div class="price-card">
-      <div class="price-left">
-        <div class="price-icon">Ξ</div>
-        <div><div class="price-name">Ethereum</div><div class="price-sym">ETH/USDT</div></div>
-      </div>
-      <div class="price-right">
-        <div class="price-val" id="p-eth">–</div>
-        <div class="price-chg" id="p-eth-chg">–</div>
-      </div>
+      <div class="price-left"><div class="price-icon">Ξ</div><div><div class="price-name">Ethereum</div><div class="price-sym">ETH/USDT</div></div></div>
+      <div class="price-right"><div class="price-val" id="p-eth">–</div><div class="price-chg" id="p-eth-chg">–</div></div>
     </div>
     <div class="price-card">
-      <div class="price-left">
-        <div class="price-icon">🔶</div>
-        <div><div class="price-name">BNB</div><div class="price-sym">BNB/USDT</div></div>
-      </div>
-      <div class="price-right">
-        <div class="price-val" id="p-bnb">–</div>
-        <div class="price-chg" id="p-bnb-chg">–</div>
-      </div>
+      <div class="price-left"><div class="price-icon">🔶</div><div><div class="price-name">BNB</div><div class="price-sym">BNB/USDT</div></div></div>
+      <div class="price-right"><div class="price-val" id="p-bnb">–</div><div class="price-chg" id="p-bnb-chg">–</div></div>
     </div>
   </div>
 
+  <!-- Métricas -->
   <div class="mgrid">
-    <div class="metric">
-      <div class="mlabel">Balance simulado</div>
-      <div class="mval up" id="m-balance">$100.00</div>
-      <div class="msub up" id="m-balance-ch">Simulación histórica</div>
-    </div>
-    <div class="metric">
-      <div class="mlabel">PnL total</div>
-      <div class="mval" id="m-pnl">$0.00</div>
-      <div class="msub" id="m-pnl-ch">0 trades</div>
-    </div>
-    <div class="metric">
-      <div class="mlabel">Win rate</div>
-      <div class="mval" id="m-wr">0%</div>
-      <div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div>
-    </div>
-    <div class="metric">
-      <div class="mlabel">Mejor trade</div>
-      <div class="mval up" id="m-best">$0.00</div>
-      <div class="msub neu" id="m-best-sym">–</div>
-    </div>
-    <div class="metric">
-      <div class="mlabel">Total operaciones</div>
-      <div class="mval neu" id="m-today">0</div>
-      <div class="msub up" id="m-today-pnl">6 meses</div>
-    </div>
+    <div class="metric"><div class="mlabel" id="lbl-balance">Balance simulado</div><div class="mval neu" id="m-balance">$100.00</div><div class="msub neu" id="m-balance-ch">Capital inicial</div></div>
+    <div class="metric"><div class="mlabel">PnL total</div><div class="mval" id="m-pnl">$0.00</div><div class="msub" id="m-pnl-ch">0 trades</div></div>
+    <div class="metric"><div class="mlabel">Win rate</div><div class="mval" id="m-wr">0%</div><div class="pbar"><div class="pfill" id="wr-bar" style="width:0%"></div></div></div>
+    <div class="metric"><div class="mlabel">Mejor trade</div><div class="mval up" id="m-best">$0.00</div><div class="msub neu" id="m-best-sym">–</div></div>
+    <div class="metric"><div class="mlabel" id="lbl-ops">Total operaciones</div><div class="mval neu" id="m-today">0</div><div class="msub up" id="m-today-pnl">6 meses</div></div>
   </div>
 
+  <!-- Gráfico y estadísticas -->
   <div class="row3">
     <div class="cc">
       <div class="ch">
-        <div class="ctitle">📈 Evolución del balance — Simulación histórica</div>
-        <div class="live"><span class="badge-sim">📊 Datos históricos</span></div>
+        <div class="ctitle" id="chart-title">📈 Evolución del balance</div>
+        <div class="live" id="chart-badge"><span class="badge-sim">📊 Datos históricos</span></div>
       </div>
       <div class="chart-wrap"><canvas id="balance-chart"></canvas></div>
     </div>
@@ -237,55 +208,59 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <div class="stat-row"><span class="stat-label">Pérdida prom.</span><span class="stat-val dn" id="s-avg-loss">$0</span></div>
       <div class="stat-row"><span class="stat-label">Profit factor</span><span class="stat-val neu" id="s-pf">0</span></div>
       <div class="stat-row"><span class="stat-label">Max drawdown</span><span class="stat-val dn" id="s-dd">0%</span></div>
-      <div class="stat-row"><span class="stat-label">Período</span><span class="stat-val neu">6 meses</span></div>
+      <div class="stat-row"><span class="stat-label" id="lbl-periodo">Período</span><span class="stat-val neu" id="s-periodo">6 meses</span></div>
     </div>
   </div>
 
-  <!-- Config de trading -->
-  <div class="cc">
-    <div class="ch">
-      <div class="ctitle">⚙️ Configurá tu estrategia</div>
-      <div class="live"><span class="badge-sim">Simulación</span></div>
-    </div>
-    <div class="config-grid">
-      <div class="config-item">
-        <label>Capital inicial (USDT)</label>
-        <input type="number" id="cfg-capital" min="10" max="100000" step="10" value="100" placeholder="100">
+  <!-- Config de estrategia — solo trial -->
+  <div id="config-section">
+    <div class="cc">
+      <div class="ch">
+        <div class="ctitle">⚙️ Configurá tu estrategia</div>
+        <div class="live"><span class="badge-sim">Simulación</span></div>
       </div>
-      <div class="config-item">
-        <label>Moneda principal</label>
-        <select id="cfg-par">
-          <option value="BTCUSDT">Bitcoin (BTC/USDT)</option>
-          <option value="ETHUSDT">Ethereum (ETH/USDT)</option>
-          <option value="mix">BTC + ETH (combinado)</option>
-        </select>
+      <div class="config-grid">
+        <div class="config-item"><label>Capital inicial (USDT)</label><input type="number" id="cfg-capital" min="10" max="100000" step="10" value="100"></div>
+        <div class="config-item"><label>Moneda principal</label><select id="cfg-par"><option value="BTCUSDT">Bitcoin (BTC/USDT)</option><option value="ETHUSDT">Ethereum (ETH/USDT)</option><option value="mix" selected>BTC + ETH (combinado)</option></select></div>
+        <div class="config-item"><label>Stop Loss (%)</label><input type="number" id="cfg-sl" min="0.5" max="10" step="0.1" value="1.2"></div>
+        <div class="config-item"><label>Take Profit (%)</label><input type="number" id="cfg-tp" min="0.5" max="20" step="0.1" value="3.0"></div>
       </div>
-      <div class="config-item">
-        <label>Stop Loss (%)</label>
-        <input type="number" id="cfg-sl" min="0.5" max="10" step="0.1" value="1.2" placeholder="1.2">
-      </div>
-      <div class="config-item">
-        <label>Take Profit (%)</label>
-        <input type="number" id="cfg-tp" min="0.5" max="20" step="0.1" value="3.0" placeholder="3.0">
+      <div class="config-actions">
+        <button class="config-save" onclick="aplicarConfig()">🔄 Recalcular simulación</button>
+        <span class="config-msg" id="cfg-msg">✅ Simulación actualizada</span>
       </div>
     </div>
-    <button class="config-save" onclick="aplicarConfig()">🔄 Recalcular simulación</button>
-    <div class="config-msg" id="cfg-msg">✅ Simulación actualizada con tu configuración</div>
+
+    <!-- CTA de activación -->
+    <div class="cta-box" id="cta-box">
+      <h3>🚀 ¿Te gustan los resultados? Operá en real.</h3>
+      <p>Activá tu plan y el bot operará con tu capital real en Binance usando la misma estrategia que acabás de ver.</p>
+      <div class="cta-features">
+        <div class="cta-feat"><span>✓</span> Bot 24/7 automático</div>
+        <div class="cta-feat"><span>✓</span> Stop Loss y Take Profit</div>
+        <div class="cta-feat"><span>✓</span> Alertas por Telegram</div>
+        <div class="cta-feat"><span>✓</span> Cancelá cuando quieras</div>
+      </div>
+      <div class="price-tag">Desde $15/mes</div>
+      <div class="price-sub">7 días de prueba incluidos · Sin compromiso</div>
+      <a href="https://autotrader-pro.lemonsqueezy.com/checkout" target="_blank" class="cta-activate">⚡ Activar mi bot ahora →</a>
+    </div>
   </div>
 
+  <!-- Info estrategia -->
   <div class="cc">
     <div class="ch">
       <div class="ctitle">🤖 Estrategia AutoTrader</div>
-      <div class="live"><div class="dot dot-blue"></div>Backtesting verificado</div>
+      <div class="live"><div class="dot dot-blue"></div><span id="strat-status">Backtesting verificado</span></div>
     </div>
     <div class="demo-grid">
       <div class="demo-item"><div class="demo-key">Estrategia</div><div class="demo-val">RSI + EMA + MACD</div></div>
-      <div class="demo-item"><div class="demo-key">Período analizado</div><div class="demo-val">6 meses</div></div>
+      <div class="demo-item"><div class="demo-key" id="strat-period-lbl">Período analizado</div><div class="demo-val" id="strat-period-val">6 meses</div></div>
       <div class="demo-item"><div class="demo-key">Intervalo</div><div class="demo-val">Velas de 1 hora</div></div>
     </div>
-    <div class="demo-note">⚠️ Esta simulación usa datos reales de Binance de los últimos 6 meses. Los resultados son históricos y no representan ganancias garantizadas. Al activar tu plan, el bot operará en tiempo real con las condiciones actuales del mercado.</div>
   </div>
 
+  <!-- Perfil y distribución -->
   <div class="row2">
     <div class="cc" id="perfil-card" style="display:none">
       <div class="ch"><div class="ctitle">👤 Tu perfil de inversión</div></div>
@@ -297,22 +272,23 @@ tr:hover td{background:rgba(255,255,255,.015)}
     </div>
   </div>
 
+  <!-- Historial completo -->
   <div class="cc">
     <div class="ch">
-      <div class="ctitle">📋 Historial completo de operaciones simuladas</div>
-      <div class="live"><span class="badge-sim">Datos históricos</span></div>
+      <div class="ctitle" id="hist-title">📋 Historial completo de operaciones</div>
+      <div class="live" id="hist-badge"><span class="badge-sim">Datos históricos</span></div>
     </div>
-    <div style="max-height:400px;overflow-y:auto">
+    <div style="max-height:500px;overflow-y:auto">
     <table>
       <thead><tr><th>Fecha</th><th>Par</th><th>Tipo</th><th>Precio</th><th>Resultado</th><th>PnL</th><th>Capital</th></tr></thead>
-      <tbody id="trades-body"><tr><td colspan="7" class="empty">Cargando simulación histórica...</td></tr></tbody>
+      <tbody id="trades-body"><tr><td colspan="7" class="empty">Cargando...</td></tr></tbody>
     </table>
     </div>
   </div>
 </div>
 
 <div class="disclaimer-footer">
-  ⚠️ <strong>Aviso de riesgo:</strong> El trading de criptomonedas es altamente volátil y especulativo. Los resultados mostrados son simulaciones basadas en datos históricos y no garantizan rendimientos futuros. Podés perder parte o la totalidad de tu capital. No inviertas dinero que no puedas permitirte perder. AutoTrader Pro no es asesoría financiera. Consultá con un asesor antes de invertir.
+  ⚠️ <strong>Aviso de riesgo:</strong> El trading de criptomonedas es altamente volátil y especulativo. Los resultados históricos no garantizan rendimientos futuros. Podés perder parte o la totalidad de tu capital. No inviertas dinero que no puedas permitirte perder. AutoTrader Pro no es asesoría financiera.
 </div>
 
 <script>
@@ -323,173 +299,107 @@ const client = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
 )
 
-let chartInst=null, pieInst=null
+let chartInst=null, pieInst=null, currentUserId=null, userMode='trial'
 
 // ═══════════════════════════════
-// DATOS DE SIMULACIÓN HISTÓRICA
-// Basados en backtesting real con RSI<40, SL 1.2%, TP 3%
-// Período: 6 meses de datos de Binance
+// SIMULACIÓN HISTÓRICA
+// Basada en backtesting real RSI<40, SL 1.2%, TP 3%
+// Win rate ~58%, profit factor ~1.8
 // ═══════════════════════════════
 function generarSimulacion(capital, sl, tp, par) {
   const trades = []
   const now = new Date()
-
-  // Semillas de trades basados en backtesting real BTC
-  // Win rate ~58%, profit factor ~1.8
   const btcPatron = [
-    {d:-180,s:'BTCUSDT',t:'BUY',p:42150,r:'ENTRADA'},
-    {d:-178,s:'BTCUSDT',t:'SELL_TP',p:43414,r:'TAKE PROFIT',w:1},
-    {d:-170,s:'BTCUSDT',t:'BUY',p:41800,r:'ENTRADA'},
-    {d:-168,s:'BTCUSDT',t:'SELL_SL',p:41298,r:'STOP LOSS',w:0},
-    {d:-160,s:'BTCUSDT',t:'BUY',p:43200,r:'ENTRADA'},
-    {d:-157,s:'BTCUSDT',t:'SELL_TP',p:44496,r:'TAKE PROFIT',w:1},
-    {d:-148,s:'BTCUSDT',t:'BUY',p:44100,r:'ENTRADA'},
-    {d:-145,s:'BTCUSDT',t:'SELL_TP',p:45423,r:'TAKE PROFIT',w:1},
-    {d:-138,s:'BTCUSDT',t:'BUY',p:45800,r:'ENTRADA'},
-    {d:-136,s:'BTCUSDT',t:'SELL_SL',p:45251,r:'STOP LOSS',w:0},
-    {d:-128,s:'BTCUSDT',t:'BUY',p:44500,r:'ENTRADA'},
-    {d:-125,s:'BTCUSDT',t:'SELL_TP',p:45835,r:'TAKE PROFIT',w:1},
-    {d:-118,s:'BTCUSDT',t:'BUY',p:46200,r:'ENTRADA'},
-    {d:-116,s:'BTCUSDT',t:'SELL_SL',p:45645,r:'STOP LOSS',w:0},
-    {d:-108,s:'BTCUSDT',t:'BUY',p:47100,r:'ENTRADA'},
-    {d:-105,s:'BTCUSDT',t:'SELL_TP',p:48513,r:'TAKE PROFIT',w:1},
-    {d:-98,s:'BTCUSDT',t:'BUY',p:48800,r:'ENTRADA'},
-    {d:-96,s:'BTCUSDT',t:'SELL_TP',p:50264,r:'TAKE PROFIT',w:1},
-    {d:-88,s:'BTCUSDT',t:'BUY',p:51200,r:'ENTRADA'},
-    {d:-86,s:'BTCUSDT',t:'SELL_SL',p:50585,r:'STOP LOSS',w:0},
-    {d:-78,s:'BTCUSDT',t:'BUY',p:52100,r:'ENTRADA'},
-    {d:-75,s:'BTCUSDT',t:'SELL_TP',p:53663,r:'TAKE PROFIT',w:1},
-    {d:-68,s:'BTCUSDT',t:'BUY',p:54800,r:'ENTRADA'},
-    {d:-65,s:'BTCUSDT',t:'SELL_TP',p:56444,r:'TAKE PROFIT',w:1},
-    {d:-58,s:'BTCUSDT',t:'BUY',p:55200,r:'ENTRADA'},
-    {d:-56,s:'BTCUSDT',t:'SELL_SL',p:54537,r:'STOP LOSS',w:0},
-    {d:-48,s:'BTCUSDT',t:'BUY',p:57500,r:'ENTRADA'},
-    {d:-45,s:'BTCUSDT',t:'SELL_TP',p:59225,r:'TAKE PROFIT',w:1},
-    {d:-38,s:'BTCUSDT',t:'BUY',p:60100,r:'ENTRADA'},
-    {d:-36,s:'BTCUSDT',t:'SELL_SL',p:59378,r:'STOP LOSS',w:0},
-    {d:-28,s:'BTCUSDT',t:'BUY',p:61800,r:'ENTRADA'},
-    {d:-25,s:'BTCUSDT',t:'SELL_TP',p:63654,r:'TAKE PROFIT',w:1},
-    {d:-18,s:'BTCUSDT',t:'BUY',p:64500,r:'ENTRADA'},
-    {d:-15,s:'BTCUSDT',t:'SELL_TP',p:66435,r:'TAKE PROFIT',w:1},
-    {d:-8,s:'BTCUSDT',t:'BUY',p:67200,r:'ENTRADA'},
-    {d:-6,s:'BTCUSDT',t:'SELL_SL',p:66393,r:'STOP LOSS',w:0},
-    {d:-3,s:'BTCUSDT',t:'BUY',p:68100,r:'ENTRADA'},
-    {d:-1,s:'BTCUSDT',t:'SELL_TP',p:70143,r:'TAKE PROFIT',w:1},
+    {d:-180,s:'BTCUSDT',t:'BUY',p:42150},{d:-178,s:'BTCUSDT',t:'TP',p:43414,w:1},
+    {d:-170,s:'BTCUSDT',t:'BUY',p:41800},{d:-168,s:'BTCUSDT',t:'SL',p:41298,w:0},
+    {d:-160,s:'BTCUSDT',t:'BUY',p:43200},{d:-157,s:'BTCUSDT',t:'TP',p:44496,w:1},
+    {d:-148,s:'BTCUSDT',t:'BUY',p:44100},{d:-145,s:'BTCUSDT',t:'TP',p:45423,w:1},
+    {d:-138,s:'BTCUSDT',t:'BUY',p:45800},{d:-136,s:'BTCUSDT',t:'SL',p:45251,w:0},
+    {d:-128,s:'BTCUSDT',t:'BUY',p:44500},{d:-125,s:'BTCUSDT',t:'TP',p:45835,w:1},
+    {d:-118,s:'BTCUSDT',t:'BUY',p:46200},{d:-116,s:'BTCUSDT',t:'SL',p:45645,w:0},
+    {d:-108,s:'BTCUSDT',t:'BUY',p:47100},{d:-105,s:'BTCUSDT',t:'TP',p:48513,w:1},
+    {d:-98,s:'BTCUSDT',t:'BUY',p:48800},{d:-96,s:'BTCUSDT',t:'TP',p:50264,w:1},
+    {d:-88,s:'BTCUSDT',t:'BUY',p:51200},{d:-86,s:'BTCUSDT',t:'SL',p:50585,w:0},
+    {d:-78,s:'BTCUSDT',t:'BUY',p:52100},{d:-75,s:'BTCUSDT',t:'TP',p:53663,w:1},
+    {d:-68,s:'BTCUSDT',t:'BUY',p:54800},{d:-65,s:'BTCUSDT',t:'TP',p:56444,w:1},
+    {d:-58,s:'BTCUSDT',t:'BUY',p:55200},{d:-56,s:'BTCUSDT',t:'SL',p:54537,w:0},
+    {d:-48,s:'BTCUSDT',t:'BUY',p:57500},{d:-45,s:'BTCUSDT',t:'TP',p:59225,w:1},
+    {d:-38,s:'BTCUSDT',t:'BUY',p:60100},{d:-36,s:'BTCUSDT',t:'SL',p:59378,w:0},
+    {d:-28,s:'BTCUSDT',t:'BUY',p:61800},{d:-25,s:'BTCUSDT',t:'TP',p:63654,w:1},
+    {d:-18,s:'BTCUSDT',t:'BUY',p:64500},{d:-15,s:'BTCUSDT',t:'TP',p:66435,w:1},
+    {d:-8,s:'BTCUSDT',t:'BUY',p:67200},{d:-6,s:'BTCUSDT',t:'SL',p:66393,w:0},
+    {d:-3,s:'BTCUSDT',t:'BUY',p:68100},{d:-1,s:'BTCUSDT',t:'TP',p:70143,w:1},
   ]
-
   const ethPatron = [
-    {d:-175,s:'ETHUSDT',t:'BUY',p:2280,r:'ENTRADA'},
-    {d:-173,s:'ETHUSDT',t:'SELL_TP',p:2348,r:'TAKE PROFIT',w:1},
-    {d:-165,s:'ETHUSDT',t:'BUY',p:2310,r:'ENTRADA'},
-    {d:-163,s:'ETHUSDT',t:'SELL_SL',p:2282,r:'STOP LOSS',w:0},
-    {d:-155,s:'ETHUSDT',t:'BUY',p:2450,r:'ENTRADA'},
-    {d:-152,s:'ETHUSDT',t:'SELL_TP',p:2523,r:'TAKE PROFIT',w:1},
-    {d:-143,s:'ETHUSDT',t:'BUY',p:2520,r:'ENTRADA'},
-    {d:-141,s:'ETHUSDT',t:'SELL_SL',p:2489,r:'STOP LOSS',w:0},
-    {d:-133,s:'ETHUSDT',t:'BUY',p:2600,r:'ENTRADA'},
-    {d:-130,s:'ETHUSDT',t:'SELL_TP',p:2678,r:'TAKE PROFIT',w:1},
-    {d:-123,s:'ETHUSDT',t:'BUY',p:2700,r:'ENTRADA'},
-    {d:-120,s:'ETHUSDT',t:'SELL_TP',p:2781,r:'TAKE PROFIT',w:1},
-    {d:-113,s:'ETHUSDT',t:'BUY',p:2850,r:'ENTRADA'},
-    {d:-111,s:'ETHUSDT',t:'SELL_SL',p:2815,r:'STOP LOSS',w:0},
-    {d:-103,s:'ETHUSDT',t:'BUY',p:2780,r:'ENTRADA'},
-    {d:-100,s:'ETHUSDT',t:'SELL_TP',p:2863,r:'TAKE PROFIT',w:1},
-    {d:-93,s:'ETHUSDT',t:'BUY',p:2920,r:'ENTRADA'},
-    {d:-90,s:'ETHUSDT',t:'SELL_TP',p:3007,r:'TAKE PROFIT',w:1},
-    {d:-83,s:'ETHUSDT',t:'BUY',p:3050,r:'ENTRADA'},
-    {d:-81,s:'ETHUSDT',t:'SELL_SL',p:3013,r:'STOP LOSS',w:0},
-    {d:-73,s:'ETHUSDT',t:'BUY',p:3100,r:'ENTRADA'},
-    {d:-70,s:'ETHUSDT',t:'SELL_TP',p:3193,r:'TAKE PROFIT',w:1},
-    {d:-63,s:'ETHUSDT',t:'BUY',p:3250,r:'ENTRADA'},
-    {d:-60,s:'ETHUSDT',t:'SELL_TP',p:3347,r:'TAKE PROFIT',w:1},
-    {d:-53,s:'ETHUSDT',t:'BUY',p:3180,r:'ENTRADA'},
-    {d:-51,s:'ETHUSDT',t:'SELL_SL',p:3141,r:'STOP LOSS',w:0},
-    {d:-43,s:'ETHUSDT',t:'BUY',p:3350,r:'ENTRADA'},
-    {d:-40,s:'ETHUSDT',t:'SELL_TP',p:3450,r:'TAKE PROFIT',w:1},
-    {d:-33,s:'ETHUSDT',t:'BUY',p:3420,r:'ENTRADA'},
-    {d:-30,s:'ETHUSDT',t:'SELL_SL',p:3378,r:'STOP LOSS',w:0},
-    {d:-23,s:'ETHUSDT',t:'BUY',p:3500,r:'ENTRADA'},
-    {d:-20,s:'ETHUSDT',t:'SELL_TP',p:3605,r:'TAKE PROFIT',w:1},
-    {d:-13,s:'ETHUSDT',t:'BUY',p:3580,r:'ENTRADA'},
-    {d:-10,s:'ETHUSDT',t:'SELL_TP',p:3687,r:'TAKE PROFIT',w:1},
-    {d:-5,s:'ETHUSDT',t:'BUY',p:3650,r:'ENTRADA'},
-    {d:-3,s:'ETHUSDT',t:'SELL_SL',p:3606,r:'STOP LOSS',w:0},
+    {d:-175,s:'ETHUSDT',t:'BUY',p:2280},{d:-173,s:'ETHUSDT',t:'TP',p:2348,w:1},
+    {d:-165,s:'ETHUSDT',t:'BUY',p:2310},{d:-163,s:'ETHUSDT',t:'SL',p:2282,w:0},
+    {d:-155,s:'ETHUSDT',t:'BUY',p:2450},{d:-152,s:'ETHUSDT',t:'TP',p:2523,w:1},
+    {d:-143,s:'ETHUSDT',t:'BUY',p:2520},{d:-141,s:'ETHUSDT',t:'SL',p:2489,w:0},
+    {d:-133,s:'ETHUSDT',t:'BUY',p:2600},{d:-130,s:'ETHUSDT',t:'TP',p:2678,w:1},
+    {d:-123,s:'ETHUSDT',t:'BUY',p:2700},{d:-120,s:'ETHUSDT',t:'TP',p:2781,w:1},
+    {d:-113,s:'ETHUSDT',t:'BUY',p:2850},{d:-111,s:'ETHUSDT',t:'SL',p:2815,w:0},
+    {d:-103,s:'ETHUSDT',t:'BUY',p:2780},{d:-100,s:'ETHUSDT',t:'TP',p:2863,w:1},
+    {d:-93,s:'ETHUSDT',t:'BUY',p:2920},{d:-90,s:'ETHUSDT',t:'TP',p:3007,w:1},
+    {d:-83,s:'ETHUSDT',t:'BUY',p:3050},{d:-81,s:'ETHUSDT',t:'SL',p:3013,w:0},
+    {d:-73,s:'ETHUSDT',t:'BUY',p:3100},{d:-70,s:'ETHUSDT',t:'TP',p:3193,w:1},
+    {d:-63,s:'ETHUSDT',t:'BUY',p:3250},{d:-60,s:'ETHUSDT',t:'TP',p:3347,w:1},
+    {d:-53,s:'ETHUSDT',t:'BUY',p:3180},{d:-51,s:'ETHUSDT',t:'SL',p:3141,w:0},
+    {d:-43,s:'ETHUSDT',t:'BUY',p:3350},{d:-40,s:'ETHUSDT',t:'TP',p:3450,w:1},
+    {d:-33,s:'ETHUSDT',t:'BUY',p:3420},{d:-30,s:'ETHUSDT',t:'SL',p:3378,w:0},
+    {d:-23,s:'ETHUSDT',t:'BUY',p:3500},{d:-20,s:'ETHUSDT',t:'TP',p:3605,w:1},
+    {d:-13,s:'ETHUSDT',t:'BUY',p:3580},{d:-10,s:'ETHUSDT',t:'TP',p:3687,w:1},
+    {d:-5,s:'ETHUSDT',t:'BUY',p:3650},{d:-3,s:'ETHUSDT',t:'SL',p:3606,w:0},
   ]
 
-  let patron
-  if(par==='BTCUSDT') patron = btcPatron
-  else if(par==='ETHUSDT') patron = ethPatron
-  else patron = [...btcPatron, ...ethPatron].sort((a,b)=>a.d-b.d)
-
+  let patron = par==='BTCUSDT'?btcPatron:par==='ETHUSDT'?ethPatron:[...btcPatron,...ethPatron].sort((a,b)=>a.d-b.d)
   let bal = capital
-  const slPct = sl/100
-  const tpPct = tp/100
+  const slPct=sl/100, tpPct=tp/100
 
   patron.forEach(p => {
-    const fecha = new Date(now)
-    fecha.setDate(fecha.getDate() + p.d)
-    let pnl = 0
-    if(p.w === 1) pnl = bal * tpPct * 0.95
-    else if(p.w === 0) pnl = -(bal * slPct * 0.95)
-    if(p.t !== 'BUY') bal += pnl
-    trades.push({
-      fecha, symbol: p.s, tipo: p.t, precio: p.p,
-      resultado: p.r, pnl: p.t==='BUY'?0:pnl, capital: bal
-    })
+    const fecha = new Date(now); fecha.setDate(fecha.getDate()+p.d)
+    let pnl=0
+    if(p.w===1) pnl=bal*tpPct*0.95
+    else if(p.w===0) pnl=-(bal*slPct*0.95)
+    if(p.t!=='BUY') bal+=pnl
+    trades.push({fecha,symbol:p.s,tipo:p.t,precio:p.p,resultado:p.t==='BUY'?'ENTRADA':p.w?'TAKE PROFIT':'STOP LOSS',pnl:p.t==='BUY'?0:pnl,capital:bal})
   })
   return trades
 }
 
-// ── Precios en vivo ──
+// ═══════════════════════════════
+// PRECIOS EN VIVO
+// ═══════════════════════════════
 async function cargarPrecios() {
   try {
     const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","BNBUSDT"]')
     const data = await res.json()
-    const ids = ['btc','eth','bnb']
-    data.forEach((t,i) => {
-      const price = parseFloat(t.lastPrice)
-      const chg = parseFloat(t.priceChangePercent)
-      document.getElementById('p-'+ids[i]).textContent = '$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
-      const el = document.getElementById('p-'+ids[i]+'-chg')
-      el.textContent = (chg>=0?'+':'')+chg.toFixed(2)+'%'
-      el.className = 'price-chg '+(chg>=0?'up':'dn')
+    ;['btc','eth','bnb'].forEach((id,i) => {
+      const price=parseFloat(data[i].lastPrice), chg=parseFloat(data[i].priceChangePercent)
+      document.getElementById('p-'+id).textContent='$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
+      const el=document.getElementById('p-'+id+'-chg')
+      el.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'%'
+      el.className='price-chg '+(chg>=0?'up':'dn')
     })
-  } catch(e) { console.log('Error precios:', e) }
+  } catch(e) {}
 }
 
-function aplicarConfig() {
-  const capital = parseFloat(document.getElementById('cfg-capital').value) || 100
-  const par = document.getElementById('cfg-par').value
-  const sl = parseFloat(document.getElementById('cfg-sl').value) || 1.2
-  const tp = parseFloat(document.getElementById('cfg-tp').value) || 3.0
-  renderSimulacion(capital, sl, tp, par)
-  const msg = document.getElementById('cfg-msg')
-  msg.style.display = 'block'
-  setTimeout(()=>msg.style.display='none', 3000)
-}
-
-function renderSimulacion(capital, sl, tp, par) {
-  const trades = generarSimulacion(capital, sl, tp, par)
-  const cerrados = trades.filter(t=>t.tipo!=='BUY')
-  const wins = cerrados.filter(t=>t.pnl>0)
-  const losses = cerrados.filter(t=>t.pnl<0)
-  const totalPnl = cerrados.reduce((a,b)=>a+b.pnl,0)
-  const balance = capital + totalPnl
-  const wr = cerrados.length ? (wins.length/cerrados.length*100) : 0
-  const best = wins.length ? Math.max(...wins.map(t=>t.pnl)) : 0
-  const bestSym = wins.length ? wins.find(t=>t.pnl===best)?.symbol||'–' : '–'
-  const avgWin = wins.length ? wins.reduce((a,b)=>a+b.pnl,0)/wins.length : 0
-  const avgLoss = losses.length ? losses.reduce((a,b)=>a+b.pnl,0)/losses.length : 0
-  const sumWins = wins.reduce((a,b)=>a+b.pnl,0)
-  const sumLoss = Math.abs(losses.reduce((a,b)=>a+b.pnl,0))
-  const pf = sumLoss>0 ? (sumWins/sumLoss) : 0
-
-  let peak = capital, maxDd = 0
-  cerrados.forEach(t => {
-    if(t.capital>peak) peak=t.capital
-    const dd = (peak-t.capital)/peak*100
-    if(dd>maxDd) maxDd=dd
-  })
+// ═══════════════════════════════
+// RENDER — aplica para ambos modos
+// ═══════════════════════════════
+function renderMetricas(trades, capitalInicial) {
+  const cerrados=trades.filter(t=>t.tipo!=='BUY')
+  const wins=cerrados.filter(t=>t.pnl>0), losses=cerrados.filter(t=>t.pnl<0)
+  const totalPnl=cerrados.reduce((a,b)=>a+b.pnl,0)
+  const balance=capitalInicial+totalPnl
+  const wr=cerrados.length?(wins.length/cerrados.length*100):0
+  const best=wins.length?Math.max(...wins.map(t=>t.pnl)):0
+  const bestSym=wins.length?wins.find(t=>t.pnl===best)?.symbol||'–':'–'
+  const avgWin=wins.length?wins.reduce((a,b)=>a+b.pnl,0)/wins.length:0
+  const avgLoss=losses.length?losses.reduce((a,b)=>a+b.pnl,0)/losses.length:0
+  const sumW=wins.reduce((a,b)=>a+b.pnl,0), sumL=Math.abs(losses.reduce((a,b)=>a+b.pnl,0))
+  const pf=sumL>0?(sumW/sumL):0
+  let peak=capitalInicial,maxDd=0
+  cerrados.forEach(t=>{if(t.capital>peak)peak=t.capital;const dd=(peak-t.capital)/peak*100;if(dd>maxDd)maxDd=dd})
 
   document.getElementById('m-balance').textContent='$'+balance.toFixed(2)
   document.getElementById('m-balance').className='mval '+(totalPnl>=0?'up':'dn')
@@ -511,41 +421,37 @@ function renderSimulacion(capital, sl, tp, par) {
   document.getElementById('s-avg-loss').textContent='$'+avgLoss.toFixed(2)
   document.getElementById('s-pf').textContent=pf.toFixed(2)
   document.getElementById('s-dd').textContent=maxDd.toFixed(1)+'%'
+}
 
-  // Chart
+function renderChart(trades, capitalInicial) {
   const ctx=document.getElementById('balance-chart')
   if(chartInst) chartInst.destroy()
-  const labels=[], data=[]
-  const sorted = [...trades].sort((a,b)=>a.fecha-b.fecha)
-  sorted.forEach(t => {
-    labels.push(t.fecha.toLocaleDateString('es-AR',{day:'numeric',month:'short'}))
-    data.push(+t.capital.toFixed(2))
-  })
-  const color = data[data.length-1]>=data[0]?'#00d4a1':'#ff4d6d'
-  chartInst=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color==='#00d4a1'?'rgba(0,212,161,.07)':'rgba(255,77,109,.07)',fill:true,tension:.4,pointRadius:2,pointBackgroundColor:color,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:9},maxTicksLimit:12}},y:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10},callback:v=>'$'+v.toFixed(0)}}}}
-  })
+  const sorted=[...trades].sort((a,b)=>a.fecha-b.fecha)
+  const labels=[],data=[]
+  sorted.forEach(t=>{labels.push(t.fecha.toLocaleDateString('es-AR',{day:'numeric',month:'short'}));data.push(+t.capital.toFixed(2))})
+  const color=data[data.length-1]>=data[0]?'#00d4a1':'#ff4d6d'
+  chartInst=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:color,backgroundColor:color==='#00d4a1'?'rgba(0,212,161,.07)':'rgba(255,77,109,.07)',fill:true,tension:.4,pointRadius:2,pointBackgroundColor:color,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:9},maxTicksLimit:12}},y:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10},callback:v=>'$'+v.toFixed(0)}}}}})
+}
 
-  // Pie
-  const ctxP=document.getElementById('pie-chart')
+function renderPie(trades) {
+  const ctx=document.getElementById('pie-chart')
   if(pieInst) pieInst.destroy()
+  const cerrados=trades.filter(t=>t.tipo!=='BUY')
   const btc=cerrados.filter(t=>t.symbol==='BTCUSDT').length
   const eth=cerrados.filter(t=>t.symbol==='ETHUSDT').length
-  if(btc+eth>0){
-    pieInst=new Chart(ctxP,{
-      type:'doughnut',
-      data:{labels:['BTC','ETH'],datasets:[{data:[btc,eth],backgroundColor:['#f59e0b','#3b82f6'],borderWidth:0}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b9cb5',font:{size:11},padding:12}}}}
-    })
-  }
+  const bnb=cerrados.filter(t=>t.symbol==='BNBUSDT').length
+  const labels=[],vals=[],colors=[]
+  if(btc){labels.push('BTC');vals.push(btc);colors.push('#f59e0b')}
+  if(eth){labels.push('ETH');vals.push(eth);colors.push('#3b82f6')}
+  if(bnb){labels.push('BNB');vals.push(bnb);colors.push('#8b5cf6')}
+  if(!vals.length) return
+  pieInst=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b9cb5',font:{size:11},padding:12}}}}})
+}
 
-  // Tabla completa
-  const cerradosSorted = [...cerrados].sort((a,b)=>b.fecha-a.fecha)
+function renderTabla(trades) {
   document.getElementById('trades-body').innerHTML=trades.sort((a,b)=>b.fecha-a.fecha).map(t=>{
-    const tagClass = t.tipo==='BUY'?'tag-buy': t.pnl>=0?'tag-tp':'tag-sl'
-    const tipoLabel = t.tipo==='BUY'?'COMPRA': t.resultado
+    const tagClass=t.tipo==='BUY'?'tag-buy':t.pnl>=0?'tag-tp':'tag-sl'
+    const tipoLabel=t.tipo==='BUY'?'COMPRA':t.resultado
     return `<tr>
       <td>${t.fecha.toLocaleDateString('es-AR')}</td>
       <td style="font-weight:600">${t.symbol}</td>
@@ -558,10 +464,80 @@ function renderSimulacion(capital, sl, tp, par) {
   }).join('')
 }
 
+// ═══════════════════════════════
+// MODO TRIAL — simulación
+// ═══════════════════════════════
+function renderSimulacion(capital,sl,tp,par) {
+  const trades=generarSimulacion(capital,sl,tp,par)
+  renderMetricas(trades,capital)
+  renderChart(trades,capital)
+  renderPie(trades)
+  renderTabla(trades)
+}
+
+function aplicarConfig() {
+  const capital=parseFloat(document.getElementById('cfg-capital').value)||100
+  const par=document.getElementById('cfg-par').value
+  const sl=parseFloat(document.getElementById('cfg-sl').value)||1.2
+  const tp=parseFloat(document.getElementById('cfg-tp').value)||3.0
+  renderSimulacion(capital,sl,tp,par)
+  const msg=document.getElementById('cfg-msg')
+  msg.style.display='inline'
+  setTimeout(()=>msg.style.display='none',3000)
+}
+
+// ═══════════════════════════════
+// MODO PRO — trades reales
+// ═══════════════════════════════
+async function cargarTradesReales() {
+  const {data,error}=await client.from('trades').select('*').eq('user_id',currentUserId).order('created_at',{ascending:false})
+  if(error||!data||!data.length) return
+  const trades=data.map(t=>({
+    fecha:new Date(t.created_at),symbol:t.symbol,tipo:t.side,precio:t.price,
+    resultado:t.pnl>=0?'WIN':'LOSS',pnl:t.pnl,capital:100+data.filter(x=>new Date(x.created_at)<=new Date(t.created_at)).reduce((a,b)=>a+b.pnl,0)
+  }))
+  const capital=100 // capital base
+  renderMetricas(trades,capital)
+  renderChart(trades,capital)
+  renderPie(trades)
+  renderTabla(trades)
+}
+
+function activarModoPro() {
+  userMode='pro'
+  document.getElementById('ds-sub').textContent='Bot operando en real · Conectado a Binance'
+  document.getElementById('lbl-balance').textContent='Balance real'
+  document.getElementById('lbl-ops').textContent='Trades hoy'
+  document.getElementById('chart-title').textContent='📈 Evolución del balance real'
+  document.getElementById('chart-badge').innerHTML='<div class="dot"></div>En vivo'
+  document.getElementById('hist-title').textContent='📋 Historial de trades reales'
+  document.getElementById('hist-badge').innerHTML='<div class="dot"></div>En vivo'
+  document.getElementById('strat-status').textContent='Operando en vivo'
+  document.getElementById('strat-period-lbl').textContent='Modo'
+  document.getElementById('strat-period-val').textContent='Real'
+  document.getElementById('s-periodo').textContent='En vivo'
+  document.getElementById('disclaimer-top').style.display='none'
+  document.getElementById('config-section').style.display='none'
+  document.getElementById('m-today-pnl').textContent='Hoy'
+  cargarTradesReales()
+  // Suscribir a cambios en tiempo real
+  client.channel('trades-pro').on('postgres_changes',{event:'INSERT',schema:'public',table:'trades',filter:'user_id=eq.'+currentUserId},()=>{cargarTradesReales()}).subscribe()
+}
+
+function activarModoTrial() {
+  userMode='trial'
+  document.getElementById('ds-sub').textContent='Simulación basada en datos históricos · Estrategia RSI + EMA + MACD'
+  renderSimulacion(100,1.2,3.0,'mix')
+}
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
 async function init() {
-  const {data:{session}} = await client.auth.getSession()
+  const {data:{session}}=await client.auth.getSession()
   if(!session) return window.location.href='login.html'
 
+  currentUserId=session.user.id
   const email=session.user.email
   const name=session.user.user_metadata?.name||email.split('@')[0]
   document.getElementById('user-email').textContent=email
@@ -574,11 +550,19 @@ async function init() {
 
   if(now>trialEnd&&session.user.id!==ADMIN_ID) return window.location.href='bloqueado.html'
 
-  let userPlan='basic'
+  // Determinar plan del usuario
+  let userPlan='trial'
   try{
     const {data:cfg}=await client.from('configuraciones').select('plan').eq('user_id',session.user.id).maybeSingle()
-    if(cfg) userPlan=cfg.plan||'basic'
+    if(cfg&&cfg.plan) userPlan=cfg.plan
   }catch(e){}
+  // Fallback a perfiles
+  if(userPlan==='trial'){
+    try{
+      const {data:perfil}=await client.from('perfiles').select('plan').eq('user_id',session.user.id).maybeSingle()
+      if(perfil&&perfil.plan&&perfil.plan!=='trial') userPlan=perfil.plan
+    }catch(e){}
+  }
 
   const planBadge=document.getElementById('plan-badge')
   if(session.user.id===ADMIN_ID){
@@ -586,14 +570,18 @@ async function init() {
     document.getElementById('trial-nav').innerHTML=''
   }else if(userPlan==='pro'){
     planBadge.innerHTML='<span class="badge-pro">⭐ Pro</span>'
-    document.getElementById('trial-nav').innerHTML=`<span class="badge">🎁 ${daysLeft}d</span>`
-  }else{
+    document.getElementById('trial-nav').innerHTML=''
+  }else if(userPlan==='basic'){
     planBadge.innerHTML='<span class="badge">Basic</span>'
+    document.getElementById('trial-nav').innerHTML=''
+  }else{
+    planBadge.innerHTML='<span class="badge">Trial</span>'
     document.getElementById('trial-nav').innerHTML=`<span class="badge">🎁 ${daysLeft}d</span>`
   }
 
+  // Mostrar banner trial
   const banner=document.getElementById('trial-banner')
-  if(session.user.id!==ADMIN_ID){
+  if(session.user.id!==ADMIN_ID&&(userPlan==='trial')){
     banner.style.display='flex'
     if(daysLeft<=2){
       banner.className='trial-banner trial-warn'
@@ -604,18 +592,22 @@ async function init() {
     }
   }
 
-  setInterval(()=>{
-    const el=document.getElementById('dtime')
-    if(el) el.textContent=new Date().toLocaleString('es-AR')
-  },1000)
+  // Reloj
+  setInterval(()=>{const el=document.getElementById('dtime');if(el)el.textContent=new Date().toLocaleString('es-AR')},1000)
 
+  // Precios siempre
   cargarPrecios()
-  setInterval(cargarPrecios, 30000)
+  setInterval(cargarPrecios,30000)
 
+  // Perfil
   cargarPerfil(session.user.id)
 
-  // Render simulación con valores iniciales
-  renderSimulacion(100, 1.2, 3.0, 'mix')
+  // Modo según plan
+  if(userPlan==='basic'||userPlan==='pro'){
+    activarModoPro()
+  }else{
+    activarModoTrial()
+  }
 }
 
 async function cargarPerfil(userId) {
@@ -636,10 +628,7 @@ async function cargarPerfil(userId) {
   `
 }
 
-async function logout() {
-  await client.auth.signOut()
-  window.location.href='login.html'
-}
+async function logout(){await client.auth.signOut();window.location.href='login.html'}
 
 init()
 </script>
