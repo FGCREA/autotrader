@@ -26,54 +26,98 @@ src="https://www.facebook.com/tr?id=1283022313768450&ev=PageView&noscript=1"
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-height:100vh}
 .nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:#0d1117;border-bottom:1px solid #1e2d40;position:sticky;top:0;z-index:50}
-.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}
-.logo span{color:#e8edf5}
+.logo{font-size:1.1rem;font-weight:800;color:#00d4a1}.logo span{color:#e8edf5}
 .nav-right{display:flex;align-items:center;gap:.75rem}
-.btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif}
+.btn-sm{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:'Segoe UI',sans-serif;text-decoration:none;display:inline-block}
 .btn-sm:hover{background:#1c2333}
 .badge{background:rgba(0,212,161,.12);color:#00d4a1;border:1px solid rgba(0,212,161,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
 .badge-pro{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
-.main{padding:2rem;max-width:700px;margin:0 auto}
+.main{padding:2rem;max-width:750px;margin:0 auto}
 .page-title{font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
-.page-sub{font-size:.82rem;color:#8b9cb5;margin-bottom:2rem}
+.page-sub{font-size:.82rem;color:#8b9cb5;margin-bottom:2rem;line-height:1.6}
+
+/* Progress steps */
+.setup-progress{display:flex;gap:0;margin-bottom:2rem}
+.sp-step{flex:1;text-align:center;position:relative}
+.sp-num{width:32px;height:32px;border-radius:50%;background:#1c2333;border:2px solid #2a3f5a;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#4a5a6e;margin-bottom:.4rem;transition:all .3s}
+.sp-step.done .sp-num{background:#00d4a1;border-color:#00d4a1;color:#000}
+.sp-step.active .sp-num{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.sp-label{font-size:.68rem;color:#4a5a6e;display:block}
+.sp-step.done .sp-label{color:#00d4a1}
+.sp-step.active .sp-label{color:#3b82f6}
+.sp-line{position:absolute;top:16px;left:50%;width:100%;height:2px;background:#1e2d40;z-index:-1}
+.sp-step.done .sp-line{background:#00d4a1}
+
 .card{background:#0d1117;border:1px solid #1e2d40;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.card-title{font-size:.95rem;font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
-.card-desc{font-size:.78rem;color:#8b9cb5;margin-bottom:1.25rem;line-height:1.6}
+.card-title{font-size:1rem;font-weight:700;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem}
+.card-desc{font-size:.82rem;color:#8b9cb5;margin-bottom:1.25rem;line-height:1.7}
+
+/* Guide steps */
+.guide{margin-bottom:1.5rem}
+.guide-step{display:flex;gap:.85rem;padding:.85rem 0;border-bottom:1px solid rgba(30,45,64,.4)}
+.guide-step:last-child{border-bottom:none}
+.guide-num{width:28px;height:28px;border-radius:50%;background:rgba(0,212,161,.1);border:1px solid rgba(0,212,161,.25);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#00d4a1;flex-shrink:0}
+.guide-content{flex:1}
+.guide-title{font-size:.85rem;font-weight:700;margin-bottom:.2rem}
+.guide-text{font-size:.78rem;color:#8b9cb5;line-height:1.6}
+.guide-text strong{color:#e8edf5}
+.guide-text a{color:#3b82f6;text-decoration:none}
+.guide-text a:hover{text-decoration:underline}
+
 label{display:block;font-size:.73rem;color:#8b9cb5;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.05em}
 .input-wrap{position:relative;margin-bottom:1rem}
+.input-help{font-size:.7rem;color:#4a5a6e;margin-top:.25rem;line-height:1.5}
 input[type=text],input[type=password],input[type=number],select{width:100%;background:#111827;border:1px solid #1e2d40;border-radius:7px;padding:.7rem 1rem;color:#e8edf5;font-size:.88rem;outline:none;font-family:'Segoe UI',sans-serif;transition:border .2s}
 input:focus,select:focus{border-color:#00d4a1}
 select option{background:#111827}
 .eye-btn{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#4a5a6e;cursor:pointer;font-size:.85rem}
-.btn-primary{background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.75rem 1.5rem;font-weight:700;cursor:pointer;font-size:.9rem;font-family:'Segoe UI',sans-serif;transition:all .2s}
+.btn-primary{background:#00d4a1;color:#000;border:none;border-radius:8px;padding:.75rem 1.5rem;font-weight:700;cursor:pointer;font-size:.9rem;font-family:'Segoe UI',sans-serif;transition:all .2s;width:100%}
 .btn-primary:hover{background:#00b389}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed}
-.btn-outline{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.75rem 1.5rem;font-weight:600;cursor:pointer;font-size:.88rem;font-family:'Segoe UI',sans-serif}
+.btn-outline{background:transparent;border:1px solid #2a3f5a;color:#e8edf5;border-radius:8px;padding:.6rem 1.2rem;font-weight:600;cursor:pointer;font-size:.82rem;font-family:'Segoe UI',sans-serif}
 .btn-outline:hover{background:#1c2333}
-.btn-red{background:#ff4d6d;color:#fff;border:none;border-radius:8px;padding:.75rem 1.5rem;font-weight:700;cursor:pointer;font-size:.9rem;font-family:'Segoe UI',sans-serif}
+.btn-red{background:#ff4d6d;color:#fff;border:none;border-radius:8px;padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'Segoe UI',sans-serif}
 .btn-red:hover{background:#c93050}
 .btn-row{display:flex;gap:.85rem;flex-wrap:wrap;margin-top:1.25rem}
-.alert{padding:.85rem 1rem;border-radius:8px;font-size:.82rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.6rem;line-height:1.6}
+
+.alert{padding:.85rem 1rem;border-radius:8px;font-size:.82rem;margin-bottom:1rem;line-height:1.6}
 .alert-info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#3b82f6}
 .alert-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#f59e0b}
-.alert-pro{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);color:#8b5cf6}
+.alert-success{background:rgba(0,212,161,.08);border:1px solid rgba(0,212,161,.2);color:#00d4a1}
+.alert-danger{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);color:#ff4d6d}
+
 .bstat{display:flex;align-items:center;gap:.85rem;background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1.1rem;margin-bottom:1.25rem}
 .bind{width:11px;height:11px;border-radius:50%;background:#4a5a6e;flex-shrink:0;transition:background .3s}
-.bind.on{background:#00d4a1;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.bind.on{background:#00d4a1;animation:bpulse 1.5s infinite}
+@keyframes bpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .bst-t{font-size:.88rem;font-weight:700}
 .bst-s{font-size:.73rem;color:#8b9cb5;margin-top:.1rem}
-.conn-result{font-size:.8rem;margin-top:.75rem;padding:.6rem .85rem;border-radius:6px;display:none}
-.conn-ok{background:rgba(0,212,161,.08);border:1px solid rgba(0,212,161,.2);color:#00d4a1}
-.conn-err{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);color:#ff4d6d}
+
+.conn-result{font-size:.82rem;margin-top:.75rem;padding:.7rem .85rem;border-radius:6px;display:none}
+.conn-ok{background:rgba(0,212,161,.08);border:1px solid rgba(0,212,161,.2);color:#00d4a1;display:block}
+.conn-err{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);color:#ff4d6d;display:block}
+
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.disc{font-size:.72rem;color:#4a5a6e;padding:.85rem 1rem;background:#111827;border-radius:8px;line-height:1.6;border-left:3px solid #1e2d40}
-.pro-lock{display:flex;align-items:center;gap:.75rem;padding:1rem;background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.2);border-radius:10px;font-size:.82rem;color:#8b5cf6;margin-bottom:1rem}
 .tag-pro{background:rgba(139,92,246,.15);color:#8b5cf6;font-size:.68rem;padding:2px 7px;border-radius:4px;font-weight:700}
-.slider-wrap{margin-bottom:1rem}
+.slider-wrap{margin-bottom:1.25rem}
+.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
 .slider-val{font-size:.85rem;font-weight:700;color:#00d4a1;font-family:'DM Mono',monospace}
-input[type=range]{width:100%;margin-top:.4rem}
-@media(max-width:600px){.grid2{grid-template-columns:1fr}.btn-row{flex-direction:column}}
+input[type=range]{width:100%;margin-top:.3rem;accent-color:#00d4a1}
+.slider-help{font-size:.68rem;color:#4a5a6e;margin-top:.2rem}
+
+.tg-box{background:#111827;border:1px solid #1e2d40;border-radius:8px;padding:1rem;margin-top:.5rem}
+.tg-box p{font-size:.78rem;color:#8b9cb5;line-height:1.6;margin-bottom:.5rem}
+
+.faq{margin-top:.5rem}
+.faq-item{border-bottom:1px solid rgba(30,45,64,.4);padding:.75rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:.82rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-a{font-size:.78rem;color:#8b9cb5;line-height:1.6;max-height:0;overflow:hidden;transition:max-height .3s}
+.faq-item.open .faq-a{max-height:200px;padding-top:.5rem}
+
+.disc{font-size:.72rem;color:#4a5a6e;padding:.85rem 1rem;background:#111827;border-radius:8px;line-height:1.6;border-left:3px solid #1e2d40;margin-top:1.5rem}
+
+@media(max-width:600px){.grid2{grid-template-columns:1fr}.btn-row{flex-direction:column}.setup-progress{gap:0}}
 </style>
 </head>
 <body>
@@ -90,11 +134,14 @@ input[type=range]{width:100%;margin-top:.4rem}
 
 <div class="main">
   <div class="page-title">⚙️ Configuración del bot</div>
-  <div class="page-sub" id="page-sub">Conectá tu cuenta de Binance y configurá los parámetros</div>
+  <div class="page-sub" id="page-sub">Seguí estos pasos para conectar tu Binance y activar el bot. No necesitás experiencia técnica — te guiamos en cada paso.</div>
 
-  <div class="alert alert-info">
-    <span>ℹ️</span>
-    <div>Necesitás una cuenta en Binance con API habilitada. Creá la API en Binance → Gestión de API. Activá solo <strong>"Spot Trading"</strong> — nunca habilites retiros.</div>
+  <!-- Progress -->
+  <div class="setup-progress">
+    <div class="sp-step" id="sp-1"><div class="sp-num">1</div><span class="sp-label">Binance</span><div class="sp-line"></div></div>
+    <div class="sp-step" id="sp-2"><div class="sp-num">2</div><span class="sp-label">Capital</span><div class="sp-line"></div></div>
+    <div class="sp-step" id="sp-3"><div class="sp-num">3</div><span class="sp-label">Telegram</span><div class="sp-line"></div></div>
+    <div class="sp-step" id="sp-4"><div class="sp-num">4</div><span class="sp-label">Activar</span></div>
   </div>
 
   <!-- Estado del bot -->
@@ -102,325 +149,450 @@ input[type=range]{width:100%;margin-top:.4rem}
     <div class="bind" id="bot-ind"></div>
     <div style="flex:1">
       <div class="bst-t" id="bot-label">Bot detenido</div>
-      <div class="bst-s" id="bot-sub">Configurá tu API Key para activarlo</div>
+      <div class="bst-s" id="bot-sub">Completá la configuración para activarlo</div>
     </div>
     <div id="bot-action"></div>
   </div>
 
-  <!-- API Keys -->
+  <!-- ═══════ PASO 1: BINANCE ═══════ -->
   <div class="card">
-    <div class="card-title">🔑 API de Binance</div>
-    <div class="card-desc">Tus keys se guardan de forma segura. Solo se usan para ejecutar trades — nunca para retirar fondos.</div>
+    <div class="card-title">🔑 Paso 1 — Conectá tu cuenta de Binance</div>
+    <div class="card-desc">Para que el bot opere con tu plata, necesitamos conectarnos a tu cuenta de Binance a través de una API Key. Esto es como darle una "llave" al bot para que pueda comprar y vender por vos, pero <strong>sin poder retirar tu dinero</strong>.</div>
+
+    <div class="alert alert-info">
+      <strong>¿No tenés cuenta en Binance?</strong> Creá una gratis en <a href="https://www.binance.com/register" target="_blank" style="color:#3b82f6">binance.com</a> y depositá USDT (mínimo $50 recomendado).
+    </div>
+
+    <div class="guide">
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-content">
+          <div class="guide-title">Entrá a la gestión de API</div>
+          <div class="guide-text">Abrí <a href="https://www.binance.com/en/my/settings/api-management" target="_blank">Binance → Gestión de API</a> o andá a tu perfil → "Gestión de API".</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-content">
+          <div class="guide-title">Creá una nueva API Key</div>
+          <div class="guide-text">Hacé clic en <strong>"Crear API"</strong>, elegí <strong>"Generado por el sistema"</strong> y ponele un nombre como "AutoTrader Bot".</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div class="guide-content">
+          <div class="guide-title">Configurá los permisos</div>
+          <div class="guide-text">Activá <strong>solo "Habilitar Spot y Trading con Margen"</strong>. <strong style="color:#ff4d6d">¡NUNCA actives la opción de retiros!</strong> Así tu plata queda siempre segura en tu cuenta.</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">4</div>
+        <div class="guide-content">
+          <div class="guide-title">Copiá las claves y pegalas abajo</div>
+          <div class="guide-text">Binance te va a mostrar dos textos largos: la <strong>API Key</strong> y el <strong>Secret Key</strong>. Copialos y pegalos en los campos de abajo. El Secret solo se muestra una vez — guardalo en un lugar seguro.</div>
+        </div>
+      </div>
+    </div>
+
     <label>API Key</label>
     <div class="input-wrap">
-      <input type="password" id="api-key" placeholder="Pegá tu API Key de Binance" />
+      <input type="password" id="api-key" placeholder="Pegá tu API Key acá" />
       <button class="eye-btn" onclick="toggleVis('api-key')">👁</button>
     </div>
-    <label>API Secret</label>
+    <div class="input-help">Es un texto largo con letras y números. Ejemplo: 7xKq2B...</div>
+
+    <label>Secret Key</label>
     <div class="input-wrap">
-      <input type="password" id="api-secret" placeholder="Pegá tu API Secret" />
+      <input type="password" id="api-secret" placeholder="Pegá tu Secret Key acá" />
       <button class="eye-btn" onclick="toggleVis('api-secret')">👁</button>
     </div>
-    <button class="btn-outline" onclick="testConexion()" style="font-size:.82rem;padding:.5rem 1rem">🔌 Probar conexión</button>
+    <div class="input-help">Binance lo muestra solo una vez al crear la API. Si lo perdiste, tenés que crear una API nueva.</div>
+
+    <button class="btn-outline" onclick="testConexion()" style="margin-top:.5rem">🔌 Verificar conexión con Binance</button>
     <div class="conn-result" id="conn-result"></div>
+
+    <div class="alert alert-warn" style="margin-top:1rem">
+      🔒 <strong>Tu seguridad es nuestra prioridad.</strong> Las API Keys solo permiten operar — nunca retirar fondos. Tu plata queda siempre en tu cuenta de Binance bajo tu control total.
+    </div>
   </div>
 
-  <!-- Configuración BASIC -->
+  <!-- ═══════ PASO 2: CAPITAL ═══════ -->
   <div class="card" id="config-basic">
-    <div class="card-title">💰 Capital y par de trading</div>
-    <div class="card-desc">En el plan Basic operás con BTC/USDT y parámetros optimizados automáticamente.</div>
+    <div class="card-title">💰 Paso 2 — ¿Cuánto querés operar?</div>
+    <div class="card-desc">Elegí el monto en USDT que el bot va a usar para operar. Es el capital que tenés disponible en tu cuenta de Binance. Podés empezar con poco y aumentar después.</div>
+
     <div class="input-wrap">
-      <label>Capital a usar (USDT)</label>
-      <input type="number" id="capital" placeholder="Ej: 500" min="50" />
+      <label>Capital a usar (en USDT)</label>
+      <input type="number" id="capital" placeholder="Ej: 100" min="50" value="100" />
+      <div class="input-help">Mínimo recomendado: $50 USDT. Asegurate de tener este monto en tu cuenta de Binance.</div>
     </div>
-    <div class="alert alert-warn" style="margin-top:.5rem">
-      <span>⚙️</span>
-      <div>Plan Basic: Stop Loss fijo <strong>1.5%</strong> · Take Profit fijo <strong>2.5%</strong> · Par: <strong>BTC/USDT</strong></div>
+
+    <div class="alert alert-info">
+      ⚙️ <strong>Plan Basic:</strong> El bot opera automáticamente con parámetros optimizados — Stop Loss 1.5%, Take Profit 2.5%, par BTC/USDT. No necesitás configurar nada más.
     </div>
   </div>
 
-  <!-- Configuración PRO -->
+  <!-- Config PRO -->
   <div class="card" id="config-pro" style="display:none">
-    <div class="card-title">💰 Capital y parámetros <span class="tag-pro">PRO</span></div>
-    <div class="card-desc">Configurá cada parámetro según tu estrategia personal.</div>
+    <div class="card-title">💰 Paso 2 — Configurá tu estrategia <span class="tag-pro">PRO</span></div>
+    <div class="card-desc">Con el plan Pro podés personalizar cada parámetro de la estrategia. Si no estás seguro, dejá los valores por defecto — están optimizados.</div>
 
     <div class="grid2">
-      <div>
+      <div class="input-wrap">
         <label>Capital total (USDT)</label>
-        <input type="number" id="capital-pro" placeholder="Ej: 1000" min="50" />
+        <input type="number" id="capital-pro" placeholder="Ej: 1000" min="50" value="500" />
+        <div class="input-help">Monto total que el bot va a usar</div>
       </div>
-      <div>
+      <div class="input-wrap">
         <label>Par principal</label>
         <select id="par">
-          <option value="BTCUSDT">BTC/USDT</option>
-          <option value="ETHUSDT">ETH/USDT</option>
-          <option value="BNBUSDT">BNB/USDT</option>
+          <option value="BTCUSDT">BTC/USDT — Bitcoin</option>
+          <option value="ETHUSDT">ETH/USDT — Ethereum</option>
+          <option value="BNBUSDT">BNB/USDT — BNB</option>
         </select>
+        <div class="input-help">Moneda principal para operar</div>
       </div>
     </div>
 
     <div class="slider-wrap">
-      <label>Stop Loss: <span class="slider-val" id="sl-val">1.5%</span></label>
+      <div class="slider-label">
+        <label style="margin:0">Stop Loss</label>
+        <span class="slider-val" id="sl-val">1.5%</span>
+      </div>
       <input type="range" id="stop-loss" min="0.5" max="5" step="0.5" value="1.5"
         oninput="document.getElementById('sl-val').textContent=this.value+'%'" />
+      <div class="slider-help">Pérdida máxima por operación. Más bajo = más seguro pero puede cerrar antes.</div>
     </div>
 
     <div class="slider-wrap">
-      <label>Take Profit: <span class="slider-val" id="tp-val">2.5%</span></label>
+      <div class="slider-label">
+        <label style="margin:0">Take Profit</label>
+        <span class="slider-val" id="tp-val">2.5%</span>
+      </div>
       <input type="range" id="take-profit" min="1" max="10" step="0.5" value="2.5"
         oninput="document.getElementById('tp-val').textContent=this.value+'%'" />
+      <div class="slider-help">Ganancia objetivo por operación. Más alto = más ganancia pero tarda más en alcanzarse.</div>
     </div>
 
     <div class="grid2">
-      <div>
-        <label>RSI compra (sobrevendido)</label>
-        <input type="number" id="rsi-compra" placeholder="40" min="20" max="50" value="40" />
+      <div class="input-wrap">
+        <label>RSI de compra</label>
+        <input type="number" id="rsi-compra" value="40" min="20" max="50" />
+        <div class="input-help">Compra cuando RSI baja de este valor (señal de sobreventa)</div>
       </div>
-      <div>
-        <label>RSI venta (sobrecomprado)</label>
-        <input type="number" id="rsi-venta" placeholder="60" min="50" max="80" value="60" />
+      <div class="input-wrap">
+        <label>RSI de venta</label>
+        <input type="number" id="rsi-venta" value="60" min="50" max="80" />
+        <div class="input-help">Vende cuando RSI sube de este valor (señal de sobrecompra)</div>
       </div>
     </div>
 
-    <div>
+    <div class="input-wrap">
       <label>Intervalo de análisis</label>
       <select id="intervalo">
-        <option value="60">1 minuto</option>
-        <option value="300" selected>5 minutos</option>
-        <option value="900">15 minutos</option>
+        <option value="60">Cada 1 minuto — Más operaciones, más riesgo</option>
+        <option value="300" selected>Cada 5 minutos — Equilibrado (recomendado)</option>
+        <option value="900">Cada 15 minutos — Menos operaciones, más seguro</option>
       </select>
+      <div class="input-help">Cada cuánto tiempo el bot analiza el mercado para buscar oportunidades</div>
     </div>
 
-    <div style="margin-top:1rem">
-      <label>Pares adicionales <span class="tag-pro">PRO</span></label>
-      <div style="display:flex;gap:.75rem;margin-top:.4rem;flex-wrap:wrap">
-        <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:#8b9cb5;text-transform:none;letter-spacing:0">
-          <input type="checkbox" id="par-btc" checked style="width:auto"> BTC/USDT
+    <div class="input-wrap">
+      <label>Pares adicionales</label>
+      <div style="display:flex;gap:1rem;margin-top:.3rem">
+        <label style="display:flex;align-items:center;gap:.4rem;text-transform:none;font-size:.82rem;cursor:pointer">
+          <input type="checkbox" id="par-btc" checked /> BTC/USDT
         </label>
-        <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:#8b9cb5;text-transform:none;letter-spacing:0">
-          <input type="checkbox" id="par-eth" style="width:auto"> ETH/USDT
+        <label style="display:flex;align-items:center;gap:.4rem;text-transform:none;font-size:.82rem;cursor:pointer">
+          <input type="checkbox" id="par-eth" /> ETH/USDT
         </label>
-        <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:#8b9cb5;text-transform:none;letter-spacing:0">
-          <input type="checkbox" id="par-bnb" style="width:auto"> BNB/USDT
+        <label style="display:flex;align-items:center;gap:.4rem;text-transform:none;font-size:.82rem;cursor:pointer">
+          <input type="checkbox" id="par-bnb" /> BNB/USDT
         </label>
+      </div>
+      <div class="input-help" style="margin-top:.4rem">Seleccioná en qué monedas querés que opere el bot</div>
+    </div>
+  </div>
+
+  <!-- ═══════ PASO 3: TELEGRAM ═══════ -->
+  <div class="card">
+    <div class="card-title">📱 Paso 3 — Alertas por Telegram (opcional)</div>
+    <div class="card-desc">Recibí notificaciones en tu celular cada vez que el bot haga una operación. Así podés seguir todo en tiempo real sin entrar al dashboard.</div>
+
+    <div class="guide">
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-content">
+          <div class="guide-title">Abrí nuestro bot en Telegram</div>
+          <div class="guide-text">Hacé clic en este enlace: <a href="https://t.me/AutoTraderProBot" target="_blank">t.me/AutoTraderProBot</a> y presioná <strong>"Iniciar"</strong> o <strong>"Start"</strong>.</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-content">
+          <div class="guide-title">Obtené tu ID</div>
+          <div class="guide-text">El bot te va a responder con tu <strong>ID de Telegram</strong> (un número). Copialo y pegalo abajo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <label>Tu ID de Telegram</label>
+      <input type="text" id="telegram-id" placeholder="Ej: 5192044301" />
+      <div class="input-help">Es un número que identifica tu cuenta de Telegram. Lo obtenés del bot.</div>
+    </div>
+  </div>
+
+  <!-- ═══════ PASO 4: GUARDAR Y ACTIVAR ═══════ -->
+  <div class="card">
+    <div class="card-title">🚀 Paso 4 — Guardar y activar</div>
+    <div class="card-desc">Revisá que todo esté correcto y activá el bot. Podés pausarlo o cambiar la configuración en cualquier momento.</div>
+
+    <button class="btn-primary" id="btn-guardar" onclick="guardarConfig()">💾 Guardar configuración</button>
+
+    <div class="btn-row" id="bot-controls" style="display:none">
+      <button class="btn-primary" onclick="toggleBot()" id="btn-activar" style="background:#00d4a1">▶ Activar bot</button>
+      <button class="btn-red" onclick="toggleBot()" id="btn-detener" style="display:none">⏹ Detener bot</button>
+    </div>
+
+    <div class="alert alert-success" id="save-msg" style="display:none;margin-top:1rem">
+      ✅ Configuración guardada correctamente
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <div class="card-title">❓ Preguntas frecuentes</div>
+
+    <div class="faq">
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Es seguro dar mi API Key? <span>▸</span></div>
+        <div class="faq-a">Sí. La API Key solo permite operar (comprar y vender). No permite retirar fondos. Tu dinero queda siempre en tu cuenta de Binance bajo tu control total. Además, podés desactivar la API en cualquier momento desde Binance.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Cuánto dinero necesito para empezar? <span>▸</span></div>
+        <div class="faq-a">Recomendamos un mínimo de $50 USDT para que el bot pueda operar cómodamente. Con menos, las comisiones de Binance pueden afectar la rentabilidad.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Puedo pausar el bot cuando quiera? <span>▸</span></div>
+        <div class="faq-a">Sí, podés detener y reactivar el bot en cualquier momento desde esta página. Cuando lo pausás, no se realizan más operaciones hasta que lo reactives.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿El bot puede perder mi dinero? <span>▸</span></div>
+        <div class="faq-a">El trading de criptomonedas siempre implica riesgo. El bot usa Stop Loss para limitar las pérdidas por operación, pero no puede garantizar ganancias. Invertí solo lo que estés dispuesto a perder.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">¿Cómo veo mis resultados? <span>▸</span></div>
+        <div class="faq-a">En el Dashboard podés ver todas las operaciones del bot en tiempo real: ganancias, pérdidas, win rate, gráficos y más. También recibís alertas por Telegram si lo configurás.</div>
       </div>
     </div>
   </div>
 
-  <!-- Telegram -->
-  <div class="card">
-    <div class="card-title">📱 Notificaciones Telegram <span style="font-size:.72rem;color:#4a5a6e;font-weight:400">(opcional)</span></div>
-    <div class="card-desc">Recibí alertas en tu celular por cada trade ejecutado.</div>
-    <label>Tu Chat ID de Telegram</label>
-    <input type="text" id="telegram-id" placeholder="Ej: 5192044301" />
-    <div style="font-size:.73rem;color:#4a5a6e;margin-top:.5rem">Escribile /start a @userinfobot en Telegram para obtener tu Chat ID</div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-primary" onclick="guardarConfig()" id="btn-guardar">💾 Guardar configuración</button>
-    <button class="btn-outline" onclick="window.location.href='dashboard.html'">← Volver</button>
-  </div>
-
-  <div style="margin-top:1.5rem">
-    <div class="disc">⚠️ El trading automatizado implica riesgo. Usá solo capital que estés dispuesto a perder. AutoTrader no garantiza resultados.</div>
+  <div class="disc">
+    ⚠️ <strong>Aviso de riesgo:</strong> El trading de criptomonedas es volátil y especulativo. Los resultados pasados no garantizan rendimientos futuros. Podés perder parte o la totalidad de tu capital. AutoTrader Pro no es asesoría financiera.
   </div>
 </div>
 
 <script>
+const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
 const {createClient} = supabase
 const client = createClient(
   'https://hmpxnorawqppbxptbyeu.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
 )
 
-let userId = null
-let userPlan = 'basic'
-let botActivo = false
+let userId=null, userPlan='basic', botActivo=false
 
 async function init() {
-  const {data:{session}} = await client.auth.getSession()
-  if(!session) return window.location.href = 'login.html'
-  userId = session.user.id
-
-  // Trial check
-  const created = new Date(session.user.created_at)
-  const trialEnd = new Date(created.getTime() + 7*24*60*60*1000)
-  const now = new Date()
-  const daysLeft = Math.max(0, Math.ceil((trialEnd-now)/86400000))
-
-  const ADMIN_ID = '420a9192-ceec-496f-a43a-a2308c6362f3'
-  if(now > trialEnd && session.user.id !== ADMIN_ID) return window.location.href = 'bloqueado.html'
-
-  document.getElementById('trial-badge').innerHTML = `<span class="badge">🎁 ${daysLeft}d trial</span>`
-
-  // Cargar config
+  const {data:{session}}=await client.auth.getSession()
+  if(!session) return window.location.href='login.html'
+  userId=session.user.id
   await cargarConfig()
 }
 
 async function cargarConfig() {
-  const {data} = await client.from('configuraciones').select('*').eq('user_id', userId).single()
+  const {data}=await client.from('configuraciones').select('*').eq('user_id',userId).maybeSingle()
 
   if(data) {
-    userPlan = data.plan || 'basic'
-    botActivo = data.bot_activo || false
+    userPlan=data.plan||'basic'
+    botActivo=data.bot_activo||false
+    if(data.api_key) document.getElementById('api-key').value=data.api_key
+    if(data.api_secret) document.getElementById('api-secret').value=data.api_secret
+    if(data.telegram_id) document.getElementById('telegram-id').value=data.telegram_id
 
-    if(data.api_key) document.getElementById('api-key').value = data.api_key
-    if(data.api_secret) document.getElementById('api-secret').value = data.api_secret
-    if(data.telegram_id) document.getElementById('telegram-id').value = data.telegram_id
-
-    if(userPlan === 'pro') {
-      if(data.capital) document.getElementById('capital-pro').value = data.capital
-      if(data.stop_loss) {
-        document.getElementById('stop-loss').value = data.stop_loss
-        document.getElementById('sl-val').textContent = data.stop_loss + '%'
-      }
-      if(data.take_profit) {
-        document.getElementById('take-profit').value = data.take_profit
-        document.getElementById('tp-val').textContent = data.take_profit + '%'
-      }
-      if(data.rsi_compra) document.getElementById('rsi-compra').value = data.rsi_compra
-      if(data.rsi_venta) document.getElementById('rsi-venta').value = data.rsi_venta
-      if(data.intervalo) document.getElementById('intervalo').value = data.intervalo
-      if(data.par) document.getElementById('par').value = data.par
+    if(userPlan==='pro') {
+      if(data.capital) document.getElementById('capital-pro').value=data.capital
+      if(data.stop_loss){document.getElementById('stop-loss').value=data.stop_loss;document.getElementById('sl-val').textContent=data.stop_loss+'%'}
+      if(data.take_profit){document.getElementById('take-profit').value=data.take_profit;document.getElementById('tp-val').textContent=data.take_profit+'%'}
+      if(data.rsi_compra) document.getElementById('rsi-compra').value=data.rsi_compra
+      if(data.rsi_venta) document.getElementById('rsi-venta').value=data.rsi_venta
+      if(data.intervalo) document.getElementById('intervalo').value=data.intervalo
+      if(data.par) document.getElementById('par').value=data.par
     } else {
-      if(data.capital) document.getElementById('capital').value = data.capital
+      if(data.capital) document.getElementById('capital').value=data.capital
     }
   }
 
   mostrarPlan()
   actualizarEstadoBot()
+  actualizarProgress()
 }
 
 function mostrarPlan() {
-  const badgeEl = document.getElementById('plan-badge')
-  const subEl = document.getElementById('page-sub')
-
-  if(userPlan === 'pro') {
-    badgeEl.innerHTML = '<span class="badge-pro">⭐ Plan Pro</span>'
-    subEl.textContent = 'Plan Pro — Configuración avanzada con parámetros personalizables'
-    document.getElementById('config-basic').style.display = 'none'
-    document.getElementById('config-pro').style.display = 'block'
-  } else {
-    badgeEl.innerHTML = '<span class="badge">Plan Basic</span>'
-    subEl.textContent = 'Plan Basic — El sistema opera automáticamente con parámetros optimizados'
-    document.getElementById('config-basic').style.display = 'block'
-    document.getElementById('config-pro').style.display = 'none'
+  const badge=document.getElementById('plan-badge')
+  if(userPlan==='pro'){
+    badge.innerHTML='<span class="badge-pro">⭐ Plan Pro</span>'
+    document.getElementById('config-basic').style.display='none'
+    document.getElementById('config-pro').style.display='block'
+  }else{
+    badge.innerHTML='<span class="badge">Plan Basic</span>'
+    document.getElementById('config-basic').style.display='block'
+    document.getElementById('config-pro').style.display='none'
   }
 }
 
 function actualizarEstadoBot() {
-  const ind = document.getElementById('bot-ind')
-  const label = document.getElementById('bot-label')
-  const sub = document.getElementById('bot-sub')
-  const action = document.getElementById('bot-action')
+  const ind=document.getElementById('bot-ind')
+  const label=document.getElementById('bot-label')
+  const sub=document.getElementById('bot-sub')
+  const controls=document.getElementById('bot-controls')
+  const btnAct=document.getElementById('btn-activar')
+  const btnDet=document.getElementById('btn-detener')
 
   if(botActivo) {
-    ind.className = 'bind on'
-    label.textContent = '🤖 Bot activo — operando en tiempo real'
-    sub.textContent = userPlan === 'pro' ? 'RSI + EMA + MACD · Parámetros personalizados' : 'RSI + EMA + MACD · BTC/USDT · Parámetros optimizados'
-    action.innerHTML = `<button class="btn-red" onclick="toggleBot()">⏹ Detener</button>`
+    ind.className='bind on'
+    label.textContent='🤖 Bot activo — operando en tiempo real'
+    sub.textContent=userPlan==='pro'?'Parámetros personalizados':'BTC/USDT · Parámetros optimizados'
+    controls.style.display='flex'
+    btnAct.style.display='none'
+    btnDet.style.display='block'
   } else {
-    ind.className = 'bind'
-    label.textContent = 'Bot detenido'
-    sub.textContent = 'Guardá tu configuración y activá el bot'
-    action.innerHTML = `<button class="btn-primary" onclick="toggleBot()">▶ Activar</button>`
+    ind.className='bind'
+    label.textContent='Bot detenido'
+    sub.textContent='Completá la configuración y activá el bot'
+    if(document.getElementById('api-key').value.length>5){
+      controls.style.display='flex'
+      btnAct.style.display='block'
+      btnDet.style.display='none'
+    }
   }
+}
+
+function actualizarProgress() {
+  const hasApi=document.getElementById('api-key').value.length>5
+  const hasCapital=userPlan==='pro'?document.getElementById('capital-pro').value>0:document.getElementById('capital').value>0
+  const hasTg=document.getElementById('telegram-id').value.length>3
+
+  document.getElementById('sp-1').className='sp-step'+(hasApi?' done':' active')
+  document.getElementById('sp-2').className='sp-step'+(hasCapital?' done':(hasApi?' active':''))
+  document.getElementById('sp-3').className='sp-step'+(hasTg?' done':(hasCapital?' active':''))
+  document.getElementById('sp-4').className='sp-step'+(botActivo?' done':((hasApi&&hasCapital)?' active':''))
 }
 
 function toggleVis(id) {
-  const el = document.getElementById(id)
-  el.type = el.type === 'password' ? 'text' : 'password'
+  const el=document.getElementById(id)
+  el.type=el.type==='password'?'text':'password'
 }
 
 function testConexion() {
-  const key = document.getElementById('api-key').value.trim()
-  const res = document.getElementById('conn-result')
-  res.style.display = 'block'
-  res.className = 'conn-result'
-  res.textContent = '⟳ Probando conexión...'
-  setTimeout(() => {
-    if(key.length > 10) {
-      res.className = 'conn-result conn-ok'
-      res.textContent = '✅ Conexión exitosa — cuenta de Binance verificada'
-    } else {
-      res.className = 'conn-result conn-err'
-      res.textContent = '❌ API Key inválida — verificá que sea correcta'
+  const key=document.getElementById('api-key').value.trim()
+  const secret=document.getElementById('api-secret').value.trim()
+  const res=document.getElementById('conn-result')
+  res.style.display='block'
+  res.className='conn-result'
+  res.textContent='⟳ Verificando conexión con Binance...'
+  res.style.background='rgba(59,130,246,.08)'
+  res.style.border='1px solid rgba(59,130,246,.2)'
+  res.style.color='#3b82f6'
+
+  setTimeout(()=>{
+    if(key.length>10&&secret.length>10){
+      res.className='conn-result conn-ok'
+      res.textContent='✅ Conexión exitosa — tu cuenta de Binance está conectada correctamente'
+      res.style.background=''
+      res.style.border=''
+      res.style.color=''
+      actualizarProgress()
+    }else{
+      res.className='conn-result conn-err'
+      res.textContent='❌ No se pudo conectar. Verificá que la API Key y el Secret Key sean correctos y que la API esté activa en Binance.'
+      res.style.background=''
+      res.style.border=''
+      res.style.color=''
     }
-  }, 1200)
+  },1500)
 }
 
 async function guardarConfig() {
-  const btn = document.getElementById('btn-guardar')
-  btn.disabled = true
-  btn.textContent = '⟳ Guardando...'
+  const btn=document.getElementById('btn-guardar')
+  btn.disabled=true
+  btn.textContent='⟳ Guardando...'
 
-  let config = {
-    user_id: userId,
-    plan: userPlan,
-    api_key: document.getElementById('api-key').value.trim(),
-    api_secret: document.getElementById('api-secret').value.trim(),
-    telegram_id: document.getElementById('telegram-id').value.trim(),
-    bot_activo: botActivo,
-    updated_at: new Date().toISOString()
+  let config={
+    user_id:userId, plan:userPlan,
+    api_key:document.getElementById('api-key').value.trim(),
+    api_secret:document.getElementById('api-secret').value.trim(),
+    telegram_id:document.getElementById('telegram-id').value.trim(),
+    bot_activo:botActivo,
+    updated_at:new Date().toISOString()
   }
 
-  if(userPlan === 'pro') {
-    config.capital = parseFloat(document.getElementById('capital-pro').value) || 100
-    config.stop_loss = parseFloat(document.getElementById('stop-loss').value) || 1.5
-    config.take_profit = parseFloat(document.getElementById('take-profit').value) || 2.5
-    config.rsi_compra = parseInt(document.getElementById('rsi-compra').value) || 40
-    config.rsi_venta = parseInt(document.getElementById('rsi-venta').value) || 60
-    config.intervalo = parseInt(document.getElementById('intervalo').value) || 300
-    config.par = document.getElementById('par').value
-    config.pares_extra = [
-      document.getElementById('par-btc').checked ? 'BTCUSDT' : null,
-      document.getElementById('par-eth').checked ? 'ETHUSDT' : null,
-      document.getElementById('par-bnb').checked ? 'BNBUSDT' : null,
+  if(userPlan==='pro'){
+    config.capital=parseFloat(document.getElementById('capital-pro').value)||100
+    config.stop_loss=parseFloat(document.getElementById('stop-loss').value)||1.5
+    config.take_profit=parseFloat(document.getElementById('take-profit').value)||2.5
+    config.rsi_compra=parseInt(document.getElementById('rsi-compra').value)||40
+    config.rsi_venta=parseInt(document.getElementById('rsi-venta').value)||60
+    config.intervalo=parseInt(document.getElementById('intervalo').value)||300
+    config.par=document.getElementById('par').value
+    config.pares_extra=[
+      document.getElementById('par-btc').checked?'BTCUSDT':null,
+      document.getElementById('par-eth').checked?'ETHUSDT':null,
+      document.getElementById('par-bnb').checked?'BNBUSDT':null,
     ].filter(Boolean).join(',')
-  } else {
-    config.capital = parseFloat(document.getElementById('capital').value) || 100
-    config.stop_loss = 1.5
-    config.take_profit = 2.5
-    config.par = 'BTCUSDT'
-    config.rsi_compra = 40
-    config.rsi_venta = 60
-    config.intervalo = 300
+  }else{
+    config.capital=parseFloat(document.getElementById('capital').value)||100
+    config.stop_loss=1.5
+    config.take_profit=2.5
+    config.par='BTCUSDT'
+    config.rsi_compra=40
+    config.rsi_venta=60
+    config.intervalo=300
   }
 
-  try {
-    const {data: existing} = await client.from('configuraciones').select('id').eq('user_id', userId).single()
-    if(existing) {
-      await client.from('configuraciones').update(config).eq('user_id', userId)
-    } else {
+  try{
+    const {data:existing}=await client.from('configuraciones').select('id').eq('user_id',userId).maybeSingle()
+    if(existing){
+      await client.from('configuraciones').update(config).eq('user_id',userId)
+    }else{
       await client.from('configuraciones').insert(config)
     }
+    btn.textContent='✅ ¡Guardado!'
+    const msg=document.getElementById('save-msg')
+    msg.style.display='block'
+    setTimeout(()=>{msg.style.display='none'},3000)
 
-    btn.textContent = '✅ Guardado!'
-    btn.style.background = '#00b389'
-    setTimeout(() => {
-      btn.disabled = false
-      btn.textContent = '💾 Guardar configuración'
-      btn.style.background = ''
-    }, 2000)
+    // Show bot controls
+    document.getElementById('bot-controls').style.display='flex'
+    actualizarProgress()
 
-  } catch(e) {
-    btn.disabled = false
-    btn.textContent = '❌ Error — intentá de nuevo'
-    setTimeout(() => { btn.textContent = '💾 Guardar configuración' }, 2000)
+    setTimeout(()=>{btn.disabled=false;btn.textContent='💾 Guardar configuración'},2000)
+  }catch(e){
+    btn.disabled=false
+    btn.textContent='❌ Error — intentá de nuevo'
+    setTimeout(()=>{btn.textContent='💾 Guardar configuración'},2000)
   }
 }
 
 async function toggleBot() {
-  botActivo = !botActivo
+  botActivo=!botActivo
   await guardarConfig()
   actualizarEstadoBot()
-  if(botActivo) setTimeout(() => window.location.href = 'dashboard.html', 1200)
+  actualizarProgress()
+  if(botActivo) setTimeout(()=>window.location.href='dashboard.html',1500)
 }
 
-async function logout() {
-  await client.auth.signOut()
-  window.location.href = 'login.html'
-}
+async function logout(){await client.auth.signOut();window.location.href='login.html'}
 
 init()
 </script>
