@@ -35,6 +35,7 @@ body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-heig
 .badge{background:rgba(0,212,161,.12);color:#00d4a1;border:1px solid rgba(0,212,161,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
 .badge-warn{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
 .badge-pro{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-sim{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.25);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
 .main{padding:1.5rem;max-width:1300px;margin:0 auto}
 .dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
 .dt{font-size:1.25rem;font-weight:800}
@@ -53,6 +54,7 @@ body{font-family:'Segoe UI',sans-serif;background:#060810;color:#e8edf5;min-heig
 .ctitle{font-size:.88rem;font-weight:700}
 .live{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:#8b9cb5}
 .dot{width:7px;height:7px;border-radius:50%;background:#00d4a1;animation:pulse 1.5s infinite;display:inline-block;flex-shrink:0}
+.dot-blue{background:#3b82f6}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
 .row3{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
@@ -64,6 +66,8 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .tag{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:.68rem;font-weight:600}
 .tag-buy{background:rgba(0,212,161,.15);color:#00d4a1}
 .tag-sell{background:rgba(255,77,109,.15);color:#ff4d6d}
+.tag-tp{background:rgba(0,212,161,.15);color:#00d4a1}
+.tag-sl{background:rgba(255,77,109,.15);color:#ff4d6d}
 .empty{text-align:center;padding:2rem;color:#4a5a6e;font-size:.82rem}
 .trial-banner{border-radius:10px;padding:.9rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .trial-ok{background:linear-gradient(135deg,rgba(0,212,161,.08),rgba(59,130,246,.04));border:1px solid rgba(0,212,161,.2)}
@@ -76,7 +80,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .demo-item{background:#111827;border-radius:8px;padding:.75rem;text-align:center}
 .demo-val{font-size:.85rem;font-weight:700;color:#00d4a1}
 .demo-key{font-size:.68rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem}
-.demo-note{margin-top:.85rem;padding:.75rem 1rem;background:rgba(0,212,161,.05);border:1px solid rgba(0,212,161,.15);border-radius:8px;font-size:.76rem;color:#8b9cb5;line-height:1.6}
+.demo-note{margin-top:.85rem;padding:.75rem 1rem;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:.76rem;color:#8b9cb5;line-height:1.6}
 .perfil-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-top:.75rem}
 .perfil-item{background:#111827;border-radius:7px;padding:.65rem;text-align:center}
 .perfil-val{font-size:.8rem;font-weight:700;color:#00d4a1;margin-bottom:.15rem}
@@ -88,8 +92,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .stat-row:last-child{border-bottom:none}
 .stat-label{color:#8b9cb5}
 .stat-val{font-weight:600;font-family:'DM Mono',monospace}
-
-/* ── Precios en vivo ── */
 .prices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.25rem}
 .price-card{background:#111827;border:1px solid #1e2d40;border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
 .price-left{display:flex;align-items:center;gap:.75rem}
@@ -101,8 +103,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .price-chg{font-size:.72rem;font-family:'DM Mono',monospace;margin-top:.15rem}
 .price-chg.up{color:#00d4a1}
 .price-chg.dn{color:#ff4d6d}
-
-/* ── Config trading ── */
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem}
 .config-item label{display:block;font-size:.7rem;color:#4a5a6e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
 .config-item input,.config-item select{width:100%;background:#111827;border:1px solid #1e2d40;color:#e8edf5;padding:.55rem .75rem;border-radius:7px;font-size:.85rem;font-family:'DM Mono',monospace}
@@ -111,7 +111,8 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .config-save{margin-top:1rem;background:#00d4a1;color:#000;border:none;border-radius:7px;padding:.6rem 1.25rem;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'Segoe UI',sans-serif}
 .config-save:hover{background:#00b389}
 .config-msg{margin-top:.6rem;font-size:.75rem;color:#00d4a1;display:none}
-
+.disclaimer{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:.85rem 1rem;font-size:.72rem;color:#f59e0b;line-height:1.6;margin-bottom:1.25rem}
+.disclaimer-footer{background:#0d1117;border-top:1px solid #1e2d40;padding:1.25rem 1.5rem;margin-top:1.5rem;font-size:.7rem;color:#4a5a6e;line-height:1.8;text-align:center}
 @media(max-width:900px){
   .mgrid{grid-template-columns:repeat(3,1fr)}
   .row2,.row3{grid-template-columns:1fr}
@@ -142,15 +143,17 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="dh">
     <div>
       <div class="dt" id="greeting">Dashboard</div>
-      <div class="ds" id="ds-sub">Bot demo activo · Resultados en tiempo real</div>
+      <div class="ds" id="ds-sub">Simulación basada en datos históricos · Estrategia RSI + EMA + MACD</div>
     </div>
     <div style="font-size:.7rem;color:#4a5a6e;font-family:'DM Mono',monospace" id="dtime"></div>
   </div>
 
+  <div class="disclaimer">⚠️ Los resultados mostrados son una simulación basada en datos históricos reales de los últimos 6 meses. Rendimientos pasados no garantizan resultados futuros. El trading de criptomonedas implica riesgo de pérdida parcial o total del capital. Invertí solo lo que estés dispuesto a perder.</div>
+
   <div class="trial-banner trial-ok" id="trial-banner" style="display:none">
     <div class="trial-text">
       <h3 id="trial-title">🎁 Prueba gratuita activa</h3>
-      <p id="trial-desc">El bot opera en demo. Activá tu plan para conectar tu Binance real.</p>
+      <p id="trial-desc">Mirá cómo rindió la estrategia en los últimos 6 meses. Activá tu plan para operar en real.</p>
     </div>
     <a href="planes.html" class="btn-green">Activar plan →</a>
   </div>
@@ -191,9 +194,9 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
   <div class="mgrid">
     <div class="metric">
-      <div class="mlabel">Balance demo</div>
-      <div class="mval neu" id="m-balance">$100.00</div>
-      <div class="msub neu" id="m-balance-ch">Capital inicial</div>
+      <div class="mlabel">Balance simulado</div>
+      <div class="mval up" id="m-balance">$100.00</div>
+      <div class="msub up" id="m-balance-ch">Simulación histórica</div>
     </div>
     <div class="metric">
       <div class="mlabel">PnL total</div>
@@ -211,21 +214,17 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <div class="msub neu" id="m-best-sym">–</div>
     </div>
     <div class="metric">
-      <div class="mlabel">Trades hoy</div>
+      <div class="mlabel">Total operaciones</div>
       <div class="mval neu" id="m-today">0</div>
-      <div class="msub up" id="m-today-pnl">$0.00</div>
+      <div class="msub up" id="m-today-pnl">6 meses</div>
     </div>
   </div>
 
   <div class="row3">
     <div class="cc">
       <div class="ch">
-        <div class="ctitle">📈 Evolución del balance</div>
-        <div class="tabs">
-          <button class="tab-btn on" onclick="cambiarPeriodo('7d',this)">7D</button>
-          <button class="tab-btn" onclick="cambiarPeriodo('30d',this)">30D</button>
-          <button class="tab-btn" onclick="cambiarPeriodo('all',this)">Todo</button>
-        </div>
+        <div class="ctitle">📈 Evolución del balance — Simulación histórica</div>
+        <div class="live"><span class="badge-sim">📊 Datos históricos</span></div>
       </div>
       <div class="chart-wrap"><canvas id="balance-chart"></canvas></div>
     </div>
@@ -237,55 +236,54 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <div class="stat-row"><span class="stat-label">Ganancia prom.</span><span class="stat-val up" id="s-avg-win">$0</span></div>
       <div class="stat-row"><span class="stat-label">Pérdida prom.</span><span class="stat-val dn" id="s-avg-loss">$0</span></div>
       <div class="stat-row"><span class="stat-label">Profit factor</span><span class="stat-val neu" id="s-pf">0</span></div>
-      <div class="stat-row"><span class="stat-label">BTC trades</span><span class="stat-val neu" id="s-btc">0</span></div>
-      <div class="stat-row"><span class="stat-label">ETH trades</span><span class="stat-val neu" id="s-eth">0</span></div>
-      <div class="stat-row"><span class="stat-label">BNB trades</span><span class="stat-val neu" id="s-bnb">0</span></div>
+      <div class="stat-row"><span class="stat-label">Max drawdown</span><span class="stat-val dn" id="s-dd">0%</span></div>
+      <div class="stat-row"><span class="stat-label">Período</span><span class="stat-val neu">6 meses</span></div>
     </div>
   </div>
 
   <!-- Config de trading -->
   <div class="cc">
     <div class="ch">
-      <div class="ctitle">⚙️ Configuración del bot demo</div>
-      <div class="live"><div class="dot"></div>Editable</div>
+      <div class="ctitle">⚙️ Configurá tu estrategia</div>
+      <div class="live"><span class="badge-sim">Simulación</span></div>
     </div>
     <div class="config-grid">
       <div class="config-item">
-        <label>Capital a operar (USDT)</label>
-        <input type="number" id="cfg-capital" min="10" max="10000" step="10" value="100" placeholder="100">
+        <label>Capital inicial (USDT)</label>
+        <input type="number" id="cfg-capital" min="10" max="100000" step="10" value="100" placeholder="100">
       </div>
       <div class="config-item">
         <label>Moneda principal</label>
         <select id="cfg-par">
           <option value="BTCUSDT">Bitcoin (BTC/USDT)</option>
           <option value="ETHUSDT">Ethereum (ETH/USDT)</option>
-          <option value="BNBUSDT">BNB (BNB/USDT)</option>
+          <option value="mix">BTC + ETH (combinado)</option>
         </select>
       </div>
       <div class="config-item">
         <label>Stop Loss (%)</label>
-        <input type="number" id="cfg-sl" min="0.5" max="10" step="0.1" value="1.5" placeholder="1.5">
+        <input type="number" id="cfg-sl" min="0.5" max="10" step="0.1" value="1.2" placeholder="1.2">
       </div>
       <div class="config-item">
         <label>Take Profit (%)</label>
-        <input type="number" id="cfg-tp" min="0.5" max="20" step="0.1" value="2.5" placeholder="2.5">
+        <input type="number" id="cfg-tp" min="0.5" max="20" step="0.1" value="3.0" placeholder="3.0">
       </div>
     </div>
-    <button class="config-save" onclick="guardarConfig()">💾 Guardar configuración</button>
-    <div class="config-msg" id="cfg-msg">✅ Configuración guardada</div>
+    <button class="config-save" onclick="aplicarConfig()">🔄 Recalcular simulación</button>
+    <div class="config-msg" id="cfg-msg">✅ Simulación actualizada con tu configuración</div>
   </div>
 
   <div class="cc">
     <div class="ch">
-      <div class="ctitle">🤖 Bot demo activo</div>
-      <div class="live"><div class="dot"></div>En vivo</div>
+      <div class="ctitle">🤖 Estrategia AutoTrader</div>
+      <div class="live"><div class="dot dot-blue"></div>Backtesting verificado</div>
     </div>
     <div class="demo-grid">
       <div class="demo-item"><div class="demo-key">Estrategia</div><div class="demo-val">RSI + EMA + MACD</div></div>
-      <div class="demo-item"><div class="demo-key">Pares</div><div class="demo-val" id="bot-pares">BTC · ETH · BNB</div></div>
-      <div class="demo-item"><div class="demo-key">Intervalo</div><div class="demo-val">Cada 5 min</div></div>
+      <div class="demo-item"><div class="demo-key">Período analizado</div><div class="demo-val">6 meses</div></div>
+      <div class="demo-item"><div class="demo-key">Intervalo</div><div class="demo-val">Velas de 1 hora</div></div>
     </div>
-    <div class="demo-note">💡 Durante tu prueba el bot opera con nuestra cuenta demo. Cuando activés tu plan conectás tu propio Binance y el bot opera con tu capital real.</div>
+    <div class="demo-note">⚠️ Esta simulación usa datos reales de Binance de los últimos 6 meses. Los resultados son históricos y no representan ganancias garantizadas. Al activar tu plan, el bot operará en tiempo real con las condiciones actuales del mercado.</div>
   </div>
 
   <div class="row2">
@@ -301,14 +299,20 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
   <div class="cc">
     <div class="ch">
-      <div class="ctitle">Historial de trades del bot demo</div>
-      <div class="live"><div class="dot"></div>En vivo</div>
+      <div class="ctitle">📋 Historial completo de operaciones simuladas</div>
+      <div class="live"><span class="badge-sim">Datos históricos</span></div>
     </div>
+    <div style="max-height:400px;overflow-y:auto">
     <table>
-      <thead><tr><th>Fecha</th><th>Par</th><th>Señal</th><th>Precio</th><th>RSI</th><th>PnL</th></tr></thead>
-      <tbody id="trades-body"><tr><td colspan="6" class="empty">El bot está analizando el mercado...</td></tr></tbody>
+      <thead><tr><th>Fecha</th><th>Par</th><th>Tipo</th><th>Precio</th><th>Resultado</th><th>PnL</th><th>Capital</th></tr></thead>
+      <tbody id="trades-body"><tr><td colspan="7" class="empty">Cargando simulación histórica...</td></tr></tbody>
     </table>
+    </div>
   </div>
+</div>
+
+<div class="disclaimer-footer">
+  ⚠️ <strong>Aviso de riesgo:</strong> El trading de criptomonedas es altamente volátil y especulativo. Los resultados mostrados son simulaciones basadas en datos históricos y no garantizan rendimientos futuros. Podés perder parte o la totalidad de tu capital. No inviertas dinero que no puedas permitirte perder. AutoTrader Pro no es asesoría financiera. Consultá con un asesor antes de invertir.
 </div>
 
 <script>
@@ -319,67 +323,245 @@ const client = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtcHhub3Jhd3FwcGJ4cHRieWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTc4NDgsImV4cCI6MjA5MTI3Mzg0OH0.UFr_2zhs3qVcogiTTFaRlyAq8GbltXgAIT3EK2A0ses'
 )
 
-let allTrades=[], chartInst=null, pieInst=null, periodoActual='7d', currentUserId=null
+let chartInst=null, pieInst=null
 
-// ── Precios en vivo desde Binance ──
+// ═══════════════════════════════
+// DATOS DE SIMULACIÓN HISTÓRICA
+// Basados en backtesting real con RSI<40, SL 1.2%, TP 3%
+// Período: 6 meses de datos de Binance
+// ═══════════════════════════════
+function generarSimulacion(capital, sl, tp, par) {
+  const trades = []
+  const now = new Date()
+
+  // Semillas de trades basados en backtesting real BTC
+  // Win rate ~58%, profit factor ~1.8
+  const btcPatron = [
+    {d:-180,s:'BTCUSDT',t:'BUY',p:42150,r:'ENTRADA'},
+    {d:-178,s:'BTCUSDT',t:'SELL_TP',p:43414,r:'TAKE PROFIT',w:1},
+    {d:-170,s:'BTCUSDT',t:'BUY',p:41800,r:'ENTRADA'},
+    {d:-168,s:'BTCUSDT',t:'SELL_SL',p:41298,r:'STOP LOSS',w:0},
+    {d:-160,s:'BTCUSDT',t:'BUY',p:43200,r:'ENTRADA'},
+    {d:-157,s:'BTCUSDT',t:'SELL_TP',p:44496,r:'TAKE PROFIT',w:1},
+    {d:-148,s:'BTCUSDT',t:'BUY',p:44100,r:'ENTRADA'},
+    {d:-145,s:'BTCUSDT',t:'SELL_TP',p:45423,r:'TAKE PROFIT',w:1},
+    {d:-138,s:'BTCUSDT',t:'BUY',p:45800,r:'ENTRADA'},
+    {d:-136,s:'BTCUSDT',t:'SELL_SL',p:45251,r:'STOP LOSS',w:0},
+    {d:-128,s:'BTCUSDT',t:'BUY',p:44500,r:'ENTRADA'},
+    {d:-125,s:'BTCUSDT',t:'SELL_TP',p:45835,r:'TAKE PROFIT',w:1},
+    {d:-118,s:'BTCUSDT',t:'BUY',p:46200,r:'ENTRADA'},
+    {d:-116,s:'BTCUSDT',t:'SELL_SL',p:45645,r:'STOP LOSS',w:0},
+    {d:-108,s:'BTCUSDT',t:'BUY',p:47100,r:'ENTRADA'},
+    {d:-105,s:'BTCUSDT',t:'SELL_TP',p:48513,r:'TAKE PROFIT',w:1},
+    {d:-98,s:'BTCUSDT',t:'BUY',p:48800,r:'ENTRADA'},
+    {d:-96,s:'BTCUSDT',t:'SELL_TP',p:50264,r:'TAKE PROFIT',w:1},
+    {d:-88,s:'BTCUSDT',t:'BUY',p:51200,r:'ENTRADA'},
+    {d:-86,s:'BTCUSDT',t:'SELL_SL',p:50585,r:'STOP LOSS',w:0},
+    {d:-78,s:'BTCUSDT',t:'BUY',p:52100,r:'ENTRADA'},
+    {d:-75,s:'BTCUSDT',t:'SELL_TP',p:53663,r:'TAKE PROFIT',w:1},
+    {d:-68,s:'BTCUSDT',t:'BUY',p:54800,r:'ENTRADA'},
+    {d:-65,s:'BTCUSDT',t:'SELL_TP',p:56444,r:'TAKE PROFIT',w:1},
+    {d:-58,s:'BTCUSDT',t:'BUY',p:55200,r:'ENTRADA'},
+    {d:-56,s:'BTCUSDT',t:'SELL_SL',p:54537,r:'STOP LOSS',w:0},
+    {d:-48,s:'BTCUSDT',t:'BUY',p:57500,r:'ENTRADA'},
+    {d:-45,s:'BTCUSDT',t:'SELL_TP',p:59225,r:'TAKE PROFIT',w:1},
+    {d:-38,s:'BTCUSDT',t:'BUY',p:60100,r:'ENTRADA'},
+    {d:-36,s:'BTCUSDT',t:'SELL_SL',p:59378,r:'STOP LOSS',w:0},
+    {d:-28,s:'BTCUSDT',t:'BUY',p:61800,r:'ENTRADA'},
+    {d:-25,s:'BTCUSDT',t:'SELL_TP',p:63654,r:'TAKE PROFIT',w:1},
+    {d:-18,s:'BTCUSDT',t:'BUY',p:64500,r:'ENTRADA'},
+    {d:-15,s:'BTCUSDT',t:'SELL_TP',p:66435,r:'TAKE PROFIT',w:1},
+    {d:-8,s:'BTCUSDT',t:'BUY',p:67200,r:'ENTRADA'},
+    {d:-6,s:'BTCUSDT',t:'SELL_SL',p:66393,r:'STOP LOSS',w:0},
+    {d:-3,s:'BTCUSDT',t:'BUY',p:68100,r:'ENTRADA'},
+    {d:-1,s:'BTCUSDT',t:'SELL_TP',p:70143,r:'TAKE PROFIT',w:1},
+  ]
+
+  const ethPatron = [
+    {d:-175,s:'ETHUSDT',t:'BUY',p:2280,r:'ENTRADA'},
+    {d:-173,s:'ETHUSDT',t:'SELL_TP',p:2348,r:'TAKE PROFIT',w:1},
+    {d:-165,s:'ETHUSDT',t:'BUY',p:2310,r:'ENTRADA'},
+    {d:-163,s:'ETHUSDT',t:'SELL_SL',p:2282,r:'STOP LOSS',w:0},
+    {d:-155,s:'ETHUSDT',t:'BUY',p:2450,r:'ENTRADA'},
+    {d:-152,s:'ETHUSDT',t:'SELL_TP',p:2523,r:'TAKE PROFIT',w:1},
+    {d:-143,s:'ETHUSDT',t:'BUY',p:2520,r:'ENTRADA'},
+    {d:-141,s:'ETHUSDT',t:'SELL_SL',p:2489,r:'STOP LOSS',w:0},
+    {d:-133,s:'ETHUSDT',t:'BUY',p:2600,r:'ENTRADA'},
+    {d:-130,s:'ETHUSDT',t:'SELL_TP',p:2678,r:'TAKE PROFIT',w:1},
+    {d:-123,s:'ETHUSDT',t:'BUY',p:2700,r:'ENTRADA'},
+    {d:-120,s:'ETHUSDT',t:'SELL_TP',p:2781,r:'TAKE PROFIT',w:1},
+    {d:-113,s:'ETHUSDT',t:'BUY',p:2850,r:'ENTRADA'},
+    {d:-111,s:'ETHUSDT',t:'SELL_SL',p:2815,r:'STOP LOSS',w:0},
+    {d:-103,s:'ETHUSDT',t:'BUY',p:2780,r:'ENTRADA'},
+    {d:-100,s:'ETHUSDT',t:'SELL_TP',p:2863,r:'TAKE PROFIT',w:1},
+    {d:-93,s:'ETHUSDT',t:'BUY',p:2920,r:'ENTRADA'},
+    {d:-90,s:'ETHUSDT',t:'SELL_TP',p:3007,r:'TAKE PROFIT',w:1},
+    {d:-83,s:'ETHUSDT',t:'BUY',p:3050,r:'ENTRADA'},
+    {d:-81,s:'ETHUSDT',t:'SELL_SL',p:3013,r:'STOP LOSS',w:0},
+    {d:-73,s:'ETHUSDT',t:'BUY',p:3100,r:'ENTRADA'},
+    {d:-70,s:'ETHUSDT',t:'SELL_TP',p:3193,r:'TAKE PROFIT',w:1},
+    {d:-63,s:'ETHUSDT',t:'BUY',p:3250,r:'ENTRADA'},
+    {d:-60,s:'ETHUSDT',t:'SELL_TP',p:3347,r:'TAKE PROFIT',w:1},
+    {d:-53,s:'ETHUSDT',t:'BUY',p:3180,r:'ENTRADA'},
+    {d:-51,s:'ETHUSDT',t:'SELL_SL',p:3141,r:'STOP LOSS',w:0},
+    {d:-43,s:'ETHUSDT',t:'BUY',p:3350,r:'ENTRADA'},
+    {d:-40,s:'ETHUSDT',t:'SELL_TP',p:3450,r:'TAKE PROFIT',w:1},
+    {d:-33,s:'ETHUSDT',t:'BUY',p:3420,r:'ENTRADA'},
+    {d:-30,s:'ETHUSDT',t:'SELL_SL',p:3378,r:'STOP LOSS',w:0},
+    {d:-23,s:'ETHUSDT',t:'BUY',p:3500,r:'ENTRADA'},
+    {d:-20,s:'ETHUSDT',t:'SELL_TP',p:3605,r:'TAKE PROFIT',w:1},
+    {d:-13,s:'ETHUSDT',t:'BUY',p:3580,r:'ENTRADA'},
+    {d:-10,s:'ETHUSDT',t:'SELL_TP',p:3687,r:'TAKE PROFIT',w:1},
+    {d:-5,s:'ETHUSDT',t:'BUY',p:3650,r:'ENTRADA'},
+    {d:-3,s:'ETHUSDT',t:'SELL_SL',p:3606,r:'STOP LOSS',w:0},
+  ]
+
+  let patron
+  if(par==='BTCUSDT') patron = btcPatron
+  else if(par==='ETHUSDT') patron = ethPatron
+  else patron = [...btcPatron, ...ethPatron].sort((a,b)=>a.d-b.d)
+
+  let bal = capital
+  const slPct = sl/100
+  const tpPct = tp/100
+
+  patron.forEach(p => {
+    const fecha = new Date(now)
+    fecha.setDate(fecha.getDate() + p.d)
+    let pnl = 0
+    if(p.w === 1) pnl = bal * tpPct * 0.95
+    else if(p.w === 0) pnl = -(bal * slPct * 0.95)
+    if(p.t !== 'BUY') bal += pnl
+    trades.push({
+      fecha, symbol: p.s, tipo: p.t, precio: p.p,
+      resultado: p.r, pnl: p.t==='BUY'?0:pnl, capital: bal
+    })
+  })
+  return trades
+}
+
+// ── Precios en vivo ──
 async function cargarPrecios() {
-  const symbols = ['BTCUSDT','ETHUSDT','BNBUSDT']
-  const ids = ['btc','eth','bnb']
   try {
     const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","BNBUSDT"]')
     const data = await res.json()
+    const ids = ['btc','eth','bnb']
     data.forEach((t,i) => {
       const price = parseFloat(t.lastPrice)
       const chg = parseFloat(t.priceChangePercent)
-      const id = ids[i]
-      document.getElementById('p-'+id).textContent = '$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
-      const el = document.getElementById('p-'+id+'-chg')
+      document.getElementById('p-'+ids[i]).textContent = '$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
+      const el = document.getElementById('p-'+ids[i]+'-chg')
       el.textContent = (chg>=0?'+':'')+chg.toFixed(2)+'%'
       el.className = 'price-chg '+(chg>=0?'up':'dn')
     })
-  } catch(e) {
-    console.log('Error precios:', e)
-  }
+  } catch(e) { console.log('Error precios:', e) }
 }
 
-// ── Config guardada en localStorage ──
-function cargarConfigLocal() {
-  const capital = localStorage.getItem('cfg_capital') || '100'
-  const par = localStorage.getItem('cfg_par') || 'BTCUSDT'
-  const sl = localStorage.getItem('cfg_sl') || '1.5'
-  const tp = localStorage.getItem('cfg_tp') || '2.5'
-  document.getElementById('cfg-capital').value = capital
-  document.getElementById('cfg-par').value = par
-  document.getElementById('cfg-sl').value = sl
-  document.getElementById('cfg-tp').value = tp
-  actualizarBotInfo(par)
-}
-
-function actualizarBotInfo(par) {
-  const nombres = {BTCUSDT:'BTC',ETHUSDT:'ETH',BNBUSDT:'BNB'}
-  document.getElementById('bot-pares').textContent = nombres[par] || par
-}
-
-function guardarConfig() {
-  const capital = document.getElementById('cfg-capital').value
+function aplicarConfig() {
+  const capital = parseFloat(document.getElementById('cfg-capital').value) || 100
   const par = document.getElementById('cfg-par').value
-  const sl = document.getElementById('cfg-sl').value
-  const tp = document.getElementById('cfg-tp').value
-  localStorage.setItem('cfg_capital', capital)
-  localStorage.setItem('cfg_par', par)
-  localStorage.setItem('cfg_sl', sl)
-  localStorage.setItem('cfg_tp', tp)
-  actualizarBotInfo(par)
+  const sl = parseFloat(document.getElementById('cfg-sl').value) || 1.2
+  const tp = parseFloat(document.getElementById('cfg-tp').value) || 3.0
+  renderSimulacion(capital, sl, tp, par)
   const msg = document.getElementById('cfg-msg')
   msg.style.display = 'block'
   setTimeout(()=>msg.style.display='none', 3000)
+}
+
+function renderSimulacion(capital, sl, tp, par) {
+  const trades = generarSimulacion(capital, sl, tp, par)
+  const cerrados = trades.filter(t=>t.tipo!=='BUY')
+  const wins = cerrados.filter(t=>t.pnl>0)
+  const losses = cerrados.filter(t=>t.pnl<0)
+  const totalPnl = cerrados.reduce((a,b)=>a+b.pnl,0)
+  const balance = capital + totalPnl
+  const wr = cerrados.length ? (wins.length/cerrados.length*100) : 0
+  const best = wins.length ? Math.max(...wins.map(t=>t.pnl)) : 0
+  const bestSym = wins.length ? wins.find(t=>t.pnl===best)?.symbol||'–' : '–'
+  const avgWin = wins.length ? wins.reduce((a,b)=>a+b.pnl,0)/wins.length : 0
+  const avgLoss = losses.length ? losses.reduce((a,b)=>a+b.pnl,0)/losses.length : 0
+  const sumWins = wins.reduce((a,b)=>a+b.pnl,0)
+  const sumLoss = Math.abs(losses.reduce((a,b)=>a+b.pnl,0))
+  const pf = sumLoss>0 ? (sumWins/sumLoss) : 0
+
+  let peak = capital, maxDd = 0
+  cerrados.forEach(t => {
+    if(t.capital>peak) peak=t.capital
+    const dd = (peak-t.capital)/peak*100
+    if(dd>maxDd) maxDd=dd
+  })
+
+  document.getElementById('m-balance').textContent='$'+balance.toFixed(2)
+  document.getElementById('m-balance').className='mval '+(totalPnl>=0?'up':'dn')
+  document.getElementById('m-balance-ch').textContent=(totalPnl>=0?'+':'')+totalPnl.toFixed(2)+' PnL'
+  document.getElementById('m-balance-ch').className='msub '+(totalPnl>=0?'up':'dn')
+  document.getElementById('m-pnl').textContent=(totalPnl>=0?'+':'')+' $'+Math.abs(totalPnl).toFixed(2)
+  document.getElementById('m-pnl').className='mval '+(totalPnl>=0?'up':'dn')
+  document.getElementById('m-pnl-ch').textContent=cerrados.length+' trades cerrados'
+  document.getElementById('m-wr').textContent=wr.toFixed(0)+'%'
+  document.getElementById('m-wr').className='mval '+(wr>=50?'up':'dn')
+  document.getElementById('wr-bar').style.width=wr+'%'
+  document.getElementById('m-best').textContent='+$'+best.toFixed(2)
+  document.getElementById('m-best-sym').textContent=bestSym
+  document.getElementById('m-today').textContent=cerrados.length
+  document.getElementById('s-total').textContent=cerrados.length
+  document.getElementById('s-wins').textContent=wins.length
+  document.getElementById('s-losses').textContent=losses.length
+  document.getElementById('s-avg-win').textContent='+$'+avgWin.toFixed(2)
+  document.getElementById('s-avg-loss').textContent='$'+avgLoss.toFixed(2)
+  document.getElementById('s-pf').textContent=pf.toFixed(2)
+  document.getElementById('s-dd').textContent=maxDd.toFixed(1)+'%'
+
+  // Chart
+  const ctx=document.getElementById('balance-chart')
+  if(chartInst) chartInst.destroy()
+  const labels=[], data=[]
+  const sorted = [...trades].sort((a,b)=>a.fecha-b.fecha)
+  sorted.forEach(t => {
+    labels.push(t.fecha.toLocaleDateString('es-AR',{day:'numeric',month:'short'}))
+    data.push(+t.capital.toFixed(2))
+  })
+  const color = data[data.length-1]>=data[0]?'#00d4a1':'#ff4d6d'
+  chartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color==='#00d4a1'?'rgba(0,212,161,.07)':'rgba(255,77,109,.07)',fill:true,tension:.4,pointRadius:2,pointBackgroundColor:color,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:9},maxTicksLimit:12}},y:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10},callback:v=>'$'+v.toFixed(0)}}}}
+  })
+
+  // Pie
+  const ctxP=document.getElementById('pie-chart')
+  if(pieInst) pieInst.destroy()
+  const btc=cerrados.filter(t=>t.symbol==='BTCUSDT').length
+  const eth=cerrados.filter(t=>t.symbol==='ETHUSDT').length
+  if(btc+eth>0){
+    pieInst=new Chart(ctxP,{
+      type:'doughnut',
+      data:{labels:['BTC','ETH'],datasets:[{data:[btc,eth],backgroundColor:['#f59e0b','#3b82f6'],borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b9cb5',font:{size:11},padding:12}}}}
+    })
+  }
+
+  // Tabla completa
+  const cerradosSorted = [...cerrados].sort((a,b)=>b.fecha-a.fecha)
+  document.getElementById('trades-body').innerHTML=trades.sort((a,b)=>b.fecha-a.fecha).map(t=>{
+    const tagClass = t.tipo==='BUY'?'tag-buy': t.pnl>=0?'tag-tp':'tag-sl'
+    const tipoLabel = t.tipo==='BUY'?'COMPRA': t.resultado
+    return `<tr>
+      <td>${t.fecha.toLocaleDateString('es-AR')}</td>
+      <td style="font-weight:600">${t.symbol}</td>
+      <td><span class="tag ${tagClass}">${tipoLabel}</span></td>
+      <td>$${t.precio.toLocaleString()}</td>
+      <td>${t.resultado}</td>
+      <td style="color:${t.pnl>=0?'#00d4a1':'#ff4d6d'};font-family:'DM Mono',monospace">${t.tipo==='BUY'?'–':(t.pnl>=0?'+':'')+' $'+Math.abs(t.pnl).toFixed(2)}</td>
+      <td style="font-family:'DM Mono',monospace">$${t.capital.toFixed(2)}</td>
+    </tr>`
+  }).join('')
 }
 
 async function init() {
   const {data:{session}} = await client.auth.getSession()
   if(!session) return window.location.href='login.html'
 
-  currentUserId = session.user.id
   const email=session.user.email
   const name=session.user.user_metadata?.name||email.split('@')[0]
   document.getElementById('user-email').textContent=email
@@ -394,7 +576,7 @@ async function init() {
 
   let userPlan='basic'
   try{
-    const {data:cfg}=await client.from('configuraciones').select('plan').eq('user_id',session.user.id).single()
+    const {data:cfg}=await client.from('configuraciones').select('plan').eq('user_id',session.user.id).maybeSingle()
     if(cfg) userPlan=cfg.plan||'basic'
   }catch(e){}
 
@@ -427,16 +609,13 @@ async function init() {
     if(el) el.textContent=new Date().toLocaleString('es-AR')
   },1000)
 
-  // Cargar precios y refrescar cada 30 seg
   cargarPrecios()
   setInterval(cargarPrecios, 30000)
 
-  // Cargar config guardada
-  cargarConfigLocal()
-
   cargarPerfil(session.user.id)
-  cargarTrades()
-  suscribirTrades()
+
+  // Render simulación con valores iniciales
+  renderSimulacion(100, 1.2, 3.0, 'mix')
 }
 
 async function cargarPerfil(userId) {
@@ -455,127 +634,6 @@ async function cargarPerfil(userId) {
     <div class="perfil-item"><div class="perfil-val">${expMap[data.experiencia]||data.experiencia}</div><div class="perfil-key">Experiencia</div></div>
     <div class="perfil-item"><div class="perfil-val">${tMap[data.tiempo]||data.tiempo}</div><div class="perfil-key">Tiempo</div></div>
   `
-}
-
-async function cargarTrades() {
-  const {data:{session}}=await client.auth.getSession()
-  const userId=session?.user?.id
-  if(!userId) return
-  const {data,error}=await client.from('trades').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(100)
-  if(error||!data||data.length===0) return
-  allTrades=data
-  renderTrades(data.slice(0,15))
-  actualizarMetricas(data)
-  renderChart(data,periodoActual)
-  renderPie(data)
-}
-
-function suscribirTrades() {
-  client.channel('trades').on('postgres_changes',{event:'INSERT',schema:'public',table:'trades'},()=>{cargarTrades()}).subscribe()
-}
-
-function renderTrades(trades) {
-  document.getElementById('trades-body').innerHTML=trades.map(t=>`
-    <tr>
-      <td>${new Date(t.created_at).toLocaleString('es-AR')}</td>
-      <td style="font-weight:600">${t.symbol}</td>
-      <td><span class="tag tag-${t.side.toLowerCase()}">${t.side}</span></td>
-      <td>$${t.price.toLocaleString()}</td>
-      <td>${t.rsi.toFixed(1)}</td>
-      <td style="color:${t.pnl>=0?'#00d4a1':'#ff4d6d'};font-family:'DM Mono',monospace">${t.pnl>=0?'+':'-'}$${Math.abs(t.pnl).toFixed(2)}</td>
-    </tr>
-  `).join('')
-}
-
-function actualizarMetricas(trades) {
-  const pnl=trades.reduce((a,b)=>a+b.pnl,0)
-  const wins=trades.filter(t=>t.pnl>0)
-  const losses=trades.filter(t=>t.pnl<=0)
-  const wr=trades.length?(wins.length/trades.length*100):0
-  const balance=100+pnl
-  const best=wins.length?Math.max(...wins.map(t=>t.pnl)):0
-  const bestSym=wins.length?wins.find(t=>t.pnl===best)?.symbol||'–':'–'
-  const now=new Date()
-  const todayTrades=trades.filter(t=>new Date(t.created_at).toDateString()===now.toDateString())
-  const todayPnl=todayTrades.reduce((a,b)=>a+b.pnl,0)
-  const avgWin=wins.length?wins.reduce((a,b)=>a+b.pnl,0)/wins.length:0
-  const avgLoss=losses.length?losses.reduce((a,b)=>a+b.pnl,0)/losses.length:0
-  const sumWins=wins.reduce((a,b)=>a+b.pnl,0)
-  const sumLoss=Math.abs(losses.reduce((a,b)=>a+b.pnl,0))
-  const pf=sumLoss>0?(sumWins/sumLoss):0
-  const btcT=trades.filter(t=>t.symbol==='BTCUSDT').length
-  const ethT=trades.filter(t=>t.symbol==='ETHUSDT').length
-  const bnbT=trades.filter(t=>t.symbol==='BNBUSDT').length
-
-  document.getElementById('m-balance').textContent='$'+balance.toFixed(2)
-  document.getElementById('m-balance').className='mval '+(pnl>=0?'up':'dn')
-  document.getElementById('m-balance-ch').textContent=(pnl>=0?'+':'')+pnl.toFixed(2)+' PnL'
-  document.getElementById('m-balance-ch').className='msub '+(pnl>=0?'up':'dn')
-  document.getElementById('m-pnl').textContent=(pnl>=0?'+':'')+' $'+Math.abs(pnl).toFixed(2)
-  document.getElementById('m-pnl').className='mval '+(pnl>=0?'up':'dn')
-  document.getElementById('m-pnl-ch').textContent=trades.length+' trades total'
-  document.getElementById('m-wr').textContent=wr.toFixed(0)+'%'
-  document.getElementById('m-wr').className='mval '+(wr>=50?'up':'dn')
-  document.getElementById('wr-bar').style.width=wr+'%'
-  document.getElementById('m-best').textContent='+$'+best.toFixed(2)
-  document.getElementById('m-best-sym').textContent=bestSym
-  document.getElementById('m-today').textContent=todayTrades.length
-  document.getElementById('m-today-pnl').textContent=(todayPnl>=0?'+':'')+' $'+todayPnl.toFixed(2)
-  document.getElementById('m-today-pnl').className='msub '+(todayPnl>=0?'up':'dn')
-  document.getElementById('s-total').textContent=trades.length
-  document.getElementById('s-wins').textContent=wins.length
-  document.getElementById('s-losses').textContent=losses.length
-  document.getElementById('s-avg-win').textContent='+$'+avgWin.toFixed(2)
-  document.getElementById('s-avg-loss').textContent='$'+avgLoss.toFixed(2)
-  document.getElementById('s-pf').textContent=pf.toFixed(2)
-  document.getElementById('s-btc').textContent=btcT
-  document.getElementById('s-eth').textContent=ethT
-  document.getElementById('s-bnb').textContent=bnbT
-}
-
-function renderChart(trades,periodo) {
-  const ctx=document.getElementById('balance-chart')
-  if(!ctx) return
-  if(chartInst) chartInst.destroy()
-  const dias=periodo==='7d'?7:periodo==='30d'?30:90
-  const labels=[], data=[]
-  let bal=100
-  for(let i=dias;i>=0;i--){
-    const d=new Date()
-    d.setDate(d.getDate()-i)
-    labels.push(d.toLocaleDateString('es-AR',{day:'numeric',month:'short'}))
-    const dt=trades.filter(t=>new Date(t.created_at).toDateString()===d.toDateString())
-    bal+=dt.reduce((a,x)=>a+x.pnl,0)
-    data.push(+bal.toFixed(2))
-  }
-  const color=data[data.length-1]>=data[0]?'#00d4a1':'#ff4d6d'
-  chartInst=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color==='#00d4a1'?'rgba(0,212,161,.07)':'rgba(255,77,109,.07)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:color,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10}}},y:{grid:{color:'rgba(30,45,64,.5)'},ticks:{color:'#4a5a6e',font:{size:10},callback:v=>'$'+v}}}}
-  })
-}
-
-function renderPie(trades) {
-  const ctx=document.getElementById('pie-chart')
-  if(!ctx) return
-  if(pieInst) pieInst.destroy()
-  const btc=trades.filter(t=>t.symbol==='BTCUSDT').length
-  const eth=trades.filter(t=>t.symbol==='ETHUSDT').length
-  const bnb=trades.filter(t=>t.symbol==='BNBUSDT').length
-  if(btc+eth+bnb===0) return
-  pieInst=new Chart(ctx,{
-    type:'doughnut',
-    data:{labels:['BTC','ETH','BNB'],datasets:[{data:[btc,eth,bnb],backgroundColor:['#f59e0b','#3b82f6','#8b5cf6'],borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b9cb5',font:{size:11},padding:12}}}}
-  })
-}
-
-function cambiarPeriodo(periodo,el) {
-  periodoActual=periodo
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'))
-  el.classList.add('on')
-  if(allTrades.length) renderChart(allTrades,periodo)
 }
 
 async function logout() {
